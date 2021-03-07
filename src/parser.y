@@ -20,58 +20,67 @@
   std::string *string;
 }
 
-%token T_TIMES T_DIVIDE T_PLUS T_MINUS T_EXPONENT
-%token T_LBRACKET T_RBRACKET
-%token T_LOG T_EXP T_SQRT
+%token T_TIMES T_DIVIDE T_PLUS T_MINUS T_MODULO
+%token T_GREATERTHAN T_LESSTHAN T_GREATERTHANEQUAL T_LESSTHANEQUAL T_EQUALTO T_NOTEQUALTO T_NOT T_LOGICAND T_LOGICOR
+%token T_LBRACKET T_RBRACKET T_LBRACE T_RBRACE T_SEMICOLON T_ASSIGN
+%token T_INT T_WHILE T_IF T_ELSE T_RETURN
 %token T_NUMBER T_VARIABLE
 
 %type <expr> EXPR TERM UNARY FACTOR
 %type <number> T_NUMBER
-%type <string> T_VARIABLE T_LOG T_EXP T_SQRT FUNCTION_NAME
+%type <int> T_INT
+%type <string> T_VARIABLE T_INT T_WHILE T_IF T_ELSE T_RETURN
 
-%start ROOT
+%start STATEMENT
 
 %%
 
-/* The TODO notes a are just a guide, and are non-exhaustive.
-   The expectation is that you do each one, then compile and test.
-   Testing should be done using patterns that target the specific
-   feature; the testbench is there to make sure that you haven't
-   broken anything while you added it.
-*/
+FUNCTION  : T_INT T_VARIABLE T_RBRACKET T_LBRACKET T_LBRACE STATEMENT T_RBRACE      { g_root = $1; }
 
-ROOT : EXPR { g_root = $1; }
+STATEMENT : EXPR T_SEMICOLON                                                        { g_root = $1; }
+        | T_RETURN EXPR T_SEMICOLON                                      { $$ = new Operator($1, $3); }       
 
-/* TODO-3 : Add support for (x + 6) and (10 - y). You'll need to add production rules, and create an AddOperator or
-            SubOperator. */
-EXPR : TERM                      { $$ = $1; }
-     | EXPR T_PLUS TERM          { $$ = new AddOperator($1, $3); }
-     | EXPR T_MINUS TERM         { $$ = new SubOperator($1, $3); }
+        | T_IF T_LBRACKET EXPR T_RBRACKET                                { $$ = new Operator($1, $3); }
+        | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT                      { $$ = new Operator($1, $3); }
+        | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT T_ELSE STATEMENT     { $$ = new Operator($1, $3); }
 
-/* TODO-4 : Add support (x * 6) and (z / 11). */
-TERM : UNARY                       { $$ = $1; }
-     | TERM T_TIMES UNARY          { $$ = new MulOperator($1, $3); }
-     | TERM T_DIVIDE UNARY         { $$ = new DivOperator($1, $3); }
+        | WHILE T_LBRACKET EXPR T_RBRACKET                               { $$ = new Operator($1, $3); }
+        | WHILE T_LBRACKET EXPR T_RBRACKET STATEMENT                     { $$ = new Operator($1, $3); }
 
-/*  TODO-5 : Add support for (- 5) and (- x). You'll need to add production rules for the unary minus operator and create a NegOperator. */
-UNARY : FACTOR                { $$ = $1; }
-      | T_MINUS FACTOR        { $$ = new NegOperator($2); }
+        | T_INT T_VARIABLE T_SEMICOLON                                   { $$ = new Operator($1, $3); }
+        | T_INT T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                     { $$ = new Operator($1, $3); }
 
-/* TODO-2 : Add a rule for variable, base on the pattern of number. */
-FACTOR : T_NUMBER     { $$ = new Number( $1 ); }
-       | T_VARIABLE   { $$ = new Variable( $1 ); }
-       | FACTOR T_EXPONENT UNARY        { $$ = new ExpOperator($1, $3); }
-       | T_LBRACKET EXPR T_RBRACKET { $$ = $2; }
+EXPR    : RELAT                         { $$ = $1; }
+        | LOGICAL T_LOGICAND RELAT      { $$ = new Operator($1, $3); }
+        | LOGICAL T_LOGICOR RELAT       { $$ = new Operator($1, $3); }
 
-/* TODO-6 : Add support log(x), by modifying the rule for FACTOR. */
-       | T_LOG T_LBRACKET EXPR T_RBRACKET { $$ = new LogFunction($3); }
-       | T_EXP T_LBRACKET EXPR T_RBRACKET { $$ = new ExpFunction($3); }
-       | T_SQRT T_LBRACKET EXPR T_RBRACKET { $$ = new SqrtFunction($3); }
-/* TODO-7 : Extend support to other functions. Requires modifications here, and to FACTOR. */
-FUNCTION_NAME : T_LOG { $$ = new std::string("log"); }
-              | T_EXP { $$ = new std::string("exp"); }
-              | T_SQRT { $$ = new std::string("sqrt"); }
-              
+RELAT   : ARITH                         { $$ = $1; }
+        | RELAT T_GREATERTHAN ARITH     { $$ = new Operator($1, $3); }
+        | RELAT T_LESSTHAN ARITH        { $$ = new Operator($1, $3); }
+        | RELAT T_GREATERTHANEQUAL ARITH{ $$ = new Operator($1, $3); }
+        | RELAT T_LESSTHANEQUAL ARITH   { $$ = new Operator($1, $3); }
+        | RELAT T_EQUALTO ARITH         { $$ = new Operator($1, $3); }
+        | RELAT T_NOTEQUALTO ARITH      { $$ = new Operator($1, $3); }
+
+
+ARITH   : TERM                          { $$ = $1; }
+        | ARITH T_PLUS TERM             { $$ = new AddOperator($1, $3); }
+        | ARITH T_MINUS TERM            { $$ = new SubOperator($1, $3); }
+
+
+TERM    : NOT                           { $$ = $1; }
+        | TERM T_TIMES UNARY            { $$ = new MulOperator($1, $3); }
+        | TERM T_DIVIDE UNARY           { $$ = new DivOperator($1, $3); }
+
+NOT     : UNARY                         { $$ = $1; }
+        | T_NOT UNARY                   { $$ = new Operator($1, $3); }
+
+UNARY   : FACTOR                        { $$ = $1; }
+        | T_MINUS FACTOR                { $$ = new NegOperator($2); }
+
+FACTOR  : T_NUMBER                      { $$ = new Number( $1 ); }
+        | T_VARIABLE                    { $$ = new Variable( $1 ); }
+        | T_LBRACKET EXPR T_RBRACKET    { $$ = $2; }
 
 
 %%
