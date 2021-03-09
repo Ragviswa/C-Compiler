@@ -55,4 +55,25 @@ public:
     }
 };
 
+class NotLogic
+    : public Unary
+{
+public:
+    NotLogic(const ExpressionPtr _expr)
+        : Unary(_expr)
+    {}
+
+    virtual const char *getOpcode() const override
+    { return "!"; }
+
+    virtual double evaluate(
+        const std::map<std::string, double> &bindings
+    ) const override
+    {
+        // TODO-F: Implement this similar to how AddOperator was implemented.
+        double in=getExpr()->evaluate(bindings);
+        return (!in);
+    }
+};
+
 #endif

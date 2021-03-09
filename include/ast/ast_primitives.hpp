@@ -59,5 +59,31 @@ public:
     }
 };
 
+class Integer
+    : public Expression
+{
+private:
+    int value;
+public:
+    Integer(int _value)
+        : value(_value)
+    {}
+
+    int getValue() const
+    { return value; }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<value;
+    }
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        return value;
+    }
+};
+
 
 #endif

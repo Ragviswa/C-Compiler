@@ -278,4 +278,46 @@ public:
     }
 };
 
+class AndLogic
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "&&"; }
+public:
+    AndLogic(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+    
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override 
+    {
+        double vl=getLeft()->evaluate(bindings);
+        double vr=getRight()->evaluate(bindings);
+        return vl&&vr;
+    }
+};
+
+class OrLogic
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "||"; }
+public:
+    OrLogic(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+    
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override 
+    {
+        double vl=getLeft()->evaluate(bindings);
+        double vr=getRight()->evaluate(bindings);
+        return vl||vr;
+    }
+};
+
 #endif
