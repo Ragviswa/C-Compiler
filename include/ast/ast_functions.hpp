@@ -8,17 +8,18 @@
 #include <vector>
 
 class Function
-    : public Expression
+    : public Statement
 {
 private:
+    // TO-DO: specify data type later
     Variable name; // function name
     std::vector<ExpressionPtr> arg; // multiple arguments
-    StatementPtr statement;
+    std::vector<StatementPtr> statements;
 protected:
-    Function(Variable _name, std::vector<ExpressionPtr> _arg = {}, StatementPtr _statement = nullptr)
+    Function(Variable _name, std::vector<ExpressionPtr> _arg = {}, std::vector<StatementPtr> _statements = {})
         : name(_name)
         , arg(_arg) 
-        , statement(_statement)
+        , statements(_statements)
     {}
 public:
     virtual ~Function()

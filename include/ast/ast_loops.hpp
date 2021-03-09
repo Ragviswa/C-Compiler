@@ -1,22 +1,24 @@
 #ifndef ast_loops_hpp
 #define ast_loops_hpp
 
+#include <vector>
+
 class Loop 
     : public Statement
 {
 private:
     ExpressionPtr condition;
-    StatementPtr statement;
+    std::vector<StatementPtr> statements;
 protected:
-    Loop(ExpressionPtr _condition, StatementPtr _statement)
+    Loop(ExpressionPtr _condition, std::vector<StatementPtr> _statements)
         : condition(_condition)
-        , statement(_statement)
+        , statements(_statements)
     {}
 public:
     virtual ~Loop()
     {
         delete condition;
-        delete statement;
+        delete statements;
     }
 
     virtual const char *getOpcode() const =0;
@@ -24,8 +26,8 @@ public:
     ExpressionPtr getCondition() const 
     { return condition; }
 
-    StatementPtr getStatement() const
-    { return statement; }
+    std::vector<StatementPtr> getStatements() const
+    { return statements; }
 
     virtual void print(std::ostream &dst) const override
     {
@@ -34,7 +36,9 @@ public:
         condition->print(dst);
         dst<<" ) ";
         dst<<"{ ";
-        statement->print(dst);
+        for(int i = 0; i < statements.size(); i++) {
+            statements[i]->print(dst);
+        }
         dst<<" }";
     }
 };
@@ -46,10 +50,10 @@ protected:
     virtual const char *getOpcode() const override
     { return "while"; }
 public:
-    WhileLoop(ExpressionPtr _condition, StatementPtr _statement)
-        : Loop(_condition, _statement)
+    WhileLoop(ExpressionPtr _condition, std::vector<StatementPtr> _statements)
+        : Loop(_condition, _statements)
     {}
-    
+
 };
 
 #endif

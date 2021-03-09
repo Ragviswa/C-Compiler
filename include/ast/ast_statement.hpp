@@ -8,6 +8,7 @@ class Statement;
 typedef const Statement *StatementPtr;
 
 class Statement
+    : public Expression
 {
 public:
     virtual ~Statement() {}
