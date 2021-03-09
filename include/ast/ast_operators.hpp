@@ -151,5 +151,131 @@ public:
     }
 };
 
+// relational operators
+class GreaterThanOperator
+    : public Operator
+{
+protected: 
+    virtual const char *getOpcode() const override
+        { return ">"; }
+public:
+    GreaterThanOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        double vl = getLeft()->evaluate(bindings);
+        double vr = getRight()->evaluate(bindings);
+        return vl > vr;
+    }
+};
+
+class GreaterThanEqualOperator
+    : public Operator
+{
+protected: 
+    virtual const char *getOpcode() const override
+        { return ">="; }
+public:
+    GreaterThanEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        double vl = getLeft()->evaluate(bindings);
+        double vr = getRight()->evaluate(bindings);
+        return vl >= vr;
+    }
+};
+
+class LessThanOperator
+    : public Operator
+{
+protected: 
+    virtual const char *getOpcode() const override
+        { return "<"; }
+public:
+    LessThanOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        double vl = getLeft()->evaluate(bindings);
+        double vr = getRight()->evaluate(bindings);
+        return vl < vr;
+    }
+};
+
+class LessThanEqualOperator
+    : public Operator
+{
+protected: 
+    virtual const char *getOpcode() const override
+        { return "<="; }
+public:
+    LessThanEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        double vl = getLeft()->evaluate(bindings);
+        double vr = getRight()->evaluate(bindings);
+        return vl <= vr;
+    }
+};
+
+class EqualOperator
+    : public Operator
+{
+protected: 
+    virtual const char *getOpcode() const override
+        { return "=="; }
+public:
+    EqualOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        double vl = getLeft()->evaluate(bindings);
+        double vr = getRight()->evaluate(bindings);
+        return vl == vr;
+    }
+};
+
+class NotEqualOperator
+    : public Operator
+{
+protected: 
+    virtual const char *getOpcode() const override
+        { return "!="; }
+public:
+    NotEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        double vl = getLeft()->evaluate(bindings);
+        double vr = getRight()->evaluate(bindings);
+        return vl != vr;
+    }
+};
 
 #endif
