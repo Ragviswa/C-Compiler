@@ -1,5 +1,5 @@
-#ifndef ast_loops_hpp
-#define ast_loops_hpp
+#ifndef ast_ifthenelse_hpp
+#define ast_ifthenelse_hpp
 
 #include <vector>
 

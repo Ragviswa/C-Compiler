@@ -44,7 +44,7 @@ STATEMENT_LIST  : STATEMENT                                              { g_roo
         | STATEMENTLIST STATEMENT                                        
 
 STATEMENT : EXPR T_SEMICOLON                                             { $$ = $1; }
-        | T_RETURN EXPR T_SEMICOLON                                      { $$ = new Operator($1, $3); }       
+        | T_RETURN EXPR T_SEMICOLON                                      { $$ = new Return($1, $3); }       
 
         | T_IF T_LBRACKET EXPR T_RBRACKET                                { $$ = new IfStatement($3); }
         | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT                      { $$ = new IfStatement($3, $5); }
@@ -55,7 +55,7 @@ STATEMENT : EXPR T_SEMICOLON                                             { $$ = 
         | WHILE T_LBRACKET EXPR T_RBRACKET STATEMENT                     { $$ = new WhileLoop($3, $5); }
 
         | T_INT T_VARIABLE T_SEMICOLON                                   { $$ = new Integer($2); }
-        | T_INT T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                     { $$ = new Operator($1, $3); }
+        | T_INT T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                     { $$ = new IntegerAssign($1, $3); }
 
 EXPR    : RELAT                         { $$ = $1; }
         | LOGICAL T_LOGICAND RELAT      { $$ = new AndLogic($1, $3); }

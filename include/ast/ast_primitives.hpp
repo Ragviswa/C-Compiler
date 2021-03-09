@@ -63,17 +63,23 @@ class Integer
     : public Expression
 {
 private:
+    std::string id;
     int value;
 public:
-    Integer(int _value)
-        : value(_value)
+    Integer(const std::string _id, int _value)
+        : id(*_id)
+        , value(_value)
     {}
+    const std::string getId() const
+    { return id; }
 
     int getValue() const
     { return value; }
 
     virtual void print(std::ostream &dst) const override
     {
+        dst<<id;
+        dst<<"=";
         dst<<value;
     }
 
