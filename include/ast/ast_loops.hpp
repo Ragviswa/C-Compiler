@@ -56,4 +56,17 @@ public:
 
 };
 
+class IfStatement
+    : public Loop
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "if"; }
+public:
+    WhileLoop(ExpressionPtr _condition, std::vector<StatementPtr> _statements)
+        : Loop(_condition, _statements)
+    {}
+
+};
+
 #endif

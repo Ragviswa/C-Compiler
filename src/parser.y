@@ -3,7 +3,7 @@
 
   #include <cassert>
 
-  extern const Expression *g_root; // A way of getting the AST out
+  extern const Function *g_root; // A way of getting the AST out
 
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
@@ -16,6 +16,7 @@
 // AST node.
 %union{
   const Expression *expr;
+  const Statement *stat;
   double number;
   std::string *string;
 }
@@ -32,35 +33,41 @@
 %type <string> T_VARIABLE T_INT T_WHILE T_IF T_ELSE T_RETURN
 
 %start STATEMENT
+// Definition of variable (to match declaration earlier)
 
 %%
 
-FUNCTION  : T_INT T_VARIABLE T_RBRACKET T_LBRACKET T_LBRACE STATEMENT T_RBRACE      { g_root = $1; }
+FUNCTION  : T_INT T_VARIABLE T_RBRACKET T_LBRACKET T_LBRACE STATEMENT_LIST T_RBRACE      { g_root = new Function($2, $6); }
 
-STATEMENT : EXPR T_SEMICOLON                                                        { g_root = $1; }
+
+STATEMENT_LIST  : STATEMENT                                              { g_root = $1; }
+        | STATEMENTLIST STATEMENT                                        
+
+STATEMENT : EXPR T_SEMICOLON                                             { $$ = $1; }
         | T_RETURN EXPR T_SEMICOLON                                      { $$ = new Operator($1, $3); }       
 
-        | T_IF T_LBRACKET EXPR T_RBRACKET                                { $$ = new Operator($1, $3); }
-        | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT                      { $$ = new Operator($1, $3); }
-        | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT T_ELSE STATEMENT     { $$ = new Operator($1, $3); }
+        | T_IF T_LBRACKET EXPR T_RBRACKET                                { $$ = new IfStatement($3); }
+        | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT                      { $$ = new IfStatement($3, $5); }
+        | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT T_ELSE               { $$ = new IfThenElseStatment($3, $5); }
+        | T_IF T_LBRACKET EXPR T_RBRACKET STATEMENT T_ELSE STATEMENT     { $$ = new IfThenElseStatment($3, $5, $7); }
 
-        | WHILE T_LBRACKET EXPR T_RBRACKET                               { $$ = new Operator($1, $3); }
-        | WHILE T_LBRACKET EXPR T_RBRACKET STATEMENT                     { $$ = new Operator($1, $3); }
+        | WHILE T_LBRACKET EXPR T_RBRACKET                               { $$ = new WhileLoop($3); }
+        | WHILE T_LBRACKET EXPR T_RBRACKET STATEMENT                     { $$ = new WhileLoop($3, $5); }
 
-        | T_INT T_VARIABLE T_SEMICOLON                                   { $$ = new Operator($1, $3); }
+        | T_INT T_VARIABLE T_SEMICOLON                                   { $$ = new Integer($2); }
         | T_INT T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                     { $$ = new Operator($1, $3); }
 
 EXPR    : RELAT                         { $$ = $1; }
-        | LOGICAL T_LOGICAND RELAT      { $$ = new Operator($1, $3); }
-        | LOGICAL T_LOGICOR RELAT       { $$ = new Operator($1, $3); }
+        | LOGICAL T_LOGICAND RELAT      { $$ = new AndLogic($1, $3); }
+        | LOGICAL T_LOGICOR RELAT       { $$ = new OrLogic($1, $3); }
 
 RELAT   : ARITH                         { $$ = $1; }
-        | RELAT T_GREATERTHAN ARITH     { $$ = new Operator($1, $3); }
-        | RELAT T_LESSTHAN ARITH        { $$ = new Operator($1, $3); }
-        | RELAT T_GREATERTHANEQUAL ARITH{ $$ = new Operator($1, $3); }
-        | RELAT T_LESSTHANEQUAL ARITH   { $$ = new Operator($1, $3); }
-        | RELAT T_EQUALTO ARITH         { $$ = new Operator($1, $3); }
-        | RELAT T_NOTEQUALTO ARITH      { $$ = new Operator($1, $3); }
+        | RELAT T_GREATERTHAN ARITH     { $$ = new GreaterThanOperator($1, $3); }
+        | RELAT T_LESSTHAN ARITH        { $$ = new LessThanOperator($1, $3); }
+        | RELAT T_GREATERTHANEQUAL ARITH{ $$ = new GreaterThanEqualOperator($1, $3); }
+        | RELAT T_LESSTHANEQUAL ARITH   { $$ = new LessThanEqualOperator($1, $3); }
+        | RELAT T_EQUALTO ARITH         { $$ = new EqualOperator($1, $3); }
+        | RELAT T_NOTEQUALTO ARITH      { $$ = new NotEqualOperator($1, $3); }
 
 
 ARITH   : TERM                          { $$ = $1; }
@@ -73,7 +80,7 @@ TERM    : NOT                           { $$ = $1; }
         | TERM T_DIVIDE UNARY           { $$ = new DivOperator($1, $3); }
 
 NOT     : UNARY                         { $$ = $1; }
-        | T_NOT UNARY                   { $$ = new Operator($1, $3); }
+        | T_NOT UNARY                   { $$ = new NotLogic($2); }
 
 UNARY   : FACTOR                        { $$ = $1; }
         | T_MINUS FACTOR                { $$ = new NegOperator($2); }
