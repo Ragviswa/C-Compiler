@@ -39,8 +39,6 @@ class Integer
     :Variable
 {
 private:
-    std::string type;
-    std::string id;
     int value;
 public:
     Integer(const std::string*_type, const std::string *_id, int _value = 0)
