@@ -49,7 +49,6 @@ public:
         const std::map<std::string, double> &bindings
     ) const override
     {
-        // TODO-F: Implement this similar to how AddOperator was implemented.
         double in=getExpr()->evaluate(bindings);
         return (-in);
     }
@@ -70,7 +69,6 @@ public:
         const std::map<std::string, double> &bindings
     ) const override
     {
-        // TODO-F: Implement this similar to how AddOperator was implemented.
         double in=getExpr()->evaluate(bindings);
         return (!in);
     }

@@ -3,8 +3,8 @@
 
 #include <string>
 #include <iostream>
-#include <cmath>
 
+// Base Class
 class Operator
     : public Expression
 {
@@ -43,6 +43,7 @@ public:
     }
 };
 
+// Mathematical Operators
 class AddOperator
     : public Operator
 {
@@ -58,7 +59,6 @@ public:
         const std::map<std::string,double> &bindings
     ) const override 
     {
-        // TODO-C : Run bin/eval_expr with something like 5+a, where a=10, to make sure you understand how this works
         double vl=getLeft()->evaluate(bindings);
         double vr=getRight()->evaluate(bindings);
         return vl+vr;
@@ -80,13 +80,11 @@ public:
         const std::map<std::string,double> &bindings
     ) const override 
     {
-        // TODO-D : Implement this, based on AddOperator::evaluate
         double vl=getLeft()->evaluate(bindings);
         double vr=getRight()->evaluate(bindings);
         return vl-vr;
     }
 };
-
 
 class MulOperator
     : public Operator
@@ -130,14 +128,14 @@ public:
     }
 };
 
-class ExpOperator
+class ModOperator
     : public Operator
 {
 protected:
     virtual const char *getOpcode() const override
-    { return "^"; }
+    { return "/"; }
 public:
-    ExpOperator(ExpressionPtr _left, ExpressionPtr _right)
+    ModOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
 
@@ -145,13 +143,13 @@ public:
         const std::map<std::string,double> &bindings
     ) const override
     {
-        double vl=getLeft()->evaluate(bindings);
-        double vr=getRight()->evaluate(bindings);
-        return pow(vl, vr);
+        int vl=getLeft()->evaluate(bindings);
+        int vr=getRight()->evaluate(bindings);
+        return vl%vr;
     }
 };
 
-// relational operators
+// Relational Operators
 class GreaterThanOperator
     : public Operator
 {
@@ -278,6 +276,7 @@ public:
     }
 };
 
+// Logic Operators
 class AndLogic
     : public Operator
 {
@@ -318,6 +317,106 @@ public:
         double vr=getRight()->evaluate(bindings);
         return vl||vr;
     }
+};
+
+// Ternary Operator
+class TernaryOperator
+    : public Expression
+{
+private:
+    ExpressionPtr cond;
+    ExpressionPtr left;
+    ExpressionPtr right;
+public:
+    TernaryOperator(ExpressionPtr _cond, ExpressionPtr _left, ExpressionPtr _right)
+        : cond(_cond)
+        , left(_left)
+        , right(_right)
+    {}
+    virtual ~TernaryOperator()
+    {
+        delete cond;
+        delete left;
+        delete right;
+    }
+
+    ExpressionPtr getcond() const
+    { return cond; }
+
+    ExpressionPtr getLeft() const
+    { return left; }
+
+    ExpressionPtr getRight() const
+    { return right; }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        cond->print(dst);
+        dst<<" ? ";
+        left->print(dst);
+        dst<<" : ";
+        right->print(dst);
+    }
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override 
+    {
+        bool cond=getcond()->evaluate(bindings);
+        double vl=getLeft()->evaluate(bindings);
+        double vr=getRight()->evaluate(bindings);
+        return cond?vl:vr;
+    }
+};
+
+//Assign Expression
+class Assign
+    : public Expression
+{
+private:
+    // TO-DO: specify data type later
+    Integer name;
+    ExpressionPtr val; // Assigning Val
+protected:
+    Function(Integer _name, ExpressionPtr _val = nullptr)
+        : name(_name)
+        , val(_val) 
+    {}
+public:
+    virtual ~Assign()
+    {
+        delete val;
+    }
+
+    virtual const char *getOpcode() const =0;
+
+    Integer getName() const
+    { return name.getId();}
+
+    ExpressionPtr getArg() const
+    { return val; }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        name.getId().print(dst);
+        dst<<getOpcode();
+        val->print(dst);
+        dst<<";";
+    }
+
+};
+
+class IntegerAssign
+    : public Assign
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "="; }
+public:
+    IntegerAssign(Integer _name, ExpressionPtr _val)
+        : Assign(_name, _val)
+    {}
+
 };
 
 #endif

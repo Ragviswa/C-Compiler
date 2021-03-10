@@ -5,14 +5,19 @@
 #include <iostream>
 
 class Variable
-    : public Expression
+    :Expression
 {
 private:
+    std::string type;
     std::string id;
 public:
-    Variable(const std::string *_id)
-        : id(*_id)
+    Variable(const std::string*_type, const std::string *_id)
+        : type(*_type)
+        , id(*_id)
     {}
+
+    const std::string getType() const
+    { return type; }
 
     const std::string getId() const
     { return id; }
@@ -26,8 +31,30 @@ public:
         const std::map<std::string,double> &bindings
     ) const override
     {
-        // TODO-B : Run bin/eval_expr with a variable binding to make sure you understand how this works.
-        // If the binding does not exist, this will throw an error
+        return bindings.at(id);
+    }    
+};
+
+class Integer
+    :Variable
+{
+private:
+    std::string type;
+    std::string id;
+    int value;
+public:
+    Integer(const std::string*_type, const std::string *_id, int _value = 0)
+        : Variable(_type, _id)
+        , value(_value)
+    {}
+
+    const int getValue() const
+    { return value; }
+
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
         return bindings.at(id);
     }    
 };
@@ -54,42 +81,8 @@ public:
         const std::map<std::string,double> &bindings
     ) const override
     {
-        // TODO-A : Run bin/eval_expr with a numeric expression to make sure you understand how this works.
         return value;
     }
 };
-
-class Integer
-    : public Expression
-{
-private:
-    std::string id;
-    int value;
-public:
-    Integer(const std::string _id, int _value)
-        : id(*_id)
-        , value(_value)
-    {}
-    const std::string getId() const
-    { return id; }
-
-    int getValue() const
-    { return value; }
-
-    virtual void print(std::ostream &dst) const override
-    {
-        dst<<id;
-        dst<<"=";
-        dst<<value;
-    }
-
-    virtual double evaluate(
-        const std::map<std::string,double> &bindings
-    ) const override
-    {
-        return value;
-    }
-};
-
 
 #endif
