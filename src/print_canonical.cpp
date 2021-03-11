@@ -1,8 +1,8 @@
-#include "ast.hpp"
+#include "../include/ast.hpp"
 
 int main()
 {
-    const Expression *ast=parseAST();
+    const Function *ast=parseAST();
 
     ast->print(std::cout);
     std::cout<<std::endl;

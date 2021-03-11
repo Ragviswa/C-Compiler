@@ -2,6 +2,7 @@
 #define ast_statement_hpp
 
 #include "ast_expression.hpp"
+#include "ast_primitives.hpp"
 
 class Statement;
 
@@ -34,6 +35,14 @@ public:
         delete statement;
         delete statementList;
     }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        statement->print(dst);
+        if(statementList!=nullptr){
+            statementList->print(dst);
+        }
+    }
 };
 
 class SelectStatement
@@ -43,7 +52,7 @@ private:
     ExpressionPtr condition;
     StatementPtr statement;
 public:
-    SelectStatement(ExpressionPtr _condition, StatementPtr _statement)
+    SelectStatement(ExpressionPtr _condition, StatementPtr _statement = nullptr)
         : condition(_condition)
         , statement(_statement)
     {}
@@ -51,6 +60,11 @@ public:
         delete condition;
         delete statement;
     }
+    ExpressionPtr getCond() const
+    { return condition; }
+    StatementPtr getStat() const
+    { return statement; }
+    
 };
 
 class IfStatement
@@ -59,12 +73,25 @@ class IfStatement
 private:
     StatementPtr else_branch;
 public:
-    IfStatement(ExpressionPtr _condition, StatementPtr _if_branch, StatementPtr _else_branch = nullptr)
+    IfStatement(ExpressionPtr _condition, StatementPtr _if_branch = nullptr, StatementPtr _else_branch = nullptr)
         : SelectStatement(_condition, _if_branch)
         , else_branch(_else_branch)
     {}
     ~IfStatement() {
         delete else_branch;
+    }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"if ( ";
+        getCond()->print(dst);
+        dst<<" ) ";
+        getStat()->print(dst);
+        if(else_branch!=nullptr) {
+            dst<<"else ";
+            else_branch->print(dst);
+        }
+        
     }
 };
 
@@ -83,6 +110,10 @@ public:
         delete condition;
         delete statement;
     }
+    ExpressionPtr getCond() const
+    { return condition; }
+    StatementPtr getStat() const
+    { return statement; }
 };
 
 class WhileLoop
@@ -92,6 +123,14 @@ public:
     WhileLoop(ExpressionPtr _condition, StatementPtr _statement = nullptr)
         : LoopStatement(_condition, _statement)
     {}
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"while ( ";
+        getCond()->print(dst);
+        dst<<" ) ";
+        getStat()->print(dst);
+    }
 };
 
 class ExpressionStatement
@@ -100,11 +139,18 @@ class ExpressionStatement
 private:
     ExpressionPtr expression;
 public:
-    ExpressionStatement(ExpressionPtr _expression)
+    ExpressionStatement(ExpressionPtr _expression = nullptr)
         : expression(_expression)
     {}
     ~ExpressionStatement() {
         delete expression;
+    }
+    virtual void print(std::ostream &dst) const override
+    {
+        if(expression!=nullptr){
+            expression->print(dst);
+        }
+        dst<<";";
     }
 };
 
@@ -120,6 +166,14 @@ public:
     ~JumpStatement() {
         delete expression;
     }
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"return ";
+        if(expression!=nullptr){
+            expression->print(dst);
+        }
+        dst<<";";
+    }
 };
 
 class CompoundStatement
@@ -127,12 +181,32 @@ class CompoundStatement
 {
 private:
     StatementListPtr statementList;
+    DeclarationListPtr declarationList;
 public:
     CompoundStatement(StatementListPtr _statementList = nullptr)
         : statementList(_statementList)
     {} 
+    CompoundStatement(DeclarationListPtr _declarationList = nullptr)
+        : declarationList(_declarationList)
+    {} 
+    CompoundStatement(DeclarationListPtr _declarationList = nullptr, StatementListPtr _statementList = nullptr)
+        : statementList(_statementList)
+        , declarationList(_declarationList)
+    {} 
     ~CompoundStatement() {
         delete statementList;
+        delete declarationList;
+    }
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"{ ";
+        if(declarationList!=nullptr){
+            declarationList->print(dst);
+        }
+        if(statementList!=nullptr){
+            statementList->print(dst);
+        }
+        dst<<"}";
     }
 };
 

@@ -4,18 +4,43 @@
 #include <string>
 #include <iostream>
 
+enum TypeDef{
+  INT,
+  FLT,
+  DBL
+};
+
 class Variable
     :Expression
 {
 private:
     std::string type;
     std::string id;
+    ExpressionPtr Expr;
 public:
-    Variable(const std::string*_type, const std::string *_id)
-        : type(*_type)
-        , id(*_id)
-    {}
+    Variable() {}
 
+    Variable(TypeDef _type, const std::string *_id, ExpressionPtr _Expr = nullptr) {
+        switch(_type) {
+            case INT:
+                type = "INT";
+                id = *_id;
+                Expr = _Expr;
+                break;
+            case FLT:
+                type = "FLOAT";
+                id = *_id;
+                Expr = _Expr;
+                break;
+            case DBL:
+                type = "DOUBLE";
+                id = *_id;
+                Expr = _Expr;
+            default:
+                type = "something went wrong";
+        }
+    }
+    
     const std::string getType() const
     { return type; }
 
@@ -24,7 +49,13 @@ public:
 
     virtual void print(std::ostream &dst) const override
     {
+        dst<<type;
+        dst<<" ";
         dst<<id;
+        if(Expr!=nullptr){
+            dst<<" = ";
+            Expr->print(dst);
+        }
     }
 
     virtual double evaluate(
@@ -35,26 +66,34 @@ public:
     }    
 };
 
-class Integer
-    :Variable
+class DeclarationList;
+
+typedef const DeclarationList *DeclarationListPtr;
+
+class DeclarationList
+    : public Variable
 {
 private:
-    int value;
+    Variable *variable;
+    DeclarationListPtr declarationList;
 public:
-    Integer(const std::string*_type, const std::string *_id, int _value = 0)
-        : Variable(_type, _id)
-        , value(_value)
+    DeclarationList(Variable *_variable, DeclarationListPtr _declarationList = nullptr)
+        : variable(_variable)
+        , declarationList(_declarationList)
     {}
 
-    const int getValue() const
-    { return value; }
+    virtual ~DeclarationList() {
+        delete variable;
+        delete declarationList;
+    }
 
-    virtual double evaluate(
-        const std::map<std::string,double> &bindings
-    ) const override
+    virtual void print(std::ostream &dst) const override
     {
-        return bindings.at(id);
-    }    
+        variable->print(dst);
+        if(declarationList!=nullptr){
+            declarationList->print(dst);
+        }
+    }
 };
 
 class Number

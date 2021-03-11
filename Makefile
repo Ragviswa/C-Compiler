@@ -15,6 +15,10 @@ bin/c_compiler : bin/compiler src/wrapper.sh
 bin/compiler : src/compiler.cpp
 	mkdir -p bin
 	g++ $(CPPFLAGS) -o bin/compiler $^
+
+bin/print_canonical : src/print_canonical -o src/maths_parser.tab.o src/lexer.yy.o src/maths_parser.tab.o
+	mkdir -p bin
+	g++ $(CPPFLAGS) -o bin/print_canonical $^
 	
 clean :
 	rm -f src/*.o

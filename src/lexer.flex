@@ -13,8 +13,6 @@ extern "C" int fileno(FILE *stream);
 [+]             { return T_PLUS; }
 [-]             { return T_MINUS; }
 [%]             { return T_MODULO; }
-[?]             { return T_QUESTION}
-[:]             { return T_COLON}
 
 [>]             { return T_GREATERTHAN; }
 [<]             { return T_LESSTHAN; }
@@ -22,10 +20,13 @@ extern "C" int fileno(FILE *stream);
 [<][=]          { return T_LESSTHANEQUAL; }
 [=][=]          { return T_EQUALTO; }
 [!][=]          { return T_NOTEQUALTO; }
+
 [&][&]          { return T_LOGICAND; }
 [|][|]          { return T_LOGICOR; }
 [!]             { return T_NOT; }
 
+[?]             { return T_QUESTION}
+[:]             { return T_COLON}
 
 [=]             { return T_ASSIGN; }
 [;]             { return T_SEMICOLON; }
