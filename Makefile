@@ -2,6 +2,8 @@
 CPPFLAGS += -std=c++17 -W -Wall -g -Wno-unused-parameter
 CPPFLAGS += -I inc
 
+all : bin/print_canonical
+
 src/maths_parser.tab.cpp src/maths_parser.tab.hpp : src/parser.y
 	bison -v -d src/parser.y -o src/maths_parser.tab.cpp
 
