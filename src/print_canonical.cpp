@@ -1,4 +1,4 @@
-#include "../include/ast.hpp"
+#include "ast.hpp"
 
 int main()
 {

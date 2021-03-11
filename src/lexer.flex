@@ -4,7 +4,7 @@
 // Avoid error "error: `fileno' was not declared in this scope"
 extern "C" int fileno(FILE *stream);
 
-#include "maths_parser.tab.hpp"
+#include "parser.tab.hpp"
 %}
 
 %%
@@ -25,8 +25,8 @@ extern "C" int fileno(FILE *stream);
 [|][|]          { return T_LOGICOR; }
 [!]             { return T_NOT; }
 
-[?]             { return T_QUESTION}
-[:]             { return T_COLON}
+[?]             { return T_QUESTION; }
+[:]             { return T_COLON; }
 
 [=]             { return T_ASSIGN; }
 [;]             { return T_SEMICOLON; }

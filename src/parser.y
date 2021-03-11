@@ -15,6 +15,7 @@
 // Represents the value associated with any kind of
 // AST node.
 %union{
+  const Function *function;
   const Statement *stat;
   const StatementList *statlist;
   const Expression *expr;
@@ -34,7 +35,6 @@
 %token T_INT T_RETURN T_WHILE T_IF T_ELSE
 %token T_NUMBER T_VARIABLE
 
-%
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT STAT COMPOUND_STAT
 %type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND EQUALITY RELAT ARITH TERM UNARY FACTOR
 %type <number> T_NUMBER
@@ -43,12 +43,13 @@
 %type <variable> DECL
 %type <statlist> STAT_LIST
 %type <decllist> DECL_LIST
+%type <function> FUNCTION
 
 %start PROGRAM
 
 %%
 
-PROGRAM             : FUNCTION                                              { g_root = $1}
+PROGRAM             : FUNCTION                                              { g_root = $1; }
 
 FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $5) }
 
@@ -118,7 +119,7 @@ UNARY               : FACTOR                                                { $$
                     | T_MINUS FACTOR                                        { $$ = new NegOperator($2); }
                     | T_NOT FACTOR                                          { $$ = new NotLogic($2); }
 
-TYPE_DEF            : T_INT                                                 { $$ = Type.INT}
+TYPE_DEF            : T_INT                                                 { $$ = TypeDef.INT; }
 
 FACTOR              : T_NUMBER                                              { $$ = new Number( $1 ); }
                     | T_VARIABLE                                            { $$ = $1; }
