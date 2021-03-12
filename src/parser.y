@@ -20,7 +20,7 @@
   const StatementList *statlist;
   const Expression *expr;
   const DeclarationList *decllist;
-  const Variable *variable;
+  Variable *variable;
   double number;
   std::string *string;
   TypeDef T_type;
@@ -58,10 +58,10 @@ COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$
                     | T_LBRACE DECL_LIST T_RBRACE                           { $$ = new CompoundStatement($2); }
                     | T_LBRACE DECL_LIST STAT_LIST T_RBRACE                 { $$ = new CompoundStatement($2, $3); }
 
-STAT_LIST           : STAT                                                  { $$ = $1; }
+STAT_LIST           : STAT                                                  { $$ = new StatementList($1); }
                     | STAT_LIST STAT                                        { $$ = new StatementList($2, $1); }
 
-DECL_LIST           : DECL                                                  { $$ = $1; }
+DECL_LIST           : DECL                                                  { $$ = new DeclarationList($1); }
                     | DECL_LIST DECL                                        { $$ = new DeclarationList($2, $1); }
 
 STAT                : COMPOUND_STAT                                         { $$ = $1; }
@@ -122,7 +122,7 @@ UNARY               : FACTOR                                                { $$
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
 
 FACTOR              : T_NUMBER                                              { $$ = new Number($1); }
-                    | T_VARIABLE                                            { $$ = new std::string(*$1); }
+                    | T_VARIABLE                                            { $$ = new Variable($1); }
                     | T_LBRACKET EXPR T_RBRACKET                            { $$ = $2; }
 
 %%

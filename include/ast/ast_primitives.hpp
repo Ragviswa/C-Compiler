@@ -11,14 +11,20 @@ enum TypeDef{
 };
 
 class Variable
-    :Expression
+    :public Expression
 {
 private:
     std::string type;
     std::string id;
     ExpressionPtr Expr;
 public:
-    Variable() {}
+//This constructor does not feel right, it's a placeholder.
+    Variable() {
+    }
+    
+    Variable(const std::string *_id) {
+        id = *_id;
+    }
 
     Variable(TypeDef _type, const std::string *_id, ExpressionPtr _Expr = nullptr) {
         switch(_type) {
