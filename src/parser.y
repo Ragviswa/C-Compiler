@@ -56,7 +56,7 @@ FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT { 
 COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$ = new CompoundStatement(); }
                     | T_LBRACE STAT_LIST T_RBRACE                           { $$ = new CompoundStatement($2); }
                     | T_LBRACE DECL_LIST T_RBRACE                           { $$ = new CompoundStatement($2); }
-                    | T_LBRACE DECL_LIST STAT_LIST T_RBRACE                 { $$ = new CompoundStatemnt($2, $3); }
+                    | T_LBRACE DECL_LIST STAT_LIST T_RBRACE                 { $$ = new CompoundStatement($2, $3); }
 
 STAT_LIST           : STAT                                                  { $$ = $1; }
                     | STAT_LIST STAT                                        { $$ = new StatementList($2, $1); }
@@ -70,10 +70,10 @@ STAT                : COMPOUND_STAT                                         { $$
                     | EXPR_STAT                                             { $$ = $1; }
                     | JUMP_STAT                                             { $$ = $1; }
 
-JUMP_STAT           : RETURN T_SEMICOLON                                    { $$ = new JumpStatement(); }
-                    | RETURN EXPR T_SEMICOLON                               { $$ = new JumpStatement($2); }
+JUMP_STAT           : T_RETURN T_SEMICOLON                                    { $$ = new JumpStatement(); }
+                    | T_RETURN EXPR T_SEMICOLON                               { $$ = new JumpStatement($2); }
 
-LOOP_STAT           : WHILE T_LBRACKET EXPR T_RBRACKET STAT                 { $$ = new WhileLoop($3, $5); }
+LOOP_STAT           : T_WHILE T_LBRACKET EXPR T_RBRACKET STAT                 { $$ = new WhileLoop($3, $5); }
 
 SEL_STAT            : T_IF T_LBRACKET EXPR T_RBRACKET STAT                  { $$ = new IfStatement($3, $5); }
                     | T_IF T_LBRACKET EXPR T_RBRACKET STAT T_ELSE STAT      { $$ = new IfStatement($3, $5, $7); }
@@ -85,7 +85,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                       { $$
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON         { $$ = new Variable($1, $2, $4); }
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
-                    | T_VARIABLE T_ASSIGN EXPR
+                    | T_VARIABLE T_ASSIGN EXPR                              {}
 
 CONDITIONAL         : LOGIC_OR                                              { $$ = $1; }
                     | LOGIC_OR T_QUESTION EXPR T_COLON CONDITIONAL          { $$ = new TernaryOperator($1, $3, $5); }
@@ -124,7 +124,6 @@ TYPE_DEF            : T_INT                                                 { $$
 FACTOR              : T_NUMBER                                              { $$ = new Number( $1 ); }
                     | T_VARIABLE                                            { $$ = $1; }
                     | T_LBRACKET EXPR T_RBRACKET                            { $$ = $2; }
-
 
 %%
 

@@ -30,7 +30,7 @@ extern "C" int fileno(FILE *stream);
 
 [=]             { return T_ASSIGN; }
 [;]             { return T_SEMICOLON; }
-[,]             { reutrn T_COMMA; }
+[,]             { return T_COMMA; }
 
 [{]             { return T_LBRACE; }
 [}]             { return T_RBRACE; }
@@ -54,5 +54,6 @@ else            { return T_ELSE; }
 void yyerror (char const *s)
 {
   fprintf (stderr, "Parse error : %s\n", s);
+  fprintf(stderr, "line %d: %s\n", yylineno, s);
   exit(1);
 }
