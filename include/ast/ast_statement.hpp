@@ -68,7 +68,7 @@ public:
 };
 
 class IfStatement
-    : SelectStatement
+    : public SelectStatement
 {
 private:
     StatementPtr else_branch;
@@ -96,7 +96,7 @@ public:
 };
 
 class LoopStatement
-    : Statement
+    : public Statement
 {
 private:
     ExpressionPtr condition;
@@ -117,7 +117,7 @@ public:
 };
 
 class WhileLoop
-    : LoopStatement
+    : public LoopStatement
 {
 public:
     WhileLoop(ExpressionPtr _condition, StatementPtr _statement = nullptr)
@@ -134,7 +134,7 @@ public:
 };
 
 class ExpressionStatement
-    : Statement
+    : public Statement
 {
 private:
     ExpressionPtr expression;
@@ -155,7 +155,7 @@ public:
 };
 
 class JumpStatement
-    : Statement
+    : public Statement
 {
 private:
     ExpressionPtr expression;
@@ -177,19 +177,21 @@ public:
 };
 
 class CompoundStatement
-    : Statement
+    : public Statement
 {
 private:
     StatementListPtr statementList;
     DeclarationListPtr declarationList;
 public:
-    CompoundStatement(StatementListPtr _statementList = nullptr)
+     CompoundStatement()
+    {} 
+    CompoundStatement(StatementListPtr _statementList)
         : statementList(_statementList)
     {} 
-    CompoundStatement(DeclarationListPtr _declarationList = nullptr)
+    CompoundStatement(DeclarationListPtr _declarationList)
         : declarationList(_declarationList)
     {} 
-    CompoundStatement(DeclarationListPtr _declarationList = nullptr, StatementListPtr _statementList = nullptr)
+    CompoundStatement(DeclarationListPtr _declarationList, StatementListPtr _statementList)
         : statementList(_statementList)
         , declarationList(_declarationList)
     {} 

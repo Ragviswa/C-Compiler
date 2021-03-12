@@ -12,13 +12,18 @@ private:
     Variable *name; // function name
     ExpressionPtr arg; // single argument
     StatementPtr statements;
-protected:
+public:
+    Function(Variable *_name, StatementPtr _statements = nullptr)
+        : name(_name)
+        , statements(_statements)
+    {}
+
     Function(Variable *_name, ExpressionPtr _arg = nullptr, StatementPtr _statements = nullptr)
         : name(_name)
         , arg(_arg) 
         , statements(_statements)
     {}
-public:
+
     virtual ~Function()
     {
         delete name,
@@ -26,7 +31,10 @@ public:
         delete statements;
     }
 
-    virtual const char *getFunction() const =0;
+    const std::string getFunction() const
+    {
+        return name->getId();
+    }
 
     ExpressionPtr getArg() const
     { return arg; }
