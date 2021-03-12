@@ -44,6 +44,7 @@ public:
         name->print(dst);
         dst<<"( ";
         dst<<" )";
+        dst<<'\n';
         statements->print(dst);
     }
 

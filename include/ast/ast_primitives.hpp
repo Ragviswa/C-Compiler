@@ -62,6 +62,8 @@ public:
             dst<<" = ";
             Expr->print(dst);
         }
+        dst<<";";
+        dst<<'\n';
     }
 
     virtual double evaluate(

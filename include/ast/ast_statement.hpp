@@ -91,7 +91,7 @@ public:
             dst<<"else ";
             else_branch->print(dst);
         }
-        
+        dst<<'\n';
     }
 };
 
@@ -130,6 +130,7 @@ public:
         getCond()->print(dst);
         dst<<" ) ";
         getStat()->print(dst);
+        dst<<'\n';
     }
 };
 
@@ -151,6 +152,7 @@ public:
             expression->print(dst);
         }
         dst<<";";
+        dst<<'\n';
     }
 };
 
@@ -173,6 +175,7 @@ public:
             expression->print(dst);
         }
         dst<<";";
+        dst<<'\n';
     }
 };
 
@@ -209,6 +212,7 @@ public:
             statementList->print(dst);
         }
         dst<<"}";
+        dst<<'\n';
     }
 };
 
