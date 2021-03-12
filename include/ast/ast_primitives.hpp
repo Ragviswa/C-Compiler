@@ -61,9 +61,9 @@ public:
         if(Expr!=nullptr){
             dst<<" = ";
             Expr->print(dst);
+            dst<<";";
+            dst<<'\n';
         }
-        dst<<";";
-        dst<<'\n';
     }
 
     virtual double evaluate(
