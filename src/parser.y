@@ -59,10 +59,10 @@ COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$
                     | T_LBRACE DECL_LIST STAT_LIST T_RBRACE                 { $$ = new CompoundStatement($2, $3); }
 
 STAT_LIST           : STAT                                                  { $$ = new StatementList($1); }
-                    | STAT_LIST STAT                                        { $$ = new StatementList($2, $1); }
+                    | STAT STAT_LIST                                        { $$ = new StatementList($1, $2); }
 
 DECL_LIST           : DECL                                                  { $$ = new DeclarationList($1); }
-                    | DECL_LIST DECL                                        { $$ = new DeclarationList($2, $1); }
+                    | DECL DECL_LIST                                        { $$ = new DeclarationList($1, $2); }
 
 STAT                : COMPOUND_STAT                                         { $$ = $1; }
                     | LOOP_STAT                                             { $$ = $1; }
@@ -126,7 +126,9 @@ FACTOR              : T_NUMBER                                              { $$
                     | T_LBRACKET EXPR T_RBRACKET                            { $$ = $2; }
 
 %%
-
+// Keep in mind Variable is creating a new Variable instead of pointing to an old declaration
+// Currently Compound Statement is incorrectly parsing as it requires the order to be a declaration list then a statement list,
+// but based on our understanding, it should be able to do it in any order
 const Function *g_root; // Definition of variable (to match declaration earlier)
 
 const Function *parseAST()
