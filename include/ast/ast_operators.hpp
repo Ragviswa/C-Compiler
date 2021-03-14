@@ -399,6 +399,22 @@ public:
     AndLogic(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::string set_zero = makeName("set_zero");
+        std::cout << "beq " << srcRegA << " $0 " << set_zero << std::endl;
+        std::cout << "beq " << srcRegB << " $0 " << set_zero << std::endl;
+        std::cout << "add " << destReg << " $0 1" << std::endl;
+        std::string exit = makeName("exit");
+        std::cout << "jump " << exit << std::endl;
+        std::cout << ":" << set_zero << std::endl;
+        std::cout << "addi " << destReg << " $0 $0" << std::endl;
+        std::cout << ":" << exit << std::endl;
+    }
     
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -420,6 +436,22 @@ public:
     OrLogic(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::string set_one = makeName("set_one");
+        std::cout << "bne " << srcRegA << " $0 " << set_one << std::endl;
+        std::cout << "bne " << srcRegB << " $0 " << set_one << std::endl;
+        std::cout << "add " << destReg << " $0 $0" << std::endl;
+        std::string exit = makeName("exit");
+        std::cout << "jump " << exit << std::endl;
+        std::cout << ":" << set_one << std::endl;
+        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << ":" << exit << std::endl;
+    }
     
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -470,6 +502,23 @@ public:
         right->print(dst);
     }
 
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        std::string srcRegC = makeName("srcRegC");
+        getcond()->CompileRec(srcRegA);
+        getLeft()->CompileRec(srcRegB);
+        getRight()->CompileRec(srcRegC);
+        std::string else_stat = makeName("else_stat");
+        std::cout << "beq " << srcRegA << " $0 " << else_stat <<std::endl;
+        std::cout << "addi " << destReg << " $0 " << srcRegB << std::endl;
+        std::string exit = makeName("exit");
+        std::cout << "jump " << exit << std::endl;
+        std::cout << ":" << else_stat << std::endl;
+        std::cout << "addi " << destReg << " $0 " << srcRegC << std::endl;
+        std::cout << ":"<<exit<<std::endl;
+    }
+
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override 
@@ -480,4 +529,5 @@ public:
         return cond?vl:vr;
     }
 };
+
 #endif
