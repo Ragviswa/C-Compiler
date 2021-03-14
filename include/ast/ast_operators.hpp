@@ -408,11 +408,11 @@ public:
         std::string set_zero = makeName("set_zero");
         std::cout << "beq " << srcRegA << " $0 " << set_zero << std::endl;
         std::cout << "beq " << srcRegB << " $0 " << set_zero << std::endl;
-        std::cout << "add " << destReg << " $0 1" << std::endl;
+        std::cout << "addi " << destReg << " $0 1" << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << set_zero << std::endl;
-        std::cout << "addi " << destReg << " $0 $0" << std::endl;
+        std::cout << "add " << destReg << " $0 $0" << std::endl;
         std::cout << ":" << exit << std::endl;
     }
     
@@ -511,11 +511,11 @@ public:
         getRight()->CompileRec(srcRegC);
         std::string else_stat = makeName("else_stat");
         std::cout << "beq " << srcRegA << " $0 " << else_stat <<std::endl;
-        std::cout << "addi " << destReg << " $0 " << srcRegB << std::endl;
+        std::cout << "add " << destReg << " $0 " << srcRegB << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << else_stat << std::endl;
-        std::cout << "addi " << destReg << " $0 " << srcRegC << std::endl;
+        std::cout << "add " << destReg << " $0 " << srcRegC << std::endl;
         std::cout << ":"<<exit<<std::endl;
     }
 
