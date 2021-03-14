@@ -188,6 +188,35 @@ public:
     }
 };
 
+class ForLoop
+    : public LoopStatement
+{
+private:
+    ExpressionPtr testExpr;
+    ExpressionPtr updateExpr;
+public:
+    ForLoop(ExpressionPtr _initExpr, ExpressionPtr _testExpr, ExpressionPtr _updateExpr, StatementPtr _statement)
+     : LoopStatement(_initExpr, _statement)
+     , testExpr(_testExpr)
+     , updateExpr(_updateExpr)
+    {}
+    ~ForLoop() {
+        delete testExpr;
+        delete updateExpr;
+    }
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"for ( ";
+        getCond()->print(dst);
+        dst<<" ; ";
+        testExpr->print(dst);
+        dst<<" ; ";
+        updateExpr->print(dst);
+        dst<<" ) \n";
+        getStat()->print(dst);
+    }
+};
+
 class ExpressionStatement
     : public Statement
 {

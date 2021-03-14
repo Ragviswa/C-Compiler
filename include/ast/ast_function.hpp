@@ -39,6 +39,11 @@ public:
     ExpressionPtr getArg() const
     { return arg; }
 
+    void CompileRec(std::string destReg) const {
+        std::cout << ":" << name->getId() << std::endl;
+        statements->CompileRec(destReg);
+    }
+
     void print(std::ostream &dst) const
     {
         name->print(dst);
