@@ -4,6 +4,11 @@
 #include "ast_expression.hpp"
 #include "ast_primitives.hpp"
 
+static int makeNameUnq = 0;
+static std::string makeName(std::string base) {
+    return "_" + base + "_" + std::to_string(makeNameUnq++);
+}
+
 class Statement;
 
 typedef const Statement *StatementPtr;
@@ -131,6 +136,20 @@ public:
         dst<<" ) ";
         getStat()->print(dst);
         dst<<'\n';
+    }
+
+    virtual void CompileRec(std::string destReg) {
+        std::string c = makeName("while_condition");
+        getCond()->CompileRec(c);
+        std::string unique_exit = makeName("exit");
+        std::cout << "beq " << c << " $0 " << unique_exit << std::endl;
+        std::string unique_start = makeName("start");
+        std::cout << ":" << unique_start << std::endl;
+        getStat()->CompileReg(destReg);
+        getCond()->CompileReg(c);
+        std::cout << "bne " << c << " $0 " << unique_start << std::endl;
+        std::cout << ":" << unique_exit << std::endl;
+        std::cout << "add " << destReg << " $0 $0" << std::endl;
     }
 };
 
