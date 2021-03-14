@@ -53,6 +53,9 @@ public:
     const std::string getId() const
     { return id; }
 
+    ExpressionPtr getExpr() const
+    { return Expr; }
+
     virtual void print(std::ostream &dst) const override
     {
         dst<<type;
@@ -66,6 +69,15 @@ public:
         }
     }
 
+    virtual void CompileRec(std::string destReg) const override{
+        if(getType()=="INT"){
+            std::string var = makeName("var");
+            if(Expr!=nullptr){
+                getExpr()->CompileRec(var);
+            }
+        }
+    }   
+//This CompileRec is a placeholder until we figure out how to assign variable locations
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override
@@ -94,6 +106,10 @@ public:
         delete variable;
         delete declarationList;
     }
+    Variable *getVar() const
+    { return variable; }
+    DeclarationListPtr getdecllist() const
+    { return declarationList; }
 
     virtual void print(std::ostream &dst) const override
     {
@@ -102,6 +118,13 @@ public:
             declarationList->print(dst);
         }
     }
+
+    virtual void CompileRec(std::string destReg) const override{
+        getVar()->CompileRec(destReg);
+        if(declarationList!=nullptr){
+            getdecllist()->CompileRec(destReg);
+        }
+    }  
 };
 
 class Number
@@ -128,6 +151,11 @@ public:
     {
         return value;
     }
+
+    virtual void CompileRec(std::string destReg) const override{
+        std::cout << "addi " << destReg << " $0 " << value << std::endl;
+    }  
+
 };
 
 #endif
