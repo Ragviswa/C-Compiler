@@ -142,6 +142,7 @@ private:
     ExpressionPtr condition;
     StatementPtr statement;
 public:
+    LoopStatement() {}
     LoopStatement(ExpressionPtr _condition, StatementPtr _statement = nullptr)
         : condition(_condition)
         , statement(_statement)
@@ -192,22 +193,40 @@ class ForLoop
     : public LoopStatement
 {
 private:
+    Variable *initVar = nullptr; // int x = 0
+    ExpressionPtr initExpr = nullptr; // x = 0
     ExpressionPtr testExpr;
     ExpressionPtr updateExpr;
+    StatementPtr statement;
 public:
     ForLoop(ExpressionPtr _initExpr, ExpressionPtr _testExpr, ExpressionPtr _updateExpr, StatementPtr _statement)
-     : LoopStatement(_initExpr, _statement)
+     : initExpr(_initExpr)
      , testExpr(_testExpr)
      , updateExpr(_updateExpr)
+     , statement(_statement)
+    {}
+    ForLoop(Variable *_initVar, ExpressionPtr _testExpr, ExpressionPtr _updateExpr, StatementPtr _statement)
+    : initVar(_initVar)
+    , testExpr(_testExpr)
+    , updateExpr(_updateExpr)
+    , statement(_statement)
     {}
     ~ForLoop() {
+        delete initVar;
+        delete initExpr;
         delete testExpr;
         delete updateExpr;
+        delete statement;
     }
     virtual void print(std::ostream &dst) const override
     {
         dst<<"for ( ";
-        getCond()->print(dst);
+        if(initVar != nullptr && initExpr == nullptr) {
+            initVar->print(dst);
+        }
+        else if(initVar == nullptr && initExpr != nullptr) {
+            initExpr->print(dst);
+        }
         dst<<" ; ";
         testExpr->print(dst);
         dst<<" ; ";

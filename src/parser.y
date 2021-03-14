@@ -32,7 +32,7 @@
 %token T_QUESTION T_COLON
 %token T_ASSIGN T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET
-%token T_INT T_RETURN T_WHILE T_IF T_ELSE
+%token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR
 %token T_NUMBER T_VARIABLE
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT STAT COMPOUND_STAT
@@ -74,6 +74,8 @@ JUMP_STAT           : T_RETURN T_SEMICOLON                                    { 
                     | T_RETURN EXPR T_SEMICOLON                               { $$ = new JumpStatement($2); }
 
 LOOP_STAT           : T_WHILE T_LBRACKET EXPR T_RBRACKET STAT                 { $$ = new WhileLoop($3, $5); }
+                    | T_FOR T_LBRACKET EXPR T_SEMICOLON EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ new ForLoop($3, $5, $7); }
+                    | T_FOR T_LBRACKET DECL EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ new ForLoop($3, $5, $7); }
 
 SEL_STAT            : T_IF T_LBRACKET EXPR T_RBRACKET STAT                  { $$ = new IfStatement($3, $5); }
                     | T_IF T_LBRACKET EXPR T_RBRACKET STAT T_ELSE STAT      { $$ = new IfStatement($3, $5, $7); }

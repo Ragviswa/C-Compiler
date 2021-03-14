@@ -42,6 +42,7 @@ return          { return T_RETURN; }
 while           { return T_WHILE; }
 if              { return T_IF; }
 else            { return T_ELSE; }
+for             { return T_FOR; }
 
 [0-9]+([.][0-9]*)?             { yylval.number=strtod(yytext, 0); return T_NUMBER; }
 [a-zA-Z_][a-zA-Z_\d]*          { yylval.string=new std::string(yytext); return T_VARIABLE; }
