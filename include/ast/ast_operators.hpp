@@ -25,6 +25,8 @@ public:
 
     virtual const char *getOpcode() const =0;
 
+    virtual const char *getInstr() const =0;
+
     ExpressionPtr getLeft() const
     { return left; }
 
@@ -41,6 +43,14 @@ public:
         right->print(dst);
         dst<<" )";
     }
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        left->CompileRec(srcRegA);
+        right->CompileRec(srcRegB);
+        std::cout << getInstr() << " " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+    }
 };
 
 // Mathematical Operators
@@ -50,6 +60,9 @@ class AddOperator
 protected:
     virtual const char *getOpcode() const override
     { return "+"; }
+
+    virtual const char *getInstr() const override
+    { return "add"; }
 public:
     AddOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
@@ -71,6 +84,8 @@ class SubOperator
 protected:
     virtual const char *getOpcode() const override
     { return "-"; }
+    virtual const char *getInstr() const override
+    { return "sub"; }
 public:
     SubOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
@@ -92,6 +107,8 @@ class MulOperator
 protected:
     virtual const char *getOpcode() const override
     { return "*"; }
+    virtual const char *getInstr() const override
+    { return "mul"; }
 public:
     MulOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
@@ -113,10 +130,20 @@ class DivOperator
 protected:
     virtual const char *getOpcode() const override
     { return "/"; }
+
 public:
     DivOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::cout << "div " << srcRegA << " " << srcRegB << std::endl; // quotient stored in hi, remainder stored in lo
+        std::cout << "mfhi " << destReg << std::endl;
+    }
 
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -133,11 +160,20 @@ class ModOperator
 {
 protected:
     virtual const char *getOpcode() const override
-    { return "/"; }
+    { return "%"; }
 public:
     ModOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::cout << "div " << srcRegA << " " << srcRegB << std::endl; // quotient stored in hi, remainder stored in lo
+        std::cout << "mflo " << destReg << std::endl;
+    }
 
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -161,6 +197,14 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::cout << "slt " << destReg << " " << srcRegB << " " << srcRegA << std::endl;
+    }
+
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override
@@ -181,6 +225,21 @@ public:
     GreaterThanEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::string set_one = makeName("set_one");
+        std::cout << "beq " << srcRegA << " " << srcRegB << " " << set_one << std::endl;
+        std::cout << "slt " << destReg << " " << srcRegB << " " << srcRegA << std::endl;
+        std::string exit = makeName("exit");
+        std::cout << "jump " << exit << std::endl;
+        std::cout << ":" << set_one << std::endl;
+        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << ":" << exit << std::endl;
+    }
 
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -203,6 +262,14 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::cout << "slt " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+    }
+
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override
@@ -223,6 +290,21 @@ public:
     LessThanEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::string set_one = makeName("set_one");
+        std::cout << "beq " << srcRegA << " " << srcRegB << " " << set_one << std::endl;
+        std::cout << "slt " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+        std::string exit = makeName("exit");
+        std::cout << "jump " << exit << std::endl;
+        std::cout << ":" << set_one << std::endl;
+        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << ":" << exit << std::endl;
+    }
 
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -245,6 +327,21 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::string set_one = makeName("set_one");
+        std::cout << "beq " << srcRegA << " " << srcRegB << " " << set_one << std::endl;
+        std::cout << "add " << destReg << " $0 $0" << std::endl;
+        std::string exit = makeName("exit");
+        std::cout << "jump " << exit << std::endl;
+        std::cout << ":" << set_one << std::endl;
+        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << ":" << exit << std::endl;
+    }
+
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override
@@ -265,6 +362,21 @@ public:
     NotEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::string set_one = makeName("set_one");
+        std::cout << "bne " << srcRegA << " " << srcRegB << " " << set_one << std::endl;
+        std::cout << "add " << destReg << " $0 $0" << std::endl;
+        std::string exit = makeName("exit");
+        std::cout << "jump " << exit << std::endl;
+        std::cout << ":" << set_one << std::endl;
+        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << ":" << exit << std::endl;
+    }
 
     virtual double evaluate(
         const std::map<std::string,double> &bindings
