@@ -19,6 +19,8 @@ public:
     virtual ~Statement() {}
 
     virtual void print(std::ostream &dst) const =0;
+
+    virtual void CompileRec(std::string destReg) const =0;
 };
 
 class StatementList;
@@ -40,12 +42,21 @@ public:
         delete statement;
         delete statementList;
     }
-
+    StatementPtr getStat() const
+    { return statement; }
+    StatementListPtr getstatlist() const
+    { return statementList; }
     virtual void print(std::ostream &dst) const override
     {
         statement->print(dst);
         if(statementList!=nullptr){
             statementList->print(dst);
+        }
+    }
+    virtual void CompileRec(std::string destReg) const override{
+        getStat()->CompileRec(destReg);
+        if(statementList!=nullptr){
+            getstatlist()->CompileRec(destReg);
         }
     }
 };
@@ -85,6 +96,9 @@ public:
     ~IfStatement() {
         delete else_branch;
     }
+    StatementPtr getElse() const
+    { return else_branch; }
+
 
     virtual void print(std::ostream &dst) const override
     {
@@ -97,6 +111,27 @@ public:
             else_branch->print(dst);
         }
         dst<<'\n';
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string c = makeName("c");
+        getCond()->CompileRec(c);
+        std::string exit = makeName("exit");
+        if(else_branch!=nullptr){
+            std::string else_stat = makeName("else_stat");
+            std::cout << "beq " << c << " $0 " << else_stat <<std::endl;
+            getStat()->CompileRec(destReg);
+            std::string exit = makeName("exit");
+            std::cout << "jump " << exit << std::endl;
+            std::cout << ":" << else_stat << std::endl;
+            getElse()->CompileRec(destReg);
+            std::cout << ":"<<exit<<std::endl;
+        }else{
+            std::string exit = makeName("exit");
+            std::cout << "beq " << c << " $0 " << exit <<std::endl;
+            getStat()->CompileRec(destReg);
+            std::cout << ":"<<exit<<std::endl;
+        }
     }
 };
 
@@ -138,15 +173,15 @@ public:
         dst<<'\n';
     }
 
-    virtual void CompileRec(std::string destReg) {
+    virtual void CompileRec(std::string destReg) const override{
         std::string c = makeName("while_condition");
         getCond()->CompileRec(c);
         std::string unique_exit = makeName("exit");
         std::cout << "beq " << c << " $0 " << unique_exit << std::endl;
         std::string unique_start = makeName("start");
         std::cout << ":" << unique_start << std::endl;
-        getStat()->CompileReg(destReg);
-        getCond()->CompileReg(c);
+        getStat()->CompileRec(destReg);
+        getCond()->CompileRec(c);
         std::cout << "bne " << c << " $0 " << unique_start << std::endl;
         std::cout << ":" << unique_exit << std::endl;
         std::cout << "add " << destReg << " $0 $0" << std::endl;
@@ -165,6 +200,8 @@ public:
     ~ExpressionStatement() {
         delete expression;
     }
+    ExpressionPtr getExp() const
+    { return expression; }
     virtual void print(std::ostream &dst) const override
     {
         if(expression!=nullptr){
@@ -172,6 +209,10 @@ public:
         }
         dst<<";";
         dst<<'\n';
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        getExp()->CompileRec(destReg);
     }
 };
 
@@ -187,6 +228,8 @@ public:
     ~JumpStatement() {
         delete expression;
     }
+    ExpressionPtr getExp() const
+    { return expression; }
     virtual void print(std::ostream &dst) const override
     {
         dst<<"return ";
@@ -195,6 +238,12 @@ public:
         }
         dst<<";";
         dst<<'\n';
+    }
+
+    virtual void CompileRec(std::string destReg) const override{
+        std::string exp = makeName("exp");
+        getExp()->CompileRec(exp);
+        std::cout << "add $2 $0 " << exp << std::endl;
     }
 };
 
@@ -221,6 +270,10 @@ public:
         delete statementList;
         delete declarationList;
     }
+    StatementListPtr getstatlist() const
+    { return statementList; }
+    DeclarationListPtr getdecllist() const
+    { return declarationList; }
     virtual void print(std::ostream &dst) const override
     {
         dst<<"{ ";
@@ -233,6 +286,15 @@ public:
         dst<<"}";
         dst<<'\n';
     }
+
+    virtual void CompileRec(std::string destReg) const override{
+        if(declarationList!=nullptr){
+            declarationList->CompileRec(destReg);
+        }
+        if(statementList!=nullptr){
+            statementList->CompileRec(destReg);
+        }
+    }    
 };
 
 #endif
