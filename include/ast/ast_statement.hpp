@@ -4,10 +4,6 @@
 #include "ast_expression.hpp"
 #include "ast_primitives.hpp"
 
-static int makeNameUnq = 0;
-static std::string makeName(std::string base) {
-    return "_" + base + "_" + std::to_string(makeNameUnq++);
-}
 
 class Statement;
 
@@ -257,6 +253,9 @@ public:
         updateExpr->print(dst);
         dst<<" ) \n";
         getStat()->print(dst);
+    }
+    virtual void CompileRec(std::string destReg) const override{
+        //needs implementation
     }
 };
 

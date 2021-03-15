@@ -29,5 +29,10 @@ public:
     { throw std::runtime_error("Not implemented."); }
 };
 
+static int makeNameUnq = 0;
+static std::string makeName(std::string base) {
+    return "_" + base + "_" + std::to_string(makeNameUnq++);
+}
+
 
 #endif

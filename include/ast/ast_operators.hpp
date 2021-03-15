@@ -25,7 +25,7 @@ public:
 
     virtual const char *getOpcode() const =0;
 
-    virtual const char *getInstr() const =0;
+    virtual const char *getInstr() const;
 
     ExpressionPtr getLeft() const
     { return left; }
