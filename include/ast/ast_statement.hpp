@@ -135,6 +135,30 @@ public:
     }
 };
 
+class SwitchStatement
+    : public SelectStatement
+{
+public:
+    SwitchStatement(ExpressionPtr _condition, StatementPtr _stat)
+        : SelectStatement(_condition, _stat)
+    {}
+    ~SwitchStatement() {
+    }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"switch ( ";
+        getCond()->print(dst);
+        dst<<" ) ";
+        getStat()->print(dst);
+        dst<<'\n';
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        //needs implementation
+    }
+};
+
 class LoopStatement
     : public Statement
 {
@@ -267,13 +291,23 @@ public:
 class JumpStatement
     : public Statement
 {
+public:
+    JumpStatement()
+    {}
+    ~JumpStatement() 
+    {}
+};
+
+class ReturnStatement
+    : public JumpStatement
+{
 private:
     ExpressionPtr expression;
 public:
-    JumpStatement(ExpressionPtr _expression = nullptr)
+    ReturnStatement(ExpressionPtr _expression = nullptr)
         : expression(_expression)
     {}
-    ~JumpStatement() {
+    ~ReturnStatement() {
         delete expression;
     }
     ExpressionPtr getExp() const
@@ -292,6 +326,46 @@ public:
         std::string exp = makeName("exp");
         getExp()->CompileRec(exp);
         std::cout << "add $2 $0 " << exp << std::endl;
+    }
+};
+
+class ContinueStatement
+    : public JumpStatement
+{
+public:
+    ContinueStatement()
+    {}
+    ~ContinueStatement() 
+    {}
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"continue;";
+        dst<<'\n';
+    }
+
+    virtual void CompileRec(std::string destReg) const override{
+        //needs implementation
+    }
+};
+
+class BreakStatement
+    : public JumpStatement
+{
+public:
+    BreakStatement()
+    {}
+    ~BreakStatement() 
+    {}
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"break;";
+        dst<<'\n';
+    }
+
+    virtual void CompileRec(std::string destReg) const override{
+        //needs implementation
     }
 };
 

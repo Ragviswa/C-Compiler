@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 
+#include "ast_expression.hpp"
+
 enum TypeDef{
   INT,
   FLT,

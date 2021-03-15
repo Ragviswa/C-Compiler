@@ -32,7 +32,7 @@
 %token T_QUESTION T_COLON
 %token T_ASSIGN T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET
-%token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR
+%token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK
 %token T_NUMBER T_VARIABLE
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT STAT COMPOUND_STAT
@@ -70,8 +70,10 @@ STAT                : COMPOUND_STAT                                         { $$
                     | EXPR_STAT                                             { $$ = $1; }
                     | JUMP_STAT                                             { $$ = $1; }
 
-JUMP_STAT           : T_RETURN T_SEMICOLON                                    { $$ = new JumpStatement(); }
-                    | T_RETURN EXPR T_SEMICOLON                               { $$ = new JumpStatement($2); }
+JUMP_STAT           : T_CONTINUE T_SEMICOLON                                  { $$ = new ContinueStatement(); }
+                    | T_BREAK T_SEMICOLON                                     { $$ = new BreakStatement(); }
+                    | T_RETURN T_SEMICOLON                                    { $$ = new ReturnStatement(); }
+                    | T_RETURN EXPR T_SEMICOLON                               { $$ = new ReturnStatement($2); }
 
 LOOP_STAT           : T_WHILE T_LBRACKET EXPR T_RBRACKET STAT                 { $$ = new WhileLoop($3, $5); }
                     | T_FOR T_LBRACKET EXPR T_SEMICOLON EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ new ForLoop($3, $5, $7); }
@@ -79,6 +81,7 @@ LOOP_STAT           : T_WHILE T_LBRACKET EXPR T_RBRACKET STAT                 { 
 
 SEL_STAT            : T_IF T_LBRACKET EXPR T_RBRACKET STAT                  { $$ = new IfStatement($3, $5); }
                     | T_IF T_LBRACKET EXPR T_RBRACKET STAT T_ELSE STAT      { $$ = new IfStatement($3, $5, $7); }
+                    | T_SWITCH T_LBRACKET EXPR T_RBRACKET STAT              { $$ = new SwitchStatement($3, $5);}
 
 EXPR_STAT           : T_SEMICOLON                                           { $$ = new ExpressionStatement(); }
                     | EXPR T_SEMICOLON                                      { $$ = new ExpressionStatement($1); }
