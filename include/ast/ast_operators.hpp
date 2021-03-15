@@ -25,8 +25,6 @@ public:
 
     virtual const char *getOpcode() const =0;
 
-    virtual const char *getInstr() const;
-
     ExpressionPtr getLeft() const
     { return left; }
 
@@ -43,14 +41,6 @@ public:
         right->print(dst);
         dst<<" )";
     }
-
-    virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        left->CompileRec(srcRegA);
-        right->CompileRec(srcRegB);
-        std::cout << getInstr() << " " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
-    }
 };
 
 // Mathematical Operators
@@ -61,8 +51,6 @@ protected:
     virtual const char *getOpcode() const override
     { return "+"; }
 
-    virtual const char *getInstr() const override
-    { return "add"; }
 public:
     AddOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
@@ -76,6 +64,14 @@ public:
         double vr=getRight()->evaluate(bindings);
         return vl+vr;
     }
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::cout << "add " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+    }
 };
 
 class SubOperator
@@ -84,8 +80,7 @@ class SubOperator
 protected:
     virtual const char *getOpcode() const override
     { return "-"; }
-    virtual const char *getInstr() const override
-    { return "sub"; }
+
 public:
     SubOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
@@ -99,6 +94,14 @@ public:
         double vr=getRight()->evaluate(bindings);
         return vl-vr;
     }
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::cout << "sub " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+    }
 };
 
 class MulOperator
@@ -107,8 +110,7 @@ class MulOperator
 protected:
     virtual const char *getOpcode() const override
     { return "*"; }
-    virtual const char *getInstr() const override
-    { return "mul"; }
+    
 public:
     MulOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
@@ -121,6 +123,14 @@ public:
         double vl=getLeft()->evaluate(bindings);
         double vr=getRight()->evaluate(bindings);
         return vl*vr;
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        std::string srcRegA = makeName("srcRegA");
+        std::string srcRegB = makeName("srcRegB");
+        getLeft()->CompileRec(srcRegA);
+        getRight()->CompileRec(srcRegB);
+        std::cout << "mul " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
     }
 };
 

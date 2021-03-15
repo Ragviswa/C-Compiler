@@ -51,7 +51,7 @@
 
 PROGRAM             : FUNCTION                                              { g_root = $1; }
 
-FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $5); }
+FUNCTION       : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $5); }
 
 COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$ = new CompoundStatement(); }
                     | T_LBRACE STAT_LIST T_RBRACE                           { $$ = new CompoundStatement($2); }
@@ -77,7 +77,7 @@ JUMP_STAT           : T_CONTINUE T_SEMICOLON                                 { $
 
 LOOP_STAT           : T_WHILE T_LBRACKET EXPR T_RBRACKET STAT                                 { $$ = new WhileLoop($3, $5); }
                     | T_FOR T_LBRACKET EXPR T_SEMICOLON EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ = new ForLoop($3, $5, $7, $9); }
-                    | T_FOR T_LBRACKET DECL EXPR T_SEMICOLON EXPR T_RBRACKET STAT             { $$ = new ForLoop($3, $4, $6, $8); }
+                    | T_FOR T_LBRACKET DECL EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ = new ForLoop($3, $4, $6, $8); }
 
 SEL_STAT            : T_IF T_LBRACKET EXPR T_RBRACKET STAT                  { $$ = new IfStatement($3, $5); }
                     | T_IF T_LBRACKET EXPR T_RBRACKET STAT T_ELSE STAT      { $$ = new IfStatement($3, $5, $7); }
@@ -91,7 +91,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                       { $$
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE T_ASSIGN EXPR                              {}
-                    | FUNCTION                                              { $$ = $1; }
+                    | T_VARIABLE T_LBRACKET T_RBRACKET                      {}
 
 CONDITIONAL         : LOGIC_OR                                              { $$ = $1; }
                     | LOGIC_OR T_QUESTION EXPR T_COLON CONDITIONAL          { $$ = new TernaryOperator($1, $3, $5); }

@@ -215,28 +215,24 @@ class ForLoop
 private:
     Variable *initVar = nullptr; // int x = 0
     ExpressionPtr initExpr = nullptr; // x = 0
-    ExpressionPtr testExpr;
+    //ExpressionPtr testExpr;
     ExpressionPtr updateExpr;
-    StatementPtr statement;
+    //StatementPtr statement;
 public:
     ForLoop(ExpressionPtr _initExpr, ExpressionPtr _testExpr, ExpressionPtr _updateExpr, StatementPtr _statement)
-     : initExpr(_initExpr)
-     , testExpr(_testExpr)
+     : LoopStatement(_testExpr, _statement)
+     , initExpr(_initExpr)
      , updateExpr(_updateExpr)
-     , statement(_statement)
     {}
     ForLoop(Variable *_initVar, ExpressionPtr _testExpr, ExpressionPtr _updateExpr, StatementPtr _statement)
-    : initVar(_initVar)
-    , testExpr(_testExpr)
+    : LoopStatement(_testExpr, _statement)
+    , initVar(_initVar)
     , updateExpr(_updateExpr)
-    , statement(_statement)
     {}
     ~ForLoop() {
         delete initVar;
         delete initExpr;
-        delete testExpr;
         delete updateExpr;
-        delete statement;
     }
     virtual void print(std::ostream &dst) const override
     {
@@ -246,13 +242,14 @@ public:
         }
         else if(initVar == nullptr && initExpr != nullptr) {
             initExpr->print(dst);
+            dst<<" ; ";
         }
-        dst<<" ; ";
-        testExpr->print(dst);
+        getCond()->print(dst);
         dst<<" ; ";
         updateExpr->print(dst);
         dst<<" ) \n";
         getStat()->print(dst);
+        dst<<'\n';
     }
     virtual void CompileRec(std::string destReg) const override{
         //needs implementation
