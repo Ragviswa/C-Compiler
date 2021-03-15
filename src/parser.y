@@ -70,14 +70,14 @@ STAT                : COMPOUND_STAT                                         { $$
                     | EXPR_STAT                                             { $$ = $1; }
                     | JUMP_STAT                                             { $$ = $1; }
 
-JUMP_STAT           : T_CONTINUE T_SEMICOLON                                  { $$ = new ContinueStatement(); }
-                    | T_BREAK T_SEMICOLON                                     { $$ = new BreakStatement(); }
-                    | T_RETURN T_SEMICOLON                                    { $$ = new ReturnStatement(); }
-                    | T_RETURN EXPR T_SEMICOLON                               { $$ = new ReturnStatement($2); }
+JUMP_STAT           : T_CONTINUE T_SEMICOLON                                 { $$ = new ContinueStatement(); }
+                    | T_BREAK T_SEMICOLON                                    { $$ = new BreakStatement(); }
+                    | T_RETURN T_SEMICOLON                                   { $$ = new ReturnStatement(); }
+                    | T_RETURN EXPR T_SEMICOLON                              { $$ = new ReturnStatement($2); }
 
-LOOP_STAT           : T_WHILE T_LBRACKET EXPR T_RBRACKET STAT                 { $$ = new WhileLoop($3, $5); }
-                    | T_FOR T_LBRACKET EXPR T_SEMICOLON EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ new ForLoop($3, $5, $7); }
-                    | T_FOR T_LBRACKET DECL EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ new ForLoop($3, $5, $7); }
+LOOP_STAT           : T_WHILE T_LBRACKET EXPR T_RBRACKET STAT                                 { $$ = new WhileLoop($3, $5); }
+                    | T_FOR T_LBRACKET EXPR T_SEMICOLON EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ = new ForLoop($3, $5, $7, $9); }
+                    | T_FOR T_LBRACKET DECL EXPR T_SEMICOLON EXPR T_RBRACKET STAT             { $$ = new ForLoop($3, $4, $6, $8); }
 
 SEL_STAT            : T_IF T_LBRACKET EXPR T_RBRACKET STAT                  { $$ = new IfStatement($3, $5); }
                     | T_IF T_LBRACKET EXPR T_RBRACKET STAT T_ELSE STAT      { $$ = new IfStatement($3, $5, $7); }
