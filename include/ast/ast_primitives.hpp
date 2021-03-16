@@ -27,6 +27,11 @@ public:
         id = *_id;
     }
 
+    Variable(const std::string *_id, ExpressionPtr _Expr) {
+        id = *_id;
+        Expr = _Expr;
+    }
+
     Variable(TypeDef _type, const std::string *_id, ExpressionPtr _Expr = nullptr) {
         switch(_type) {
             case INT:

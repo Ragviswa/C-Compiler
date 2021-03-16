@@ -32,10 +32,10 @@
 %token T_QUESTION T_COLON
 %token T_ASSIGN T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET
-%token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK
+%token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE
 %token T_NUMBER T_VARIABLE
 
-%type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT STAT COMPOUND_STAT
+%type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
 %type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND EQUALITY RELAT ARITH TERM UNARY FACTOR
 %type <number> T_NUMBER
 %type <string> T_INT T_VARIABLE
@@ -69,15 +69,18 @@ STAT                : COMPOUND_STAT                                         { $$
                     | SEL_STAT                                              { $$ = $1; }
                     | EXPR_STAT                                             { $$ = $1; }
                     | JUMP_STAT                                             { $$ = $1; }
+                    | LABL_STAT                                             { $$ = $1; }
 
-JUMP_STAT           : T_CONTINUE T_SEMICOLON                                 { $$ = new ContinueStatement(); }
-                    | T_BREAK T_SEMICOLON                                    { $$ = new BreakStatement(); }
-                    | T_RETURN T_SEMICOLON                                   { $$ = new ReturnStatement(); }
-                    | T_RETURN EXPR T_SEMICOLON                              { $$ = new ReturnStatement($2); }
+LABL_STAT           : T_CASE CONDITIONAL T_COLON STAT                       { $$ = new LabelStatement($2, $4); }
+
+JUMP_STAT           : T_CONTINUE T_SEMICOLON                                { $$ = new ContinueStatement(); }
+                    | T_BREAK T_SEMICOLON                                   { $$ = new BreakStatement(); }
+                    | T_RETURN T_SEMICOLON                                  { $$ = new ReturnStatement(); }
+                    | T_RETURN EXPR T_SEMICOLON                             { $$ = new ReturnStatement($2); }
 
 LOOP_STAT           : T_WHILE T_LBRACKET EXPR T_RBRACKET STAT                                 { $$ = new WhileLoop($3, $5); }
                     | T_FOR T_LBRACKET EXPR T_SEMICOLON EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ = new ForLoop($3, $5, $7, $9); }
-                    | T_FOR T_LBRACKET DECL EXPR T_SEMICOLON EXPR T_RBRACKET STAT { $$ = new ForLoop($3, $4, $6, $8); }
+                    | T_FOR T_LBRACKET DECL EXPR T_SEMICOLON EXPR T_RBRACKET STAT             { $$ = new ForLoop($3, $4, $6, $8); }
 
 SEL_STAT            : T_IF T_LBRACKET EXPR T_RBRACKET STAT                  { $$ = new IfStatement($3, $5); }
                     | T_IF T_LBRACKET EXPR T_RBRACKET STAT T_ELSE STAT      { $$ = new IfStatement($3, $5, $7); }
@@ -90,7 +93,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                       { $$
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON         { $$ = new Variable($1, $2, $4); }
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
-                    | T_VARIABLE T_ASSIGN EXPR                              {}
+                    | T_VARIABLE T_ASSIGN EXPR                              { $$ = new Variable($1, $3); }
                     | T_VARIABLE T_LBRACKET T_RBRACKET                      {}
 
 CONDITIONAL         : LOGIC_OR                                              { $$ = $1; }

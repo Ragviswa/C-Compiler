@@ -365,6 +365,43 @@ public:
     }
 };
 
+class LabelStatement
+    : public Statement
+{
+private:
+    ExpressionPtr expression;
+    StatementPtr statement;
+public:
+    LabelStatement(ExpressionPtr _expression = nullptr, StatementPtr _statement = nullptr)
+        : expression(_expression)
+        , statement(_statement)
+    {}
+    ~LabelStatement() {
+        delete expression;
+        delete statement;
+    }
+    ExpressionPtr getExp() const
+    { return expression; }
+    StatementPtr getStat() const
+    { return statement; }
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"case ";
+        if(expression!=nullptr){
+            expression->print(dst);
+        }
+        dst<<": ";
+        if(statement!=nullptr){
+            statement->print(dst);
+        }
+        dst<<'\n';
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        //needs implementation
+    }
+};
+
 class CompoundStatement
     : public Statement
 {
