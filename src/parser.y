@@ -97,7 +97,7 @@ ENUM_LIST           : ENUM                                                  {}
                     | ENUM T_COMMA ENUM_LIST                                {}
 
 ENUM                : T_VARIABLE                                            {}
-                    | T_VARIABLE = CONDITIONAL                              {}
+                    | T_VARIABLE T_ASSIGN CONDITIONAL                       {}
 
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                       { $$ = new Variable($1, $2); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON         { $$ = new Variable($1, $2, $4); }
