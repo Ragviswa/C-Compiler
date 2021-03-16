@@ -104,7 +104,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                       { $$
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE T_ASSIGN EXPR                              { $$ = new Variable($1, $3); }
-                    | T_VARIABLE T_LBRACKET T_RBRACKET                      {}
+                    | T_VARIABLE T_LBRACKET T_RBRACKET                      { $$ = new Variable($1); }
 
 CONDITIONAL         : LOGIC_OR                                              { $$ = $1; }
                     | LOGIC_OR T_QUESTION EXPR T_COLON CONDITIONAL          { $$ = new TernaryOperator($1, $3, $5); }
