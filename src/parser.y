@@ -32,7 +32,7 @@
 %token T_QUESTION T_COLON
 %token T_ASSIGN T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET
-%token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE
+%token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
 %token T_NUMBER T_VARIABLE
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
@@ -88,6 +88,16 @@ SEL_STAT            : T_IF T_LBRACKET EXPR T_RBRACKET STAT                  { $$
 
 EXPR_STAT           : T_SEMICOLON                                           { $$ = new ExpressionStatement(); }
                     | EXPR T_SEMICOLON                                      { $$ = new ExpressionStatement($1); }
+
+ENUM_DECL           : ENUM T_LBRACE ENUM_LIST T_RBRACE                      {}
+                    | ENUM T_VARIABLE T_LBRACE ENUM_LIST T_RBRACE           {}
+                    | ENUM T_VARIABLE                                       {}
+
+ENUM_LIST           : ENUM                                                  {}
+                    | ENUM T_COMMA ENUM_LIST                                {}
+
+ENUM                : T_VARIABLE                                            {}
+                    | T_VARIABLE = CONDITIONAL                              {}
 
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                       { $$ = new Variable($1, $2); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON         { $$ = new Variable($1, $2, $4); }
