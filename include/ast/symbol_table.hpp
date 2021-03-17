@@ -4,6 +4,24 @@
 #include "ast_primitives.hpp"
 #include "ast_function.hpp"
 
+class StackPtr{
+    private:
+    int increment;
+
+    StackPtr() {
+        std::cout<<"addi $29 $0 2000";
+    }
+
+    int getIncr() {
+        return increment;
+    }
+
+    void setIncr(int _increment) {
+        increment = _increment;
+    }
+
+};
+
 class Node {
 private:
     std::string type, format ,name, address;
