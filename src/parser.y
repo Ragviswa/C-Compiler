@@ -41,7 +41,7 @@
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
 %type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND IOR_EXPR XOR_EXPR AND_EXPR EQUALITY RELAT SHIFT ARITH TERM UNARY POST FACTOR
 %type <number> T_NUMBER
-%type <string> T_INT T_VARIABLE ASSIGN_OP
+%type <string> T_INT T_VARIABLE ASSIGNOP
 %type <T_type> TYPE_DEF
 %type <variable> DECL
 %type <statlist> STAT_LIST
@@ -109,17 +109,17 @@ EXPR                : CONDITIONAL                                           { $$
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $3); }
                     | T_VARIABLE T_LBRACKET T_RBRACKET                      { $$ = new Variable($1); }
 
-ASSIGNOP            : T_ASSIGN                                              { $$ = $1; }
-                    | T_ADDASSIGN                                           { $$ = $1; }
-                    | T_SUBASSIGN                                           { $$ = $1; }
-                    | T_DIVASSIGN                                           { $$ = $1; }
-                    | T_MULASSIGN                                           { $$ = $1; }
-                    | T_MODASSIGN                                           { $$ = $1; }
-                    | T_LEFASSIGN                                           { $$ = $1; }
-                    | T_RIGASSIGN                                           { $$ = $1; }
-                    | T_ANDASSIGN                                           { $$ = $1; }
-                    | T_XORASSIGN                                           { $$ = $1; }
-                    | T_ORASSIGN                                            { $$ = $1; }
+ASSIGNOP            : T_ASSIGN                                              { $$ = new std::string("="); }
+                    | T_ADDASSIGN                                           { $$ = new std::string("+="); }
+                    | T_SUBASSIGN                                           { $$ = new std::string("-="); }
+                    | T_DIVASSIGN                                           { $$ = new std::string("/="); }
+                    | T_MULASSIGN                                           { $$ = new std::string("*="); }
+                    | T_MODASSIGN                                           { $$ = new std::string("%="); }
+                    | T_LEFASSIGN                                           { $$ = new std::string("<<="); }
+                    | T_RIGASSIGN                                           { $$ = new std::string(">>="); }
+                    | T_ANDASSIGN                                           { $$ = new std::string("&="); }
+                    | T_XORASSIGN                                           { $$ = new std::string("^="); }
+                    | T_ORASSIGN                                            { $$ = new std::string("|="); }
 
 CONDITIONAL         : LOGIC_OR                                              { $$ = $1; }
                     | LOGIC_OR T_QUESTION EXPR T_COLON CONDITIONAL          { $$ = new TernaryOperator($1, $3, $5); }
@@ -169,8 +169,8 @@ UNARY               : FACTOR                                                { $$
 
 POST                : FACTOR                                                { $$ = $1; }
                     | POST T_LSBRACKET EXPR T_RSBRACKET                     {}
-                    | POST T_LBRACKET T_SBRACKET                            {}
-                    | POST T_LBRACKET EXPR T_SBRACKET                       {}
+                    | POST T_LBRACKET T_RBRACKET                            {}
+                    | POST T_LBRACKET EXPR T_RBRACKET                       {}
 
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
 
