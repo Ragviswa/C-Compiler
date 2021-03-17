@@ -28,17 +28,20 @@
 
 %token T_TIMES T_DIVIDE T_PLUS T_MINUS T_MODULO
 %token T_GREATERTHAN T_LESSTHAN T_GREATERTHANEQUAL T_LESSTHANEQUAL T_EQUALTO T_NOTEQUALTO
+%token T_LSHIFT T_RSHIFT
+%token T_AND T_IOR T_XOR
 %token T_NOT T_LOGICAND T_LOGICOR
 %token T_QUESTION T_COLON
-%token T_ASSIGN T_SEMICOLON T_COMMA
-%token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET
+%token T_ASSIGN T_ADDASSIGN T_SUBASSIGN T_DIVASSIGN T_MULASSIGN T_MODASSIGN T_LEFASSIGN T_RIGASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN
+%token T_SEMICOLON T_COMMA
+%token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
 %token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
 %token T_NUMBER T_VARIABLE
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
-%type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND EQUALITY RELAT ARITH TERM UNARY FACTOR
+%type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND IOR_EXPR XOR_EXPR AND_EXPR EQUALITY RELAT SHIFT ARITH TERM UNARY POST FACTOR
 %type <number> T_NUMBER
-%type <string> T_INT T_VARIABLE
+%type <string> T_INT T_VARIABLE ASSIGN_OP
 %type <T_type> TYPE_DEF
 %type <variable> DECL
 %type <statlist> STAT_LIST
@@ -103,8 +106,20 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                       { $$
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON         { $$ = new Variable($1, $2, $4); }
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
-                    | T_VARIABLE T_ASSIGN EXPR                              { $$ = new Variable($1, $3); }
+                    | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $3); }
                     | T_VARIABLE T_LBRACKET T_RBRACKET                      { $$ = new Variable($1); }
+
+ASSIGNOP            : T_ASSIGN                                              { $$ = $1; }
+                    | T_ADDASSIGN                                           { $$ = $1; }
+                    | T_SUBASSIGN                                           { $$ = $1; }
+                    | T_DIVASSIGN                                           { $$ = $1; }
+                    | T_MULASSIGN                                           { $$ = $1; }
+                    | T_MODASSIGN                                           { $$ = $1; }
+                    | T_LEFASSIGN                                           { $$ = $1; }
+                    | T_RIGASSIGN                                           { $$ = $1; }
+                    | T_ANDASSIGN                                           { $$ = $1; }
+                    | T_XORASSIGN                                           { $$ = $1; }
+                    | T_ORASSIGN                                            { $$ = $1; }
 
 CONDITIONAL         : LOGIC_OR                                              { $$ = $1; }
                     | LOGIC_OR T_QUESTION EXPR T_COLON CONDITIONAL          { $$ = new TernaryOperator($1, $3, $5); }
@@ -112,18 +127,31 @@ CONDITIONAL         : LOGIC_OR                                              { $$
 LOGIC_OR            : LOGIC_AND                                             { $$ = $1; }
                     | LOGIC_OR T_LOGICOR LOGIC_AND                          { $$ = new OrLogic($1, $3); }
 
-LOGIC_AND           : EQUALITY                                              { $$ = $1; }
-                    | LOGIC_AND T_LOGICAND EQUALITY                         { $$ = new AndLogic($1, $3); }
+LOGIC_AND           : IOR_EXPR                                              { $$ = $1; }
+                    | LOGIC_AND T_LOGICAND IOR_EXPR                         { $$ = new AndLogic($1, $3); }
+
+IOR_EXPR            : XOR_EXPR                                              { $$ = $1; }
+                    | IOR_EXPR T_IOR XOR_EXPR                               {}
+
+XOR_EXPR            : AND_EXPR                                              { $$ = $1; }
+                    | XOR_EXPR T_XOR AND_EXPR                               {}
+
+AND_EXPR            : EQUALITY                                              { $$ = $1; }
+                    | AND_EXPR T_AND EQUALITY                               {}
 
 EQUALITY            : RELAT                                                 { $$ = $1; }
                     | EQUALITY T_EQUALTO RELAT                              { $$ = new EqualOperator($1, $3); }
                     | EQUALITY T_NOTEQUALTO RELAT                           { $$ = new NotEqualOperator($1, $3); }
 
-RELAT               : ARITH                                                 { $$ = $1; }
-                    | RELAT T_GREATERTHAN ARITH                             { $$ = new GreaterThanOperator($1, $3); }
-                    | RELAT T_LESSTHAN ARITH                                { $$ = new LessThanOperator($1, $3); }
-                    | RELAT T_GREATERTHANEQUAL ARITH                        { $$ = new GreaterThanEqualOperator($1, $3); }
-                    | RELAT T_LESSTHANEQUAL ARITH                           { $$ = new LessThanEqualOperator($1, $3); }
+RELAT               : SHIFT                                                 { $$ = $1; }
+                    | RELAT T_GREATERTHAN SHIFT                             { $$ = new GreaterThanOperator($1, $3); }
+                    | RELAT T_LESSTHAN SHIFT                                { $$ = new LessThanOperator($1, $3); }
+                    | RELAT T_GREATERTHANEQUAL SHIFT                        { $$ = new GreaterThanEqualOperator($1, $3); }
+                    | RELAT T_LESSTHANEQUAL SHIFT                           { $$ = new LessThanEqualOperator($1, $3); }
+
+SHIFT               : ARITH                                                 { $$ = $1; }  
+                    | SHIFT T_RSHIFT ARITH                                  {}
+                    | SHIFT T_LSHIFT ARITH                                  {}
 
 ARITH               : TERM                                                  { $$ = $1; }
                     | ARITH T_PLUS TERM                                     { $$ = new AddOperator($1, $3); }
@@ -135,8 +163,14 @@ TERM                : UNARY                                                 { $$
                     | TERM T_MODULO UNARY                                   { $$ = new ModOperator($1, $3); }
 
 UNARY               : FACTOR                                                { $$ = $1; }
-                    | T_MINUS FACTOR                                        { $$ = new NegOperator($2); }
-                    | T_NOT FACTOR                                          { $$ = new NotLogic($2); }
+                    | T_MINUS POST                                          { $$ = new NegOperator($2); }
+                    | T_PLUS POST                                           {}
+                    | T_NOT POST                                            { $$ = new NotLogic($2); }
+
+POST                : FACTOR                                                { $$ = $1; }
+                    | POST T_LSBRACKET EXPR T_RSBRACKET                     {}
+                    | POST T_LBRACKET T_SBRACKET                            {}
+                    | POST T_LBRACKET EXPR T_SBRACKET                       {}
 
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
 
