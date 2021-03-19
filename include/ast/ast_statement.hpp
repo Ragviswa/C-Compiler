@@ -129,11 +129,11 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        getCond()->CompileRec("$t7");
+        getCond()->CompileRec("$t0");
         std::string exit = makeName("exit");
         if(else_branch!=nullptr){
             std::string else_stat = makeName("else_stat");
-            std::cout << "beq $t7, $0, " << else_stat << std::endl;
+            std::cout << "beq $t0, $0, " << else_stat << std::endl;
             getStat()->CompileRec(destReg);
             std::string exit = makeName("exit");
             std::cout << "jump " << exit << std::endl;
@@ -142,7 +142,7 @@ public:
             std::cout << ":"<< exit << std::endl;
         }else{
             std::string exit = makeName("exit");
-            std::cout << "beq $t7, $0, " << exit << std::endl;
+            std::cout << "beq $t0, $0, " << exit << std::endl;
             getStat()->CompileRec(destReg);
             std::cout << ":" << exit << std::endl;
         }
@@ -213,14 +213,16 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        getCond()->CompileRec("$t7");
+        getCond()->CompileRec("$t0");
         std::string unique_exit = makeName("exit");
-        std::cout << "beq $t7, $0, " << unique_exit << std::endl;
+        std::cout << "beq $t0, $0, " << unique_exit << std::endl;
         std::string unique_start = makeName("start");
         std::cout << ":" << unique_start << std::endl;
+        getCond()->CompileRec("$t0");
+        std::cout << "sw $t0, 4($sp)" << std::endl;
         getStat()->CompileRec(destReg);
-        getCond()->CompileRec("$t7");
-        std::cout << "bne, $t7, $0 " << unique_start << std::endl;
+        std::cout << "lw $t0, 4($sp)" << std::endl;
+        std::cout << "bne $t0, $0, " << unique_start << std::endl;
         std::cout << ":" << unique_exit << std::endl;
         std::cout << "add " << destReg << ", $0, $0" << std::endl;
     }
@@ -336,8 +338,8 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        getExp()->CompileRec("$t7");
-        std::cout << "add $v0, $0, $t7" << std::endl;
+        getExp()->CompileRec("$t0");
+        std::cout << "add $v0, $0, $t0" << std::endl;
     }
 };
 
@@ -428,7 +430,7 @@ public:
     {} 
     CompoundStatement(BlockListPtr _blocklist)
         : blocklist(_blocklist)
-    {} 
+    {}
     ~CompoundStatement() {
         delete blocklist;
     }
@@ -445,9 +447,11 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
+        Symbol.newScope();
         if(getblocklist()!=nullptr){
             getblocklist()->CompileRec(destReg);
         }
+        Symbol.endScope();
     }
 };
 
