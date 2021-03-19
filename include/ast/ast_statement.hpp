@@ -3,6 +3,7 @@
 
 #include "ast_expression.hpp"
 #include "ast_primitives.hpp"
+#include "symbol_table.hpp"
 
 
 class Statement;
@@ -19,40 +20,57 @@ public:
     virtual void CompileRec(std::string destReg) const =0;
 };
 
-class StatementList;
+class BlockList;
 
-typedef const StatementList *StatementListPtr;
+typedef const BlockList *BlockListPtr;
 
-class StatementList
+class BlockList
     : public Statement
 {
 private:
     StatementPtr statement;
-    StatementListPtr statementList;
+    Variable *variable;
+    BlockListPtr statdecllist;
 public:
-    StatementList(StatementPtr _statement, StatementListPtr _statementList = nullptr)
+    BlockList(StatementPtr _statement, BlockListPtr _statdecllist = nullptr)
         : statement(_statement)
-        , statementList(_statementList)
+        , statdecllist(_statdecllist)
     {}
-    virtual ~StatementList() {
+    BlockList(Variable *_variable, BlockListPtr _statdecllist = nullptr)
+        : variable(_variable)
+        , statdecllist(_statdecllist)
+    {}
+    virtual ~BlockList() {
         delete statement;
-        delete statementList;
+        delete statdecllist;
+        delete variable;
     }
     StatementPtr getStat() const
     { return statement; }
-    StatementListPtr getstatlist() const
-    { return statementList; }
+    Variable *getVar() const
+    { return variable;}
+    BlockListPtr getstatdecllist() const
+    { return statdecllist; }
+
     virtual void print(std::ostream &dst) const override
     {
-        statement->print(dst);
-        if(statementList!=nullptr){
-            statementList->print(dst);
+        if(statement != nullptr){
+            statement->print(dst);
+        }else if(variable != nullptr){
+            variable->print(dst);
+        }
+        if(statdecllist!=nullptr){
+            statdecllist->print(dst);
         }
     }
     virtual void CompileRec(std::string destReg) const override{
-        getStat()->CompileRec(destReg);
-        if(statementList!=nullptr){
-            getstatlist()->CompileRec(destReg);
+        if(getStat() != nullptr){
+            getStat()->CompileRec(destReg);
+        }else if(getVar() != nullptr){
+            getVar()->CompileRec(destReg);
+        }
+        if(getstatdecllist()!=nullptr){
+            getstatdecllist()->CompileRec(destReg);
         }
     }
 };
@@ -406,50 +424,31 @@ class CompoundStatement
     : public Statement
 {
 private:
-    StatementListPtr statementList;
-    DeclarationListPtr declarationList;
+    BlockListPtr blocklist;
 public:
-     CompoundStatement()
-    {} 
-    CompoundStatement(StatementListPtr _statementList)
-        : statementList(_statementList)
-    {} 
-    CompoundStatement(DeclarationListPtr _declarationList)
-        : declarationList(_declarationList)
-    {} 
-    CompoundStatement(DeclarationListPtr _declarationList, StatementListPtr _statementList)
-        : statementList(_statementList)
-        , declarationList(_declarationList)
+    CompoundStatement(BlockListPtr _blocklist = nullptr)
+        : blocklist(_blocklist)
     {} 
     ~CompoundStatement() {
-        delete statementList;
-        delete declarationList;
+        delete blocklist;
     }
-    StatementListPtr getstatlist() const
-    { return statementList; }
-    DeclarationListPtr getdecllist() const
-    { return declarationList; }
+    BlockListPtr getblocklist() const
+    { return blocklist; }
     virtual void print(std::ostream &dst) const override
     {
         dst<<"{ ";
-        if(declarationList!=nullptr){
-            declarationList->print(dst);
-        }
-        if(statementList!=nullptr){
-            statementList->print(dst);
+        if(blocklist!=nullptr){
+            blocklist->print(dst);
         }
         dst<<"}";
         dst<<'\n';
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        if(declarationList!=nullptr){
-            declarationList->CompileRec(destReg);
+        if(getblocklist()!=nullptr){
+            getblocklist()->CompileRec(destReg);
         }
-        if(statementList!=nullptr){
-            statementList->CompileRec(destReg);
-        }
-    }    
+    }
 };
 
 #endif

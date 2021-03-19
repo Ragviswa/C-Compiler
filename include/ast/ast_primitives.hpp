@@ -123,9 +123,9 @@ public:
                 if(Expr!=nullptr){
                     dst<<" = ";
                     Expr->print(dst);
-                    dst<<";";
-                    dst<<'\n';
                 }
+                dst<<";";
+                dst<<'\n';
         }
     }
 
@@ -191,47 +191,6 @@ public:
     {
         return bindings.at(id);
     }    
-};
-
-class DeclarationList;
-
-typedef const DeclarationList *DeclarationListPtr;
-
-class DeclarationList
-    : public Variable
-{
-private:
-    Variable *variable;
-    DeclarationListPtr declarationList;
-public:
-    DeclarationList(Variable *_variable, DeclarationListPtr _declarationList = nullptr)
-        : variable(_variable)
-        , declarationList(_declarationList)
-    {}
-
-    virtual ~DeclarationList() {
-        delete variable;
-        delete declarationList;
-    }
-    Variable *getVar() const
-    { return variable; }
-    DeclarationListPtr getdecllist() const
-    { return declarationList; }
-
-    virtual void print(std::ostream &dst) const override
-    {
-        variable->print(dst);
-        if(declarationList!=nullptr){
-            declarationList->print(dst);
-        }
-    }
-
-    virtual void CompileRec(std::string destReg) const override{
-        getVar()->CompileRec(destReg);
-        if(declarationList!=nullptr){
-            getdecllist()->CompileRec(destReg);
-        }
-    }  
 };
 
 class Number
