@@ -5,6 +5,7 @@
 #include "ast_function.hpp"
 
 extern SymbolTable Symbol;
+extern StackPtr StackPointer;
 
 class StackPtr{
     private:
