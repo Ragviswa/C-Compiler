@@ -24,10 +24,10 @@ for i in compiler_tests/*; do
 		b=$(basename ${j});
 		n=${b%.c}
 		m=${j%.c}
-		TESTCASE=${SUB_FOLDER}/${n}
-		mkdir -p ${TESTCASE}
 
 		if [[ $b != *_driver.c ]]; then
+			TESTCASE=${SUB_FOLDER}/${n}
+			mkdir -p ${TESTCASE}
 			echo "============================="
 			echo ""
 			echo "Input file : ${j}"

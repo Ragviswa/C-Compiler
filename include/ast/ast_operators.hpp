@@ -66,12 +66,11 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
-        std::cout << "add " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
+        std::cout << "add " << destReg << ", $t0, $t1" << std::endl;
     }
+    
 };
 
 class SubOperator
@@ -96,11 +95,9 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
-        std::cout << "sub " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
+        std::cout << "sub " << destReg << ", $t0, $t1" << std::endl;
     }
 };
 
@@ -126,11 +123,9 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
-        std::cout << "mul " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
+        std::cout << "mul " << destReg << ", $t0, $t1" << std::endl;
     }
 };
 
@@ -147,11 +142,9 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
-        std::cout << "div " << srcRegA << " " << srcRegB << std::endl; // quotient stored in hi, remainder stored in lo
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
+        std::cout << "div $t0, $t1" << std::endl;
         std::cout << "mfhi " << destReg << std::endl;
     }
 
@@ -177,11 +170,9 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
-        std::cout << "div " << srcRegA << " " << srcRegB << std::endl; // quotient stored in hi, remainder stored in lo
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
+        std::cout << "div $t0, $t1" << std::endl;
         std::cout << "mflo " << destReg << std::endl;
     }
 
@@ -208,11 +199,9 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
-        std::cout << "slt " << destReg << " " << srcRegB << " " << srcRegA << std::endl;
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
+        std::cout << "slt " << destReg << ", $t1, $t0" << std::endl;
     }
 
     virtual double evaluate(
@@ -237,17 +226,15 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
         std::string set_one = makeName("set_one");
-        std::cout << "beq " << srcRegA << " " << srcRegB << " " << set_one << std::endl;
-        std::cout << "slt " << destReg << " " << srcRegB << " " << srcRegA << std::endl;
+        std::cout << "beq $t0, $t1, " << set_one << std::endl;
+        std::cout << "slt " << destReg << ", $t1, $t0" << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << set_one << std::endl;
-        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << "addi " << destReg << ", $0, 1" << std::endl;
         std::cout << ":" << exit << std::endl;
     }
 
@@ -273,11 +260,9 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
-        std::cout << "slt " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
+        std::cout << "slt " << destReg << ", $t0, $t1" << std::endl;
     }
 
     virtual double evaluate(
@@ -302,17 +287,15 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
         std::string set_one = makeName("set_one");
-        std::cout << "beq " << srcRegA << " " << srcRegB << " " << set_one << std::endl;
-        std::cout << "slt " << destReg << " " << srcRegA << " " << srcRegB << std::endl;
+        std::cout << "beq $t0, $t1, " << set_one << std::endl;
+        std::cout << "slt " << destReg << ", $t0, $t1" << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << set_one << std::endl;
-        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << "addi " << destReg << ", $0, 1" << std::endl;
         std::cout << ":" << exit << std::endl;
     }
 
@@ -338,17 +321,15 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
         std::string set_one = makeName("set_one");
-        std::cout << "beq " << srcRegA << " " << srcRegB << " " << set_one << std::endl;
-        std::cout << "add " << destReg << " $0 $0" << std::endl;
+        std::cout << "beq $t0, $t1, " << set_one << std::endl;
+        std::cout << "add " << destReg << ", $0, $0" << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << set_one << std::endl;
-        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << "addi " << destReg << ", $0, 1" << std::endl;
         std::cout << ":" << exit << std::endl;
     }
 
@@ -374,17 +355,15 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
         std::string set_one = makeName("set_one");
-        std::cout << "bne " << srcRegA << " " << srcRegB << " " << set_one << std::endl;
-        std::cout << "add " << destReg << " $0 $0" << std::endl;
+        std::cout << "bne $t0, $t1, " << set_one << std::endl;
+        std::cout << "add " << destReg << ", $0, $0" << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << set_one << std::endl;
-        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << "addi " << destReg << ", $0, 1" << std::endl;
         std::cout << ":" << exit << std::endl;
     }
 
@@ -411,18 +390,16 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
         std::string set_zero = makeName("set_zero");
-        std::cout << "beq " << srcRegA << " $0 " << set_zero << std::endl;
-        std::cout << "beq " << srcRegB << " $0 " << set_zero << std::endl;
-        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << "beq $t0, $0, " << set_zero << std::endl;
+        std::cout << "beq $t1, $0, " << set_zero << std::endl;
+        std::cout << "addi " << destReg << ", $0, 1" << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << set_zero << std::endl;
-        std::cout << "add " << destReg << " $0 $0" << std::endl;
+        std::cout << "add " << destReg << ", $0, $0" << std::endl;
         std::cout << ":" << exit << std::endl;
     }
     
@@ -448,18 +425,16 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        getLeft()->CompileRec(srcRegA);
-        getRight()->CompileRec(srcRegB);
+        getLeft()->CompileRec("$t0");
+        getRight()->CompileRec("$t1");
         std::string set_one = makeName("set_one");
-        std::cout << "bne " << srcRegA << " $0 " << set_one << std::endl;
-        std::cout << "bne " << srcRegB << " $0 " << set_one << std::endl;
-        std::cout << "add " << destReg << " $0 $0" << std::endl;
+        std::cout << "bne $t0, $0, " << set_one << std::endl;
+        std::cout << "bne $t1, $0, " << set_one << std::endl;
+        std::cout << "add " << destReg << ", $0, $0" << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << set_one << std::endl;
-        std::cout << "addi " << destReg << " $0 1" << std::endl;
+        std::cout << "addi " << destReg << ", $0, 1" << std::endl;
         std::cout << ":" << exit << std::endl;
     }
     
@@ -513,19 +488,16 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string srcRegA = makeName("srcRegA");
-        std::string srcRegB = makeName("srcRegB");
-        std::string srcRegC = makeName("srcRegC");
-        getcond()->CompileRec(srcRegA);
-        getLeft()->CompileRec(srcRegB);
-        getRight()->CompileRec(srcRegC);
+        getcond()->CompileRec("$t0");
+        getLeft()->CompileRec("$t1");
+        getRight()->CompileRec("$t2");
         std::string else_stat = makeName("else_stat");
-        std::cout << "beq " << srcRegA << " $0 " << else_stat <<std::endl;
-        std::cout << "add " << destReg << " $0 " << srcRegB << std::endl;
+        std::cout << "beq $t0, $0, " << else_stat <<std::endl;
+        std::cout << "add " << destReg << ", $0, $t1" << std::endl;
         std::string exit = makeName("exit");
         std::cout << "jump " << exit << std::endl;
         std::cout << ":" << else_stat << std::endl;
-        std::cout << "add " << destReg << " $0 " << srcRegC << std::endl;
+        std::cout << "add " << destReg << ", $0, $t2" << std::endl;
         std::cout << ":"<<exit<<std::endl;
     }
 

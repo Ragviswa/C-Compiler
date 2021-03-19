@@ -116,6 +116,7 @@ public:
         return false;
     }
 
+    // modify function should only be called when there is a declaration with an existing variable name
     bool modify(std::string type, std::string format, std::string name, std::string address) {
         if(head[current_scope] == nullptr) {
             return false;
