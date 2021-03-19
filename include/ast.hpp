@@ -7,6 +7,7 @@
 #include "ast/ast_operators.hpp"
 #include "ast/ast_statement.hpp"
 #include "ast/ast_unary.hpp"
+#include "ast/symbol_table.hpp"
 
 extern const Function *parseAST();
 

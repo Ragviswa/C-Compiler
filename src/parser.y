@@ -102,13 +102,13 @@ ENUM_LIST           : ENUM                                                  {}
 ENUM                : T_VARIABLE                                            {}
                     | T_VARIABLE T_ASSIGN CONDITIONAL                       {}
 
-DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2); }
+DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, nullptr); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET                           {}
                     | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET T_ASSIGN EXPR T_SEMICOLON {}
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
-                    | POST ASSIGNOP EXPR                                    {}
+                    | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
 
 ASSIGNOP            : T_ASSIGN                                              { $$ = new std::string("="); }
                     | T_ADDASSIGN                                           { $$ = new std::string("+="); }

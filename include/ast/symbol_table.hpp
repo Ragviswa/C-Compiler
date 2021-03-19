@@ -1,16 +1,12 @@
 #ifndef symbol_table_hpp
 #define symbol_table_hpp
-
-#include "ast_primitives.hpp"
-#include "ast_function.hpp"
-
-extern SymbolTable Symbol;
-extern StackPtr StackPointer;
+#include <cassert>
 
 class StackPtr{
     private:
     int increment;
 
+    public:
     StackPtr() {
         std::cout<<"addi $29 $0 2000";
     }
@@ -187,5 +183,8 @@ public:
         return true;
     }
 };
+
+extern SymbolTable Symbol;
+extern StackPtr StackPointer;
 
 #endif
