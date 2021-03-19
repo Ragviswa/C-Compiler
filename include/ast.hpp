@@ -10,5 +10,7 @@
 #include "ast/symbol_table.hpp"
 
 extern const Function *parseAST();
+extern SymbolTable Symbol;
+extern StackPtr StackPointer;
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef symbol_table_hpp
 #define symbol_table_hpp
+
 #include <cassert>
+
+class SymbolTable;
+class StackPtr;
 
 class StackPtr{
     private:
@@ -183,8 +187,5 @@ public:
         return true;
     }
 };
-
-extern SymbolTable Symbol;
-extern StackPtr StackPointer;
 
 #endif

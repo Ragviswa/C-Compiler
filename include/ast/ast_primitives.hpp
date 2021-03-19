@@ -6,6 +6,9 @@
 
 #include "symbol_table.hpp"
 
+extern SymbolTable Symbol;
+extern StackPtr StackPointer;
+
 enum TypeDef{
   INT,
   FLT,

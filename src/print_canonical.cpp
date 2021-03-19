@@ -1,5 +1,8 @@
 #include "ast.hpp"
 
+SymbolTable Symbol;
+StackPtr StackPointer;
+
 int main()
 {
     const Function *ast=parseAST();
