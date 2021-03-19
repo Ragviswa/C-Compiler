@@ -30,7 +30,7 @@ class BlockList
 private:
     StatementPtr statement = nullptr;
     Variable *variable = nullptr;
-    BlockListPtr statdecllist;
+    BlockListPtr statdecllist = nullptr;
 public:
     BlockList(StatementPtr _statement, BlockListPtr _statdecllist = nullptr)
         : statement(_statement)
@@ -447,11 +447,9 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        Symbol.newScope();
         if(getblocklist()!=nullptr){
             getblocklist()->CompileRec(destReg);
         }
-        Symbol.endScope();
     }
 };
 
