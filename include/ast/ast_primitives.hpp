@@ -141,31 +141,31 @@ public:
                 break;
             case ASSIGN:
                 if(assignop == "="){
-                    std::cout << "addi $t0, $0, " << address << std::endl;
                     getExpr()->CompileRec("$t1");
+                    std::cout << "addi $t0, $0, " << address << std::endl;
                     std::cout << "sw $t1, 0($t0)" << std::endl;
                 }else if(assignop == "+="){
-                    std::cout << "addi $t0, $0, " << address << std::endl;
                     getExpr()->CompileRec("$t1");
+                    std::cout << "addi $t0, $0, " << address << std::endl;
                     std::cout << "lw $t2, 0($t0)" << std::endl;
                     std::cout << "add $t2, $t2, $t1" << std::endl;
                     std::cout << "sw $t2, 0($t0)" << std::endl;
                 }else if(assignop == "-="){
-                    std::cout << "addi $t0, $0, " << address << std::endl;
                     getExpr()->CompileRec("$t1");
+                    std::cout << "addi $t0, $0, " << address << std::endl;
                     std::cout << "lw $t2, 0($t0)" << std::endl;
                     std::cout << "sub $t2, $t2, $t1" << std::endl;
                     std::cout << "sw $t2, 0($t0)" << std::endl;
                 }else if(assignop == "/="){
-                    std::cout << "addi $t0, $0, " << address << std::endl;
                     getExpr()->CompileRec("$t1");
+                    std::cout << "addi $t0, $0, " << address << std::endl;
                     std::cout << "lw $t2, 0($t0)" << std::endl;
                     std::cout << "div $t2, $t1" << std::endl;
                     std::cout << "mfhi $t2" << std::endl;
                     std::cout << "sw $t2, 0($t0)" << std::endl;
                 }else if(assignop == "*="){
-                    std::cout << "addi $t0, $0, " << address << std::endl;
                     getExpr()->CompileRec("$t1");
+                    std::cout << "addi $t0, $0, " << address << std::endl;
                     std::cout << "lw $t2, 0($t0)" << std::endl;
                     std::cout << "mul $t2, $t2, $t1" << std::endl;
                     std::cout << "sw $t2, 0($t0)" << std::endl;

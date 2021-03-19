@@ -34,6 +34,8 @@ extern "C" int fileno(FILE *stream);
 
 [?]             { return T_QUESTION; }
 [:]             { return T_COLON; }
+[+][+]          { return T_INCR; }
+[-][-]          { return T_DECR; }
 
 [=]             { return T_ASSIGN; }
 [+][=]          { return T_ADDASSIGN; }

@@ -30,7 +30,7 @@
 %token T_LSHIFT T_RSHIFT
 %token T_AND T_IOR T_XOR
 %token T_NOT T_LOGICAND T_LOGICOR
-%token T_QUESTION T_COLON
+%token T_QUESTION T_COLON T_INCR T_DECR
 %token T_ASSIGN T_ADDASSIGN T_SUBASSIGN T_DIVASSIGN T_MULASSIGN T_MODASSIGN T_LEFASSIGN T_RIGASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
@@ -167,6 +167,8 @@ POST                : FACTOR                                                { $$
                     | POST T_LSBRACKET EXPR T_RSBRACKET                     {}
                     | POST T_LBRACKET T_RBRACKET                            {}
                     | POST T_LBRACKET EXPR T_RBRACKET                       {}
+                    | POST T_INCR                                           {}
+                    | POST T_DECR                                           {}
 
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
 
