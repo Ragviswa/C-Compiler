@@ -184,8 +184,8 @@ public:
             case DECL:
                 if(getType()=="INT"){
                     if(Expr!=nullptr){
-                        std::cout << "addi $t0, $0, " << address << std::endl;
                         getExpr()->CompileRec("$t1");
+                        std::cout << "addi $t0, $0, " << address << std::endl;
                         std::cout << "sw $t1, 0($t0)" << std::endl;
                     }
                 }
