@@ -129,23 +129,22 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        std::string c = makeName("c");
-        getCond()->CompileRec(c);
+        getCond()->CompileRec("$t7");
         std::string exit = makeName("exit");
         if(else_branch!=nullptr){
             std::string else_stat = makeName("else_stat");
-            std::cout << "beq " << c << " $0 " << else_stat <<std::endl;
+            std::cout << "beq $t7, $0, " << else_stat << std::endl;
             getStat()->CompileRec(destReg);
             std::string exit = makeName("exit");
             std::cout << "jump " << exit << std::endl;
             std::cout << ":" << else_stat << std::endl;
             getElse()->CompileRec(destReg);
-            std::cout << ":"<<exit<<std::endl;
+            std::cout << ":"<< exit << std::endl;
         }else{
             std::string exit = makeName("exit");
-            std::cout << "beq " << c << " $0 " << exit <<std::endl;
+            std::cout << "beq $t7, $0, " << exit << std::endl;
             getStat()->CompileRec(destReg);
-            std::cout << ":"<<exit<<std::endl;
+            std::cout << ":" << exit << std::endl;
         }
     }
 };
@@ -214,17 +213,16 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        std::string c = makeName("while_condition");
-        getCond()->CompileRec(c);
+        getCond()->CompileRec("$t7");
         std::string unique_exit = makeName("exit");
-        std::cout << "beq " << c << " $0 " << unique_exit << std::endl;
+        std::cout << "beq $t7, $0, " << unique_exit << std::endl;
         std::string unique_start = makeName("start");
         std::cout << ":" << unique_start << std::endl;
         getStat()->CompileRec(destReg);
-        getCond()->CompileRec(c);
-        std::cout << "bne " << c << " $0 " << unique_start << std::endl;
+        getCond()->CompileRec("$t7");
+        std::cout << "bne, $t7, $0 " << unique_start << std::endl;
         std::cout << ":" << unique_exit << std::endl;
-        std::cout << "add " << destReg << " $0 $0" << std::endl;
+        std::cout << "add " << destReg << ", $0, $0" << std::endl;
     }
 };
 
@@ -338,9 +336,8 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        std::string exp = makeName("exp");
-        getExp()->CompileRec(exp);
-        std::cout << "add $2 $0 " << exp << std::endl;
+        getExp()->CompileRec("$t7");
+        std::cout << "add $v0, $0, $t7" << std::endl;
     }
 };
 
