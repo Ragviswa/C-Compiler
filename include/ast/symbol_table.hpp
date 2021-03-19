@@ -4,6 +4,8 @@
 #include "ast_primitives.hpp"
 #include "ast_function.hpp"
 
+extern SymbolTable Symbol;
+
 class StackPtr{
     private:
     int increment;
