@@ -426,7 +426,9 @@ class CompoundStatement
 private:
     BlockListPtr blocklist;
 public:
-    CompoundStatement(BlockListPtr _blocklist = nullptr)
+    CompoundStatement()
+    {} 
+    CompoundStatement(BlockListPtr _blocklist)
         : blocklist(_blocklist)
     {} 
     ~CompoundStatement() {
