@@ -88,6 +88,7 @@ public:
                 }else{
                     Symbol.modify(type, "var", id, address);
                 }
+                break;
             default:
                 type = "something went wrong";
         }
@@ -110,12 +111,14 @@ public:
         switch(VarType) {
             case CALL:
                 dst<<id;
+                break;
             case ASSIGN:
                 dst<<id;
                 dst<<" ";
                 dst<<assignop;
                 dst<<" ";
                 Expr->print(dst);
+                break;
             case DECL:
                 dst<<type;
                 dst<<" ";
@@ -126,6 +129,7 @@ public:
                 }
                 dst<<";";
                 dst<<'\n';
+                break;
         }
     }
 
@@ -134,6 +138,7 @@ public:
             case CALL:
                 std::cout << "addi $t0, $0, " << address << std::endl;
                 std::cout << "lw " << destReg << ", 0($t0)" << std::endl;
+                break;
             case ASSIGN:
                 if(assignop == "="){
                     std::cout << "addi $t0, $0, " << address << std::endl;
@@ -175,6 +180,7 @@ public:
                 }else if(assignop == "^="){
 
                 }
+                break;
             case DECL:
                 if(getType()=="INT"){
                     if(Expr!=nullptr){
@@ -183,6 +189,7 @@ public:
                         std::cout << "sw $t1, 0($t0)" << std::endl;
                     }
                 }
+                break;
         }   
     }
     virtual double evaluate(

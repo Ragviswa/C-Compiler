@@ -28,8 +28,8 @@ class BlockList
     : public Statement
 {
 private:
-    StatementPtr statement;
-    Variable *variable;
+    StatementPtr statement = nullptr;
+    Variable *variable = nullptr;
     BlockListPtr statdecllist;
 public:
     BlockList(StatementPtr _statement, BlockListPtr _statdecllist = nullptr)
@@ -119,6 +119,7 @@ public:
         dst<<"if ( ";
         getCond()->print(dst);
         dst<<" ) ";
+        dst<<'\n';
         getStat()->print(dst);
         if(else_branch!=nullptr) {
             dst<<"else ";
