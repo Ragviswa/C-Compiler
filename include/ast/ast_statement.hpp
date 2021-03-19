@@ -137,14 +137,14 @@ public:
             getStat()->CompileRec(destReg);
             std::string exit = makeName("exit");
             std::cout << "jump " << exit << std::endl;
-            std::cout << ":" << else_stat << std::endl;
+            std::cout << else_stat << ":" << std::endl;
             getElse()->CompileRec(destReg);
-            std::cout << ":"<< exit << std::endl;
+            std::cout << exit << ":" << std::endl;
         }else{
             std::string exit = makeName("exit");
             std::cout << "beq $t0, $0, " << exit << std::endl;
             getStat()->CompileRec(destReg);
-            std::cout << ":" << exit << std::endl;
+            std::cout << exit << ":" << std::endl;
         }
     }
 };
@@ -217,13 +217,13 @@ public:
         std::string unique_exit = makeName("exit");
         std::cout << "beq $t0, $0, " << unique_exit << std::endl;
         std::string unique_start = makeName("start");
-        std::cout << ":" << unique_start << std::endl;
+        std::cout << unique_start << ":" << std::endl;
         getCond()->CompileRec("$t0");
         std::cout << "sw $t0, 4($sp)" << std::endl;
         getStat()->CompileRec(destReg);
         std::cout << "lw $t0, 4($sp)" << std::endl;
         std::cout << "bne $t0, $0, " << unique_start << std::endl;
-        std::cout << ":" << unique_exit << std::endl;
+        std::cout << unique_exit << ":" << std::endl;
         std::cout << "add " << destReg << ", $0, $0" << std::endl;
     }
 };

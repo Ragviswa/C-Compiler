@@ -12,7 +12,7 @@ class StackPtr{
 
     public:
     StackPtr() {
-        std::cout<<"addi $29 $0 2000"<<std::endl;
+        std::cout<<"addi $sp, $0, 2000"<<std::endl;
     }
 
     int getIncr() {
