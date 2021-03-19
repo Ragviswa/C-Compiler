@@ -4,9 +4,10 @@
 SymbolTable Symbol;
 StackPtr StackPointer;
 
-int main() {
+int main(int argc, char *argv[]) {
+    FILE *fileInput = fopen(argv[1],"r");
     std::cout << ".text" << std::endl;
-    const Function *ast = parseAST();
+    const Function *ast = parseAST(fileInput);
     ast->CompileRec("$v0");
     return 0;
 }

@@ -4,7 +4,7 @@
   #include <cassert>
 
   extern const Function *g_root; // A way of getting the AST out
-
+  extern FILE* yyin;
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
   // that Bison generated code can call them.
@@ -182,9 +182,10 @@ FACTOR              : T_NUMBER                                              { $$
 // but based on our understanding, it should be able to do it in any order
 const Function *g_root; // Definition of variable (to match declaration earlier)
 
-const Function *parseAST()
+const Function *parseAST(FILE *inputFile)
 {
   g_root=0;
+  yyin = inputFile;
   yyparse();
   return g_root;
 }
