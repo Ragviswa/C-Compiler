@@ -160,7 +160,7 @@ TERM                : UNARY                                                 { $$
 
 UNARY               : FACTOR                                                { $$ = $1; }
                     | T_MINUS POST                                          { $$ = new NegOperator($2); }
-                    | T_PLUS POST                                           {}
+                    | T_PLUS POST                                           { $$ = new PosOperator($2); }
                     | T_NOT POST                                            { $$ = new NotLogic($2); }
 
 POST                : FACTOR                                                { $$ = $1; }
