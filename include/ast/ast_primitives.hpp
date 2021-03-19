@@ -30,7 +30,7 @@ private:
     std::string address;
     std::string assignop;
     DeclType VarType;
-    ExpressionPtr Expr;
+    ExpressionPtr Expr = nullptr;
 public:
 //This constructor does not feel right, it's a placeholder.
     Variable() {

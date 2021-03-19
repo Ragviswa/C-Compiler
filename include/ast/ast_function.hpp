@@ -52,9 +52,11 @@ public:
         std::cout << "sw $s7, 32($sp)" << std::endl;
         std::cout << "sw $fp, 36($sp)" << std::endl;
         std::cout << "sw $ra, 40($sp)" << std::endl;
+        StackPointer.setIncr(40);
 
         statements->CompileRec(destReg);
 
+        StackPointer.setIncr(0);
         std::cout << "lw $s0, 4($sp)" << std::endl;
         std::cout << "lw $s1, 8($sp)" << std::endl;
         std::cout << "lw $s2, 12($sp)" << std::endl;

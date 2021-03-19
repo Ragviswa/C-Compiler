@@ -101,7 +101,7 @@ class IfStatement
     : public SelectStatement
 {
 private:
-    StatementPtr else_branch;
+    StatementPtr else_branch = nullptr;
 public:
     IfStatement(ExpressionPtr _condition, StatementPtr _if_branch = nullptr, StatementPtr _else_branch = nullptr)
         : SelectStatement(_condition, _if_branch)
@@ -178,7 +178,7 @@ class LoopStatement
 {
 private:
     ExpressionPtr condition;
-    StatementPtr statement;
+    StatementPtr statement = nullptr;
 public:
     LoopStatement() {}
     LoopStatement(ExpressionPtr _condition, StatementPtr _statement = nullptr)
@@ -279,7 +279,7 @@ class ExpressionStatement
     : public Statement
 {
 private:
-    ExpressionPtr expression;
+    ExpressionPtr expression = nullptr;
 public:
     ExpressionStatement(ExpressionPtr _expression = nullptr)
         : expression(_expression)
@@ -317,7 +317,7 @@ class ReturnStatement
     : public JumpStatement
 {
 private:
-    ExpressionPtr expression;
+    ExpressionPtr expression = nullptr;
 public:
     ReturnStatement(ExpressionPtr _expression = nullptr)
         : expression(_expression)
@@ -387,8 +387,8 @@ class LabelStatement
     : public Statement
 {
 private:
-    ExpressionPtr expression;
-    StatementPtr statement;
+    ExpressionPtr expression = nullptr;
+    StatementPtr statement = nullptr;
 public:
     LabelStatement(ExpressionPtr _expression = nullptr, StatementPtr _statement = nullptr)
         : expression(_expression)
@@ -424,7 +424,7 @@ class CompoundStatement
     : public Statement
 {
 private:
-    BlockListPtr blocklist;
+    BlockListPtr blocklist = nullptr;
 public:
     CompoundStatement()
     {} 
