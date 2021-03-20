@@ -127,13 +127,13 @@ LOGIC_AND           : IOR_EXPR                                              { $$
                     | LOGIC_AND T_LOGICAND IOR_EXPR                         { $$ = new AndLogic($1, $3); }
 
 IOR_EXPR            : XOR_EXPR                                              { $$ = $1; }
-                    | IOR_EXPR T_IOR XOR_EXPR                               {}
+                    | IOR_EXPR T_IOR XOR_EXPR                               { $$ = new OrOperator($1, $3); }
 
 XOR_EXPR            : AND_EXPR                                              { $$ = $1; }
-                    | XOR_EXPR T_XOR AND_EXPR                               {}
+                    | XOR_EXPR T_XOR AND_EXPR                               { $$ = new XorOperator($1, $3); }
 
 AND_EXPR            : EQUALITY                                              { $$ = $1; }
-                    | AND_EXPR T_AND EQUALITY                               {}
+                    | AND_EXPR T_AND EQUALITY                               { $$ = new AndOperator($1, $3); }
 
 EQUALITY            : RELAT                                                 { $$ = $1; }
                     | EQUALITY T_EQUALTO RELAT                              { $$ = new EqualOperator($1, $3); }

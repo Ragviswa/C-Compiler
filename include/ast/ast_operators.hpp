@@ -398,6 +398,98 @@ public:
         return vl != vr;
     }
 };
+// Bitwise Operators
+
+class AndOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "&"; }
+
+public:
+    AndOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+    
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override 
+    {
+        int vl=getLeft()->evaluate(bindings);
+        int vr=getRight()->evaluate(bindings);
+        return vl&vr;
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        getLeft()->CompileRec("$t0");
+        std::cout << "sw $t0, 4($sp)" << std::endl;
+        getRight()->CompileRec("$t1");
+        std::cout << "lw $t0, 4($sp)" << std::endl;
+        std::cout << "and " << destReg << ", $t0, $t1" << std::endl;
+    }
+    
+};
+
+class OrOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "|"; }
+
+public:
+    OrOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+    
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override 
+    {
+        int vl=getLeft()->evaluate(bindings);
+        int vr=getRight()->evaluate(bindings);
+        return vl|vr;
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        getLeft()->CompileRec("$t0");
+        std::cout << "sw $t0, 4($sp)" << std::endl;
+        getRight()->CompileRec("$t1");
+        std::cout << "lw $t0, 4($sp)" << std::endl;
+        std::cout << "or " << destReg << ", $t0, $t1" << std::endl;
+    }
+};
+
+class XorOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "^"; }
+
+public:
+    XorOperator(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+    
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override 
+    {
+        double vl=getLeft()->evaluate(bindings);
+        double vr=getRight()->evaluate(bindings);
+        return vl-vr;
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        getLeft()->CompileRec("$t0");
+        std::cout << "sw $t0, 4($sp)" << std::endl;
+        getRight()->CompileRec("$t1");
+        std::cout << "lw $t0, 4($sp)" << std::endl;
+        std::cout << "xor " << destReg << ", $t0, $t1" << std::endl;
+    }
+};
 
 // Logic Operators
 class AndLogic

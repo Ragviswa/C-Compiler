@@ -26,7 +26,7 @@ extern "C" int fileno(FILE *stream);
 
 [&]             { return T_AND; }
 [|]             { return T_IOR; }
-[\^]             { return T_XOR; }
+[\^]            { return T_XOR; }
 
 [&][&]          { return T_LOGICAND; }
 [|][|]          { return T_LOGICOR; }
