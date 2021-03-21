@@ -43,9 +43,9 @@
 %type <number> T_NUMBER
 %type <string> T_INT T_VARIABLE ASSIGNOP
 %type <T_type> TYPE_DEF
-%type <variable> DECL
+%type <variable> DECL ARG
 %type <blocklist> BLOCK_ITEM_LIST
-%type <decllist> DECL_LIST
+%type <decllist> ARG_LIST
 %type <function> FUNCTION
 
 %start PROGRAM
@@ -55,10 +55,12 @@
 PROGRAM             : FUNCTION                                              { g_root = $1; }
 
 FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new Variable($1, $2)), $5); }
-                    | TYPE_DEF T_VARIABLE T_LBRACKET DECL_LIST T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $4, $6); }
+                    | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new Variable($1, $2)), $4, $6); }
 
-DECL_LIST           : DECL                                                  { $$ = new DeclarationList($1, nullptr); }
-                    | DECL T_COMMA DECL_LIST                                { $$ = new DeclarationList($1, $3); }
+ARG_LIST            : ARG                                                   { $$ = new DeclarationList($1, nullptr); }
+                    | ARG T_COMMA ARG_LIST                                  { $$ = new DeclarationList($1, $3); }
+
+ARG                 : TYPE_DEF T_VARIABLE                                   { $$ = new Variable($1, $2, nullptr); }
 
 COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$ = new CompoundStatement(); }
                     | T_LBRACE BLOCK_ITEM_LIST T_RBRACE                     { $$ = new CompoundStatement($2); }

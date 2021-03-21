@@ -18,7 +18,8 @@ enum TypeDef{
 enum DeclType{
   CALL,
   ASSIGN,
-  DECL
+  DECL,
+  ARG
 };
 
 class Variable
