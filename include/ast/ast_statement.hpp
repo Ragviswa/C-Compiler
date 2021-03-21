@@ -447,9 +447,11 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
+        Symbol.newScope();
         if(getblocklist()!=nullptr){
             getblocklist()->CompileRec(destReg);
         }
+        Symbol.endScope();
     }
 };
 

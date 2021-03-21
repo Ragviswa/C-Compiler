@@ -192,6 +192,9 @@ public:
                         std::cout << "addi $t0, $0, " << address << std::endl;
                         std::cout << "sw $t1, 0($t0)" << std::endl;
                     }
+                    if(Symbol.getScope()==0){
+                        std::cout << ".global " << getId() << std::endl;
+                    }
                 }
                 break;
         }   

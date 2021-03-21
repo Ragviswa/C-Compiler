@@ -103,6 +103,10 @@ public:
         current_scope = 0;
     }
 
+    int getScope(){
+        return current_scope;
+    }
+
     bool insert(std::string type, std::string format, std::string name, std::string address) {
         if(head[current_scope] == nullptr) {
             head[current_scope] = new Node(type, format, name, address);

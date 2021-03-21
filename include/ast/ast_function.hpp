@@ -69,6 +69,9 @@ public:
         std::cout << "lw $ra, 40($sp)" << std::endl;
         std::cout << "move $fp, $sp" << std::endl;
         std::cout << "jr $ra" << std::endl;
+        if(Symbol.getScope()==0){
+            std::cout << ".global " << getFunction() << std::endl;
+        }
     }
 
     void print(std::ostream &dst) const
