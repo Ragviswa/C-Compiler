@@ -27,7 +27,7 @@ class Variable
 private:
     std::string type;
     std::string id;
-    std::string address;
+    mutable std::string address;
     std::string assignop;
     DeclType VarType;
     ExpressionPtr Expr = nullptr;
@@ -39,14 +39,12 @@ public:
     Variable(const std::string *_id) {
         VarType = CALL;
         id = *_id;
-        address = Symbol.lookUp(id);
     }
 
     Variable(const std::string *_id, std::string *_AssignOp, ExpressionPtr _Expr) {
         VarType = ASSIGN;
         id = *_id;
         assignop = *_AssignOp;
-        address = Symbol.lookUp(id);
         Expr = _Expr;
     }
 
@@ -57,18 +55,12 @@ public:
                 type = "INT";
                 id = *_id;
                 Expr = _Expr;
-                StackPointer.setIncr(StackPointer.getIncr()+4);
-                address = std::to_string(StackPointer.getIncr() + 2000);
-                if(Symbol.lookUp(id) == "Error: undefined reference"){
-                    Symbol.insert(type, "var", id, address);
-                }else{
-                    Symbol.modify(type, "var", id, address);
-                }
                 break;
             case FLT:
                 type = "FLT";
                 id = *_id;
                 Expr = _Expr;
+                /*
                 StackPointer.setIncr(StackPointer.getIncr()+8);
                 address = std::to_string(StackPointer.getIncr() + 2000);
                 if(Symbol.lookUp(id) == "Error: undefined reference"){
@@ -76,11 +68,13 @@ public:
                 }else{
                     Symbol.modify(type, "var", id, address);
                 }
+                */
                 break;
             case DBL:
                 type = "DBL";
                 id = *_id;
                 Expr = _Expr;
+                /*
                 StackPointer.setIncr(StackPointer.getIncr()+16);
                 address = std::to_string(StackPointer.getIncr() + 2000);
                 if(Symbol.lookUp(id) == "Error: undefined reference"){
@@ -88,6 +82,7 @@ public:
                 }else{
                     Symbol.modify(type, "var", id, address);
                 }
+                */
                 break;
             default:
                 type = "something went wrong";
@@ -136,10 +131,12 @@ public:
     virtual void CompileRec(std::string destReg) const override{
         switch(VarType) {
             case CALL:
+                address = Symbol.lookUp(id);
                 std::cout << "addi $t0, $0, " << address << std::endl;
                 std::cout << "lw " << destReg << ", 0($t0)" << std::endl;
                 break;
             case ASSIGN:
+                address = Symbol.lookUp(id);
                 if(assignop == "="){
                     getExpr()->CompileRec("$t1");
                     std::cout << "addi $t0, $0, " << address << std::endl;
@@ -184,6 +181,13 @@ public:
             case DECL:
                 if(getType()=="INT"){
                     if(Expr!=nullptr){
+                        StackPointer.setIncr(StackPointer.getIncr()+4);
+                        address = std::to_string(StackPointer.getIncr() + 2000);
+                        if(Symbol.lookUp(id) == "Error: undefined reference"){
+                            Symbol.insert(type, "var", id, address);
+                        }else{
+                            Symbol.modify(type, "var", id, address);
+                        }
                         getExpr()->CompileRec("$t1");
                         std::cout << "addi $t0, $0, " << address << std::endl;
                         std::cout << "sw $t1, 0($t0)" << std::endl;
