@@ -213,18 +213,14 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        getCond()->CompileRec("$t0");
         std::string unique_exit = makeName("exit");
-        std::cout << "beq $t0, $0, " << unique_exit << std::endl;
-        std::string unique_start = makeName("start");
-        std::cout << unique_start << ":" << std::endl;
+        std::string unique_loop = makeName("loop");
+        std::cout << unique_loop << ":" << std::endl;
         getCond()->CompileRec("$t0");
-        std::cout << "sw $t0, 4($sp)" << std::endl;
-        getStat()->CompileRec(destReg);
-        std::cout << "lw $t0, 4($sp)" << std::endl;
-        std::cout << "bne $t0, $0, " << unique_start << std::endl;
+        std::cout << "beq $t0, $0, " << unique_exit << std::endl;
+        getStat()->CompileRec(destReg); // loop body
+        std::cout << "j " << unique_loop << std::endl;
         std::cout << unique_exit << ":" << std::endl;
-        std::cout << "add " << destReg << ", $0, $0" << std::endl;
     }
 };
 
