@@ -448,13 +448,14 @@ public:
 
     virtual void CompileRec(std::string destReg) const override{
         Symbol.newScope();
+        StackPointer.setcurrentscope(StackPointer.getcurrentscope()+1);
         StackPointer.setscopeIncr(0);
         if(getblocklist()!=nullptr){
             getblocklist()->CompileRec(destReg);
         }
         std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr() << std::endl;
         StackPointer.setIncr(StackPointer.getIncr() - StackPointer.getscopeIncr());
-        StackPointer.setscopeIncr(0);
+        StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
         Symbol.endScope();
     }
 };

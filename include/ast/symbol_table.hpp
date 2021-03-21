@@ -9,8 +9,8 @@ class StackPtr;
 class StackPtr{
     private:
     int incr;
-    int scopeincr;
-
+    int scopeincr[50];
+    int current_scope = 0;
     public:
     StackPtr() {
     }
@@ -24,11 +24,19 @@ class StackPtr{
     }
 
     int getscopeIncr() {
-        return scopeincr;
+        return scopeincr[current_scope];
     }
 
     void setscopeIncr(int _scopeincr) {
-        scopeincr = _scopeincr;
+        scopeincr[current_scope] = _scopeincr;
+    }
+
+    int getcurrentscope() {
+        return current_scope;
+    }
+
+    void setcurrentscope(int _current_scope) {
+        current_scope = _current_scope;
     }
 
 };

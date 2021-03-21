@@ -57,10 +57,12 @@ public:
 
         if(args!=nullptr){
             Symbol.newScope();
+            StackPointer.setcurrentscope(StackPointer.getcurrentscope()+1);
             StackPointer.setscopeIncr(0);
             args->CompileRec(destReg);
             statements->CompileRec(destReg);
             Symbol.endScope();
+            StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
         }else{
             statements->CompileRec(destReg);
         }
