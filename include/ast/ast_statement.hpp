@@ -136,7 +136,7 @@ public:
             std::cout << "beq $t0, $0, " << else_stat << std::endl;
             getStat()->CompileRec(destReg);
             std::string exit = makeName("exit");
-            std::cout << "jump " << exit << std::endl;
+            std::cout << "j " << exit << std::endl;
             std::cout << else_stat << ":" << std::endl;
             getElse()->CompileRec(destReg);
             std::cout << exit << ":" << std::endl;
