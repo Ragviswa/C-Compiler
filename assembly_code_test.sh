@@ -44,6 +44,16 @@ for i in compiler_tests/*; do
 
 			# simulate the executable on MIPS
 			qemu-mips ${TESTCASE}/$n
+			
+			# check if return code is 0
+			if [ $? -eq 0 ]; then
+				PASSED=$(( ${PASSED}+1 ));
+			fi
 		fi	
+		CHECKED=$(( ${CHECKED}+1 ));
 	done
 done
+
+echo "####################"
+echo "Passed ${PASSED} out of ${CHECKED}"
+echo ""
