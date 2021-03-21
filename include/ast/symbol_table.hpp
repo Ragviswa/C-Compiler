@@ -45,6 +45,7 @@ class Node {
 private:
     std::string type, format ,name, address;
     Node* next;
+    friend class SymbolTable;
 public:
     Node() {
         next = nullptr;
@@ -178,16 +179,22 @@ public:
     bool newScope() {
         current_scope = current_scope + 1;
         assert(head[current_scope] == nullptr); // new scope must be empty
-        Node *new_list = nullptr;
-        Node **first_node = &new_list;
         Node *old_list = head[current_scope-1];
-        while(old_list != nullptr) {
-            new_list = new Node(old_list->getType(), old_list->getFormat(), old_list->getName(), old_list->getAddress());
-            new_list = new_list->getNext();
-            old_list = old_list->getNext();
+        if (old_list != nullptr) {
+            head[current_scope] = new Node(old_list->getType(), old_list->getFormat(), old_list->getName(), old_list->getAddress());
+            Node *start = head[current_scope];
+            while(old_list->next != nullptr) {
+                old_list = old_list->next;
+                head[current_scope]->next = new Node(old_list->getType(), old_list->getFormat(), old_list->getName(), old_list->getAddress());
+                head[current_scope] = head[current_scope]->next;
+            }
+            head[current_scope] = start;
+            return true;
         }
-        head[current_scope] = *first_node;
-        return true;
+        else {
+            head[current_scope] = nullptr;
+            return true;
+        }
     }
 
     bool endScope() {
