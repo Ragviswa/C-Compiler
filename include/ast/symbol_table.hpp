@@ -179,14 +179,17 @@ public:
             current_scope = current_scope - 1;
             return true;
         }
-        Node *current = head[current_scope];
+        Node **list = &head[current_scope];
+        Node *current = *list;
         Node *next = nullptr;
-        while(current != nullptr) {
+        if (current != nullptr) {
             next = current->getNext();
-            delete current;
+            delete(current);
             current = next;
         }
+        *list = nullptr;
         if(head[current_scope] != nullptr) {
+            std::cout << "this is wrong" << std::endl;
             return false;
         }
         current_scope = current_scope - 1;
