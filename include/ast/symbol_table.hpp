@@ -163,12 +163,14 @@ public:
         current_scope = current_scope + 1;
         assert(head[current_scope] == nullptr); // new scope must be empty
         Node *new_list = nullptr;
+        Node *first_node = new_list;
         Node *old_list = head[current_scope-1];
-        while(old_list->getNext() != nullptr) {
+        while(old_list != nullptr) {
             *new_list = Node(old_list->getType(), old_list->getFormat(), old_list->getName(), old_list->getAddress());
             new_list = new_list->getNext();
             old_list = old_list->getNext();
         }
+        head[current_scope] = first_node;
         return true;
     }
 
