@@ -271,7 +271,21 @@ public:
         dst<<'\n';
     }
     virtual void CompileRec(std::string destReg) const override{
-        //needs implementation
+        if(initVar != nullptr && initExpr == nullptr) { // int i = 0;
+            initVar->getExpr()->CompileRec("$t0");
+        }
+        else if(initVar == nullptr && initExpr != nullptr) { // i = 0;
+            initExpr->CompileRec("$t0");
+        }
+        std::string unique_loop = makeName("loop");
+        std::cout << unique_loop << ":" << std::endl;
+        std::string unique_exit = makeName("exit");
+        getCond()->CompileRec("$t1"); // i < 3
+        std::cout << "beq $t1, $0, " << unique_exit << std::endl; // exit if condition false
+        getStat()->CompileRec(destReg); // loop body
+        updateExpr->CompileRec("$t0");
+        std::cout << "j " << unique_loop << std::endl;
+        std::cout << unique_exit << ":" << std::endl;
     }
 };
 
