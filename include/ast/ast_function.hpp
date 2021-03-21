@@ -10,7 +10,7 @@ class Function
 private:
     
     Variable *name; // function name
-    DeclarationListPtr args = nullptr;
+    DeclarationListPtr args;
     StatementPtr statements;
 public:
     Function(Variable *_name, StatementPtr _statements = nullptr)
@@ -36,7 +36,7 @@ public:
         return name->getId();
     }
 
-    ExpressionPtr getArgs() const
+    DeclarationListPtr getArgs() const
     { return args; }
 
     void CompileRec(std::string destReg) const {
@@ -55,10 +55,15 @@ public:
         std::cout << "sw $ra, 40($sp)" << std::endl;
         StackPointer.setIncr(StackPointer.getIncr()+44);
 
-        Symbol.newScope();
-        args->CompileRec(destReg);
-        statements->CompileRec(destReg);
-        Symbol.endScope();
+        if(args!=nullptr){
+            Symbol.newScope();
+            StackPointer.setscopeIncr(0);
+            args->CompileRec(destReg);
+            statements->CompileRec(destReg);
+            Symbol.endScope();
+        }else{
+            statements->CompileRec(destReg);
+        }
 
         StackPointer.setIncr(StackPointer.getIncr()-44);
         std::cout << "lw $s0, 4($sp)" << std::endl;

@@ -4,7 +4,7 @@
   #include <cassert>
 
   extern const Function *g_root; // A way of getting the AST out
-  //extern FILE* yyin;
+  extern FILE* yyin;
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
   // that Bison generated code can call them.
@@ -19,6 +19,7 @@
   const Statement *stat;
   const Expression *expr;
   const BlockList *blocklist;
+  const DeclarationList *decllist;
   Variable *variable;
   double number;
   std::string *string;
@@ -44,6 +45,7 @@
 %type <T_type> TYPE_DEF
 %type <variable> DECL
 %type <blocklist> BLOCK_ITEM_LIST
+%type <decllist> DECL_LIST
 %type <function> FUNCTION
 
 %start PROGRAM
@@ -52,8 +54,8 @@
 
 PROGRAM             : FUNCTION                                              { g_root = $1; }
 
-FUNCTION       : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $5); }
-               | TYPE_DEF T_VARIABLE T_LBRACKET DECL_LIST T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $5); }
+FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new Variable($1, $2)), $5); }
+                    | TYPE_DEF T_VARIABLE T_LBRACKET DECL_LIST T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $4, $6); }
 
 DECL_LIST           : DECL                                                  { $$ = new DeclarationList($1, nullptr); }
                     | DECL T_COMMA DECL_LIST                                { $$ = new DeclarationList($1, $3); }
@@ -186,7 +188,7 @@ FACTOR              : T_NUMBER                                              { $$
 // but based on our understanding, it should be able to do it in any order
 const Function *g_root; // Definition of variable (to match declaration earlier)
 
-/*
+
 const Function *parseAST(FILE *inputFile)
 {
   g_root=0;
@@ -194,10 +196,10 @@ const Function *parseAST(FILE *inputFile)
   yyparse();
   return g_root;
 }
-*/
-const Function *parseAST()
+
+/*const Function *parseAST()
 {
   g_root=0;
   yyparse();
   return g_root;
-}
+}*/
