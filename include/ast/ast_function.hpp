@@ -67,7 +67,7 @@ public:
         std::cout << "lw $s7, 32($sp)" << std::endl;
         std::cout << "lw $fp, 36($sp)" << std::endl;
         std::cout << "lw $ra, 40($sp)" << std::endl;
-        std::cout << "move $fp, $sp" << std::endl;
+        std::cout << "move $sp, $fp" << std::endl;
         std::cout << "jr $ra" << std::endl;
         if(Symbol.getScope()==0){
             std::cout << ".global " << getFunction() << std::endl;

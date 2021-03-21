@@ -233,7 +233,7 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        std::cout << "addi $0, " << destReg << ", " << value << std::endl;
+        std::cout << "addi " << destReg << ", $0, " << value << std::endl;
     }  
 
 };
