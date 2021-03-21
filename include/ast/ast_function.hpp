@@ -61,8 +61,9 @@ public:
             StackPointer.setscopeIncr(0);
             args->CompileRec(destReg);
             statements->CompileRec(destReg);
-            Symbol.endScope();
+            std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr() << std::endl;
             StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
+            Symbol.endScope();
         }else{
             statements->CompileRec(destReg);
         }
