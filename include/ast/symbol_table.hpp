@@ -174,7 +174,7 @@ public:
         Node *first_node = new_list;
         Node *old_list = head[current_scope-1];
         while(old_list != nullptr) {
-            *new_list = Node(old_list->getType(), old_list->getFormat(), old_list->getName(), old_list->getAddress());
+            new_list = new Node(old_list->getType(), old_list->getFormat(), old_list->getName(), old_list->getAddress());
             new_list = new_list->getNext();
             old_list = old_list->getNext();
         }
