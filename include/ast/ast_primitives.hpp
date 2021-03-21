@@ -189,16 +189,16 @@ public:
                 break;
             case DECL:
                 if(getType()=="INT"){
+                    std::cout << "addi $sp, $sp, -4" << std::endl;
+                    StackPointer.setIncr(StackPointer.getIncr()+4);
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
+                    address = std::to_string(StackPointer.getIncr());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "var", id, address);
+                    }else{
+                        Symbol.modify(type, "var", id, address);
+                    }
                     if(Expr!=nullptr){
-                        std::cout << "addi $sp, $sp, -4" << std::endl;
-                        StackPointer.setIncr(StackPointer.getIncr()+4);
-                        StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
-                        address = std::to_string(StackPointer.getIncr());
-                        if(Symbol.lookUp(id) == "Error: undefined reference"){
-                            Symbol.insert(type, "var", id, address);
-                        }else{
-                            Symbol.modify(type, "var", id, address);
-                        }
                         getExpr()->CompileRec("$t0");
                         std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
                     }
@@ -215,6 +215,49 @@ public:
     {
         return bindings.at(id);
     }    
+};
+
+class DeclarationList;
+
+typedef const DeclarationList *DeclarationListPtr;
+
+class DeclarationList
+    : public Variable
+{
+private:
+    Variable *variable;
+    DeclarationListPtr declarationList = nullptr;
+public:
+    DeclarationList(Variable *_variable, DeclarationListPtr _declarationList = nullptr)
+        : variable(_variable)
+        , declarationList(_declarationList)
+    {}
+
+    virtual ~DeclarationList() {
+        delete variable;
+        delete declarationList;
+    }
+    Variable *getVar() const
+    { return variable; }
+
+    DeclarationListPtr getdecllist() const
+    { return declarationList; }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        variable->print(dst);
+        if(declarationList!=nullptr){
+            dst << ", ";
+            declarationList->print(dst);
+        }
+    }
+
+    virtual void CompileRec(std::string destReg) const override{
+        getVar()->CompileRec(destReg);
+        if(declarationList!=nullptr){
+            getdecllist()->CompileRec(destReg);
+        }
+    }  
 };
 
 class Number

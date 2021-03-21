@@ -53,6 +53,10 @@
 PROGRAM             : FUNCTION                                              { g_root = $1; }
 
 FUNCTION       : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $5); }
+               | TYPE_DEF T_VARIABLE T_LBRACKET DECL_LIST T_RBRACKET COMPOUND_STAT { $$ = new Function((new Variable($1, $2)), $5); }
+
+DECL_LIST           : DECL                                                  { $$ = new DeclarationList($1, nullptr); }
+                    | DECL T_COMMA DECL_LIST                                { $$ = new DeclarationList($1, $3); }
 
 COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$ = new CompoundStatement(); }
                     | T_LBRACE BLOCK_ITEM_LIST T_RBRACE                     { $$ = new CompoundStatement($2); }
