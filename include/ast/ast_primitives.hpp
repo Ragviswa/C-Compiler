@@ -49,44 +49,82 @@ public:
         Expr = _Expr;
     }
 
-    Variable(TypeDef _type, const std::string *_id, ExpressionPtr _Expr = nullptr) {
-        VarType = DECL;
-        switch(_type) {
-            case INT:
-                type = "INT";
-                id = *_id;
-                Expr = _Expr;
-                break;
-            case FLT:
-                type = "FLT";
-                id = *_id;
-                Expr = _Expr;
-                /*
-                StackPointer.setIncr(StackPointer.getIncr()+8);
-                address = std::to_string(StackPointer.getIncr() + 2000);
-                if(Symbol.lookUp(id) == "Error: undefined reference"){
-                    Symbol.insert(type, "var", id, address);
-                }else{
-                    Symbol.modify(type, "var", id, address);
-                }
-                */
-                break;
-            case DBL:
-                type = "DBL";
-                id = *_id;
-                Expr = _Expr;
-                /*
-                StackPointer.setIncr(StackPointer.getIncr()+16);
-                address = std::to_string(StackPointer.getIncr() + 2000);
-                if(Symbol.lookUp(id) == "Error: undefined reference"){
-                    Symbol.insert(type, "var", id, address);
-                }else{
-                    Symbol.modify(type, "var", id, address);
-                }
-                */
-                break;
-            default:
-                type = "something went wrong";
+    Variable(TypeDef _type, const std::string *_id, DeclType _form, ExpressionPtr _Expr = nullptr) {
+        if(_form == ARG){
+            VarType = ARG;
+            switch(_type) {
+                case INT:
+                    type = "INT";
+                    id = *_id;
+                    break;
+                case FLT:
+                    type = "FLT";
+                    id = *_id;
+                    /*
+                    StackPointer.setIncr(StackPointer.getIncr()+8);
+                    address = std::to_string(StackPointer.getIncr() + 2000);
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "var", id, address);
+                    }else{
+                        Symbol.modify(type, "var", id, address);
+                    }
+                    */
+                    break;
+                case DBL:
+                    type = "DBL";
+                    id = *_id;
+                    /*
+                    StackPointer.setIncr(StackPointer.getIncr()+16);
+                    address = std::to_string(StackPointer.getIncr() + 2000);
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "var", id, address);
+                    }else{
+                        Symbol.modify(type, "var", id, address);
+                    }
+                    */
+                    break;
+                default:
+                    type = "something went wrong";
+            }
+        }else if(_form == DECL){
+            VarType = DECL;
+            switch(_type) {
+                case INT:
+                    type = "INT";
+                    id = *_id;
+                    Expr = _Expr;
+                    break;
+                case FLT:
+                    type = "FLT";
+                    id = *_id;
+                    Expr = _Expr;
+                    /*
+                    StackPointer.setIncr(StackPointer.getIncr()+8);
+                    address = std::to_string(StackPointer.getIncr() + 2000);
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "var", id, address);
+                    }else{
+                        Symbol.modify(type, "var", id, address);
+                    }
+                    */
+                    break;
+                case DBL:
+                    type = "DBL";
+                    id = *_id;
+                    Expr = _Expr;
+                    /*
+                    StackPointer.setIncr(StackPointer.getIncr()+16);
+                    address = std::to_string(StackPointer.getIncr() + 2000);
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "var", id, address);
+                    }else{
+                        Symbol.modify(type, "var", id, address);
+                    }
+                    */
+                    break;
+                default:
+                    type = "something went wrong";
+            }
         }
     }
     
@@ -208,6 +246,29 @@ public:
                     }
                 }
                 break;
+            case ARG:
+                if(getType()=="INT"){
+                    std::cout << "addi $sp, $sp, -4" << std::endl;
+                    if(StackPointer.getArgc()<4){
+                        std::cout << "sw $a" << StackPointer.getArgc() << ", 0($sp)"<<  std::endl;
+                    }
+                    StackPointer.setIncr(StackPointer.getIncr()+4);
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
+                    address = std::to_string(StackPointer.getIncr());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "var", id, address);
+                    }else{
+                        Symbol.modify(type, "var", id, address);
+                    }
+                    if(Expr!=nullptr){
+                        getExpr()->CompileRec("$t0");
+                        std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
+                    }
+                    if(Symbol.getScope()==0){
+                        std::cout << ".global " << getId() << std::endl;
+                    }
+                }
+                break;
         }   
     }
     virtual double evaluate(
@@ -255,9 +316,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override{
         getVar()->CompileRec(destReg);
+        StackPointer.setArgc(StackPointer.getArgc()+1);
         if(declarationList!=nullptr){
             getdecllist()->CompileRec(destReg);
         }
+        StackPointer.setArgc(0);
     }  
 };
 

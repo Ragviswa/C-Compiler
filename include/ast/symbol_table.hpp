@@ -9,6 +9,7 @@ class StackPtr;
 class StackPtr{
     private:
     int incr;
+    int argc;
     int scopeincr[50];
     int current_scope = 0;
     public:
@@ -37,6 +38,14 @@ class StackPtr{
 
     void setcurrentscope(int _current_scope) {
         current_scope = _current_scope;
+    }
+
+    int getArgc() {
+        return argc;
+    }
+
+    void setArgc(int _argc) {
+        argc = _argc;
     }
 
 };

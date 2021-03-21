@@ -54,13 +54,13 @@
 
 PROGRAM             : FUNCTION                                              { g_root = $1; }
 
-FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new Variable($1, $2)), $5); }
-                    | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new Variable($1, $2)), $4, $6); }
+FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new Variable($1, $2, DeclType::DECL)), $5); }
+                    | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new Variable($1, $2, DeclType::DECL)), $4, $6); }
 
 ARG_LIST            : ARG                                                   { $$ = new DeclarationList($1, nullptr); }
                     | ARG T_COMMA ARG_LIST                                  { $$ = new DeclarationList($1, $3); }
 
-ARG                 : TYPE_DEF T_VARIABLE                                   { $$ = new Variable($1, $2, nullptr); }
+ARG                 : TYPE_DEF T_VARIABLE                                   { $$ = new Variable($1, $2, DeclType::ARG); }
 
 COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$ = new CompoundStatement(); }
                     | T_LBRACE BLOCK_ITEM_LIST T_RBRACE                     { $$ = new CompoundStatement($2); }
@@ -105,8 +105,8 @@ ENUM_LIST           : ENUM                                                  {}
 ENUM                : T_VARIABLE                                            {}
                     | T_VARIABLE T_ASSIGN CONDITIONAL                       {}
 
-DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, nullptr); }
-                    | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, $4); }
+DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
+                    | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET                           {}
                     | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET T_ASSIGN EXPR T_SEMICOLON {}
 
