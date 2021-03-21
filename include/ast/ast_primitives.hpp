@@ -202,18 +202,6 @@ public:
                         getExpr()->CompileRec("$t0");
                         std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
                     }
-                    else { // int x;
-                        std::cout << "addi $sp, $sp, -4" << std::endl;
-                        StackPointer.setIncr(StackPointer.getIncr()+4);
-                        StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
-                        address = std::to_string(StackPointer.getIncr());
-                        if(Symbol.lookUp(id) == "Error: undefined reference") {
-                            Symbol.insert(type, "var", id, address);
-                        }
-                        else {
-                            Symbol.modify(type, "var", id, address);
-                        }
-                    }
                     if(Symbol.getScope()==0){
                         std::cout << ".global " << getId() << std::endl;
                     }
