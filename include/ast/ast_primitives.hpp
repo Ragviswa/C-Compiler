@@ -6,9 +6,6 @@
 
 #include "symbol_table.hpp"
 
-extern SymbolTable Symbol;
-extern StackPtr StackPointer;
-
 enum TypeDef{
   INT,
   FLT,
@@ -278,6 +275,103 @@ public:
         return bindings.at(id);
     }    
 };
+
+class FunctionStorage
+    :public Expression
+{
+private:
+    std::string type;
+    std::string id;
+    mutable std::string address;
+    ExpressionListPtr Args = nullptr;
+    DeclType VarType;
+public:
+//This constructor does not feel right, it's a placeholder.
+    FunctionStorage() {
+    }
+    
+    FunctionStorage(const std::string *_id, ExpressionListPtr _Args = nullptr) {
+        VarType = CALL;
+        id = *_id;
+        Args = _Args;
+    }
+
+    FunctionStorage(TypeDef _type, const std::string *_id) {
+        VarType = DECL;
+        switch(_type) {
+            case INT:
+                type = "INT";
+                id = *_id;
+                break;
+            case FLT:
+                type = "FLT";
+                id = *_id;
+                break;
+            case DBL:
+                type = "DBL";
+                id = *_id;
+                break;
+            default:
+                type = "something went wrong";
+        }
+    }
+    
+    const std::string getType() const
+    { return type; }
+
+    const std::string getId() const
+    { return id; }
+
+    const std::string getAddr() const
+    { return address; }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        switch(VarType) {
+            case CALL:
+                dst<<id;
+                break;
+            case DECL:
+                dst<<type;
+                dst<<" ";
+                dst<<id;
+                dst<<"();";
+                dst<<'\n';
+                break;
+        }
+    }
+
+    virtual void CompileRec(std::string destReg) const override{
+        switch(VarType) {
+            case CALL:
+                address = std::to_string(stoi(Symbol.lookUp(id))+44);
+                if(Args!=nullptr){
+                    Args->CompileRec(destReg, address);
+                }
+                std::cout << "jal " << id << std::endl;
+                break;
+            case DECL:
+                if(getType()=="INT"){
+                   address = std::to_string(StackPointer.getIncr());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "func", id, address);
+                    }else{
+                        Symbol.modify(type, "func", id, address);
+                    }
+                    if(Symbol.getScope()==0){
+                        std::cout << ".global " << getId() << std::endl;
+                    }
+                }
+                break;
+        }   
+    }
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        return bindings.at(id);
+    }    
+}; 
 
 class DeclarationList;
 

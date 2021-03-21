@@ -20,6 +20,7 @@
   const Expression *expr;
   const BlockList *blocklist;
   const DeclarationList *decllist;
+  const ExpressionList *arglist;
   Variable *variable;
   double number;
   std::string *string;
@@ -46,6 +47,7 @@
 %type <variable> DECL ARG
 %type <blocklist> BLOCK_ITEM_LIST
 %type <decllist> ARG_LIST
+%type <arglist> EXPR_LIST
 %type <function> FUNCTION
 
 %start PROGRAM
@@ -54,8 +56,11 @@
 
 PROGRAM             : FUNCTION                                              { g_root = $1; }
 
-FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new Variable($1, $2, DeclType::DECL)), $5); }
-                    | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new Variable($1, $2, DeclType::DECL)), $4, $6); }
+
+FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new FunctionStorage($1, $2)), nullptr, $5); }
+                    | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new FunctionStorage($1, $2)), $4, $6); }
+                    | TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET T_SEMICOLON             { $$ = new Function((new FunctionStorage($1, $2)), nullptr, nullptr); }
+                    | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET T_SEMICOLON    { $$ = new Function((new FunctionStorage($1, $2)), $4, nullptr); }
 
 ARG_LIST            : ARG                                                   { $$ = new DeclarationList($1, nullptr); }
                     | ARG T_COMMA ARG_LIST                                  { $$ = new DeclarationList($1, $3); }
@@ -173,15 +178,18 @@ UNARY               : FACTOR                                                { $$
 
 POST                : FACTOR                                                { $$ = $1; }
                     | POST T_LSBRACKET EXPR T_RSBRACKET                     {}
-                    | POST T_LBRACKET T_RBRACKET                            {}
-                    | POST T_LBRACKET EXPR T_RBRACKET                       {}
                     | POST T_INCR                                           {}
                     | POST T_DECR                                           {}
+
+EXPR_LIST           : EXPR                                                  { $$ = new ExpressionList($1); }
+                    | EXPR T_COMMA EXPR_LIST                                { $$ = new ExpressionList($1, $3); }
 
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
 
 FACTOR              : T_NUMBER                                              { $$ = new Number($1); }
                     | T_VARIABLE                                            { $$ = new Variable($1); }
+                    | T_VARIABLE T_LBRACKET T_RBRACKET                      { $$ = new FunctionStorage($1); }
+                    | T_VARIABLE T_LBRACKET EXPR_LIST T_RBRACKET            { $$ = new FunctionStorage($1, $3); }
                     | T_LBRACKET EXPR T_RBRACKET                            { $$ = $2; }
 
 %%
