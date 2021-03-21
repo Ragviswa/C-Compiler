@@ -132,65 +132,75 @@ public:
         switch(VarType) {
             case CALL:
                 address = Symbol.lookUp(id);
-                std::cout << "addi $t0, $0, " << address << std::endl;
-                std::cout << "lw " << destReg << ", 0($t0)" << std::endl;
+                std::cout << "lw " << destReg << ", -" << address << "($fp)" << std::endl;
                 break;
             case ASSIGN:
                 address = Symbol.lookUp(id);
                 if(assignop == "="){
-                    getExpr()->CompileRec("$t1");
-                    std::cout << "addi $t0, $0, " << address << std::endl;
-                    std::cout << "sw $t1, 0($t0)" << std::endl;
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
                 }else if(assignop == "+="){
-                    getExpr()->CompileRec("$t1");
-                    std::cout << "addi $t0, $0, " << address << std::endl;
-                    std::cout << "lw $t2, 0($t0)" << std::endl;
-                    std::cout << "add $t2, $t2, $t1" << std::endl;
-                    std::cout << "sw $t2, 0($t0)" << std::endl;
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                    std::cout << "add $t1, $t1, $t0" << std::endl;
+                    std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                 }else if(assignop == "-="){
-                    getExpr()->CompileRec("$t1");
-                    std::cout << "addi $t0, $0, " << address << std::endl;
-                    std::cout << "lw $t2, 0($t0)" << std::endl;
-                    std::cout << "sub $t2, $t2, $t1" << std::endl;
-                    std::cout << "sw $t2, 0($t0)" << std::endl;
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                    std::cout << "sub $t1, $t1, $t0" << std::endl;
+                    std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                 }else if(assignop == "/="){
-                    getExpr()->CompileRec("$t1");
-                    std::cout << "addi $t0, $0, " << address << std::endl;
-                    std::cout << "lw $t2, 0($t0)" << std::endl;
-                    std::cout << "div $t2, $t1" << std::endl;
-                    std::cout << "mfhi $t2" << std::endl;
-                    std::cout << "sw $t2, 0($t0)" << std::endl;
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                    std::cout << "div $t1, $t0" << std::endl;
+                    std::cout << "mfhi $t1" << std::endl;
+                    std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                 }else if(assignop == "*="){
-                    getExpr()->CompileRec("$t1");
-                    std::cout << "addi $t0, $0, " << address << std::endl;
-                    std::cout << "lw $t2, 0($t0)" << std::endl;
-                    std::cout << "mul $t2, $t2, $t1" << std::endl;
-                    std::cout << "sw $t2, 0($t0)" << std::endl;
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                    std::cout << "mul $t1, $t1, $t0" << std::endl;
+                    std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                 }else if(assignop == "%="){
-
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                    std::cout << "div $t1, $t0" << std::endl;
+                    std::cout << "mflo $t1" << std::endl;
+                    std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                 }else if(assignop == "<<="){
 
                 }else if(assignop == ">>="){
 
                 }else if(assignop == "^="){
-
-                }else if(assignop == "^="){
-
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                    std::cout << "xor $t1, $t1, $t0" << std::endl;
+                    std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                }else if(assignop == "&="){
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                    std::cout << "and $t1, $t1, $t0" << std::endl;
+                    std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                }else if(assignop == "|="){
+                    getExpr()->CompileRec("$t0");
+                    std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                    std::cout << "or $t1, $t1, $t0" << std::endl;
+                    std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                 }
                 break;
             case DECL:
                 if(getType()=="INT"){
                     if(Expr!=nullptr){
+                        std::cout << "addi $sp, $sp, -4" << std::endl;
                         StackPointer.setIncr(StackPointer.getIncr()+4);
-                        address = std::to_string(StackPointer.getIncr() + 2000);
+                        StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
+                        address = std::to_string(StackPointer.getIncr());
                         if(Symbol.lookUp(id) == "Error: undefined reference"){
                             Symbol.insert(type, "var", id, address);
                         }else{
                             Symbol.modify(type, "var", id, address);
                         }
-                        getExpr()->CompileRec("$t1");
-                        std::cout << "addi $t0, $0, " << address << std::endl;
-                        std::cout << "sw $t1, 0($t0)" << std::endl;
+                        getExpr()->CompileRec("$t0");
+                        std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
                     }
                     if(Symbol.getScope()==0){
                         std::cout << ".global " << getId() << std::endl;

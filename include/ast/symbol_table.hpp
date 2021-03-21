@@ -8,19 +8,27 @@ class StackPtr;
 
 class StackPtr{
     private:
-    int increment;
+    int incr;
+    int scopeincr;
 
     public:
     StackPtr() {
-        std::cout<<"addi $sp, $0, 2000"<<std::endl;
     }
 
     int getIncr() {
-        return increment;
+        return incr;
     }
 
-    void setIncr(int _increment) {
-        increment = _increment;
+    void setIncr(int _incr) {
+        incr = _incr;
+    }
+
+    int getscopeIncr() {
+        return scopeincr;
+    }
+
+    void setscopeIncr(int _scopeincr) {
+        scopeincr = _scopeincr;
     }
 
 };

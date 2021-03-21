@@ -41,6 +41,7 @@ public:
 
     void CompileRec(std::string destReg) const {
         std::cout << name->getId() << ":" << std::endl;
+        std::cout << "move $fp, $sp" << std::endl;
         std::cout << "addiu $sp, $sp, -44" << std::endl;
         std::cout << "sw $s0, 4($sp)" << std::endl;
         std::cout << "sw $s1, 8($sp)" << std::endl;
