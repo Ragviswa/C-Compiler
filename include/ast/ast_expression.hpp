@@ -25,6 +25,9 @@ public:
     virtual void print(std::ostream &dst) const
     {}
 
+    virtual const std::string getDataType() const
+    {}
+
     virtual void CompileRec(std::string destReg) const
     {}
 

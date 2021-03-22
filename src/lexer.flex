@@ -72,7 +72,8 @@ break           { return T_BREAK; }
 case            { return T_CASE; }
 enum            { return T_ENUM; }
 
-[0-9]+([.][0-9]*)?             { yylval.number=strtod(yytext, 0); return T_NUMBER; }
+[0-9]+                         { yylval.number=strtod(yytext, 0); return T_NUMBER_INT; }
+[0-9]+[.]([0-9]+)*             { yylval.number=strtod(yytext, 0); return T_NUMBER_DOUBLE; }
 [a-zA-Z_][a-zA-Z_\d]*          { yylval.string=new std::string(yytext); return T_VARIABLE; }
 
 [ \t\r\n]+		{;}

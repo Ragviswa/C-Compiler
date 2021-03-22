@@ -5,7 +5,7 @@ StackPtr StackPointer;
 
 int main()
 {
-    const Function *ast=parseAST();
+    const Body *ast=parseAST();
     std::cout << ".text" << std::endl;
     ast->CompileRec("$v0");
     std::cout<<std::endl;

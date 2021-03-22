@@ -38,11 +38,11 @@
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
 %token T_INT T_FLOAT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
-%token T_NUMBER T_VARIABLE
+%token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
 %type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND IOR_EXPR XOR_EXPR AND_EXPR EQUALITY RELAT SHIFT ARITH TERM UNARY POST FACTOR
-%type <number> T_NUMBER
+%type <number> T_NUMBER_INT T_NUMBER_DOUBLE
 %type <string> T_INT T_FLOAT T_VARIABLE ASSIGNOP
 %type <T_type> TYPE_DEF
 %type <variable> DECL ARG
@@ -193,7 +193,8 @@ EXPR_LIST           : EXPR                                                  { $$
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
                     | T_FLOAT                                               { $$ = TypeDef::FLOAT; }
 
-FACTOR              : T_NUMBER                                              { $$ = new Number($1); }
+FACTOR              : T_NUMBER_INT                                          { $$ = new Number_INT($1); }
+                    | T_NUMBER_DOUBLE                                       { $$ = new Number_DOUBLE($1); }
                     | T_VARIABLE                                            { $$ = new Variable($1); }
                     | T_VARIABLE T_LBRACKET T_RBRACKET                      { $$ = new FunctionStorage($1); }
                     | T_VARIABLE T_LBRACKET EXPR_LIST T_RBRACKET            { $$ = new FunctionStorage($1, $3); }
@@ -214,9 +215,11 @@ const Body *parseAST(FILE *inputFile)
   return g_root;
 }
 
-/*const Body *parseAST()
+/*
+const Body *parseAST()
 {
   g_root=0;
   yyparse();
   return g_root;
-}*/
+}
+*/

@@ -155,6 +155,11 @@ public:
         }
     }
 
+    virtual const std::string getDataType() const override {
+        type = Symbol.getType(id);
+        return type;
+    }
+
     virtual void CompileRec(std::string destReg) const override{
         switch(VarType) {
             case CALL:
@@ -164,7 +169,7 @@ public:
                     std::cout << "lw " << destReg << ", -" << address << "($fp)" << std::endl;
                 }
                 else if(type == "FLOAT") {
-                    std::cout << "lwc1 " << destReg << ", -" << address << "($fp)" << std::endl;
+                    std::cout << "lwc1 $f" << destReg[2] << ", -" << address << "($fp)" << std::endl;
                 }
                 break;
             case ASSIGN:
@@ -509,40 +514,60 @@ public:
     }  
 };
 
-class Number
+class Number_INT
     : public Expression
 {
 private:
     double value;
 public:
-    Number(double _value)
-        : value(_value)
-    {}
-
+    Number_INT(double _value) {
+        value = _value;
+    }
     double getValue() const
     { return value; }
-
     virtual void print(std::ostream &dst) const override
-    {
-        dst<<value;
-    }
-
+    { dst<<value; }
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override
     {
         return value;
     }
+    virtual const std::string getDataType() const override {
+        return "INT";
+    }
+    virtual void CompileRec(std::string destReg) const override {
+        std::cout << "addi " << destReg << ", $0, " << value << std::endl;
+    }
+};
 
-    virtual void CompileRec(std::string destReg) const override{
-        if(value == (int) value) {
-            std::cout << "addi " << destReg << ", $0, " << value << std::endl;
-        }
-        else {
-            std::cout << "addi.s " << destReg << ", $0, " << value << std::endl;
-        }
-    }  
-
+class Number_DOUBLE
+    : public Expression
+{
+private:
+    double value;
+public: 
+    Number_DOUBLE(double _value) {
+        value = _value;
+    }
+    double getValue() const
+    { return value; }
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<value;
+    }
+    virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        return value;
+    }
+    virtual const std::string getDataType() const override {
+        return "FLOAT";
+    }
+    virtual void CompileRec(std::string destReg) const override {
+        std::cout << "li.s " << destReg << ", " << value << std::endl;
+    }
 };
 
 #endif

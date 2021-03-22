@@ -42,6 +42,7 @@ public:
     void CompileRec(std::string destReg) const {
         std::cout << name->getId() << ":" << std::endl;
         name->CompileRec(destReg);
+        std::string functionType = getType();
         if(statements!=nullptr){
             std::cout << "move $fp, $sp" << std::endl;
             std::cout << "addiu $sp, $sp, -44" << std::endl;
@@ -62,12 +63,29 @@ public:
                 StackPointer.setcurrentscope(StackPointer.getcurrentscope()+1);
                 StackPointer.setscopeIncr(0);
                 args->CompileRec(destReg);
-                statements->CompileRec(destReg);
+                if(functionType == "INT") {
+                    statements->CompileRec(destReg);
+                }
+                else if(functionType == "FLOAT") {
+                    statements->CompileRec("$f0");
+                }
+                else {
+                    std::cout << "ERROR: function datatype missing" << std::endl;
+                }
                 std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr() << std::endl;
                 StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
                 Symbol.endScope();
             }else{
-                statements->CompileRec(destReg);
+                std::string functionType = getType();
+                if(functionType == "INT") {
+                    statements->CompileRec(destReg);
+                }
+                else if(functionType == "FLOAT") {
+                    statements->CompileRec("$f0");
+                }
+                else {
+                    std::cout << "ERROR: function datatype missing" << std::endl;
+                }
             }
 
             StackPointer.setIncr(StackPointer.getIncr()-44);
