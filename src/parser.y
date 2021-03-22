@@ -126,6 +126,8 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
                     | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET ASSIGNOP EXPR { $$ = new Array($1, $3, $5, $6); }
+                    | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET T_INCR        { $$ = new Array($1, $3, new std::string("++"), nullptr); }
+                    | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET T_DECR        { $$ = new Array($1, $3, new std::string("--"), nullptr); }
                     | T_VARIABLE T_INCR                                     { $$ = new Variable($1, new std::string("++"), nullptr); }
                     | T_VARIABLE T_DECR                                     { $$ = new Variable($1, new std::string("--"), nullptr); }
 
@@ -209,6 +211,7 @@ FACTOR              : T_NUMBER_INT                                          { $$
 // Currently Compound Statement is incorrectly parsing as it requires the order to be a declaration list then a statement list,
 // but based on our understanding, it should be able to do it in any order
 const Body *g_root; // Definition of variable (to match declaration earlier)
+
 
 const Body *parseAST(FILE *inputFile)
 {
