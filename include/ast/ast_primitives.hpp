@@ -288,6 +288,42 @@ public:
                         std::cout << "or $t1, $t1, $t0" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
+                }else if(assignop == "++") {
+                    if(type == "INT") {
+                        std::cout << "lw $t0, -" << address << "($fp)" << std::endl;
+                        std::cout << "addi $t0, $t0, 1" << std::endl;
+                        std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
+                    }
+                    else if(type == "FLOAT") {
+                        std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
+                        std::cout << "addi.s $f0, $f0, 1" << std::endl;
+                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                    }
+                    else if(type == "DOUBLE") {
+                        std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
+                        std::cout << "lwc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
+                        std::cout << "addi.d $f0, $f0, 1" << std::endl;
+                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                        std::cout << "swc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
+                    }
+                }else if(assignop == "--") {
+                    if(type == "INT") {
+                        std::cout << "lw $t0, -" << address << "($fp)" << std::endl;
+                        std::cout << "subi $t0, $t0, 1" << std::endl;
+                        std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
+                    }
+                    else if(type == "FLOAT") {
+                        std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
+                        std::cout << "subi.s $f0, $f0, 1" << std::endl;
+                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                    }
+                    else if(type == "DOUBLE") {
+                        std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
+                        std::cout << "lwc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
+                        std::cout << "subi.d $f0, $f0, 1" << std::endl;
+                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                        std::cout << "swc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
+                    }
                 }
                 break;
             case DECL:
@@ -446,6 +482,233 @@ public:
     {
         return bindings.at(id);
     }    
+};
+
+class Array
+    : public Variable
+{
+private:
+    mutable std::string type;
+    std::string id;
+    mutable std::string address;
+    double length;
+    ExpressionPtr index;
+    std::string assignop;
+    DeclType VarType;
+    ExpressionPtr Expr = nullptr;
+public:
+//This constructor does not feel right, it's a placeholder.
+    Array() {}
+
+    Array(const std::string *_id, ExpressionPtr _index) {
+        VarType = CALL;
+        id = *_id;
+        index = _index;
+    }
+
+    Array(const std::string *_id, ExpressionPtr _index, std::string *_assignop, ExpressionPtr _Expr) {
+        VarType = ASSIGN;
+        id = *_id;
+        assignop = *_assignop;
+        Expr = _Expr;
+        index = _index;
+    }
+
+    Array(TypeDef _type, const std::string *_id, double _length) {
+        VarType = DECL;
+        id = *_id;
+        length = _length;
+        switch(_type) {
+            case INT:
+                type = "INT";
+                break;
+            case FLOAT:
+                type = "FLOAT";
+                break;
+            case DOUBLE:
+                type = "DOUBLE";
+                break;
+            default:
+                type = "something went wrong";
+        }
+    }
+
+    Array(TypeDef _type, const std::string *_id) {
+        VarType = ARG;
+        id = *_id;
+        switch(_type) {
+            case INT:
+                type = "INT";
+                break;
+            case FLOAT:
+                type = "FLOAT";
+                break;
+            case DOUBLE:
+                type = "DOUBLE";
+                break;
+            default:
+                type = "something went wrong";
+        }
+    }
+
+    const std::string getType() const
+    { return type; }
+
+    const std::string getId() const
+    { return id; }
+
+    const std::string getAddr() const { // returns address of the first element
+        return address;
+    }
+
+    ExpressionPtr getExpr() const { // returns expr for given index
+        return Expr;
+    }
+
+    ExpressionPtr getIndex() const { // returns given index
+        return index;
+    }
+
+    double getLength() const { // returns length of the array
+        return length;
+    }
+
+    virtual const std::string getDataType() const override {
+        type = Symbol.getType(id);
+        return type;
+    }
+
+    virtual void CompileRec(std::string destReg) const override {
+        switch(VarType) {
+            case CALL:
+                address = Symbol.lookUp(id);
+                type = Symbol.getType(id);
+                getIndex()->CompileRec("$t0");
+                if(type == "INT") {
+                    std::cout << "sll $t0, $t0, 2" << std::endl; // x2
+                    std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
+                    std::cout << "subu $t1, $t1, $t0" << std::endl;
+                    std::cout << "lw " << destReg << ", 0($t1)" << std::endl;
+                }
+                else if(type == "FLOAT") {
+                    std::cout << "sll $t0, $t0, 2" << std::endl; // x2
+                    std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
+                    std::cout << "subu $t1, $t1, $t0" << std::endl;
+                    std::cout << "lwc1 " << destReg << ", 0($t1)" << std::endl;
+                }
+                else if(type == "DOUBLE") {
+                    std::cout << "sll $t0, $t0, 3" << std::endl; // x3
+                    std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
+                    std::cout << "subu $t1, $t1, $t0" << std::endl;
+                    std::cout << "lwc1 " << destReg << ", 0($t1)" << std::endl;
+                    std::cout << "lwc1 " << destReg[0] << destReg[1] << (int)destReg[2]-48+1 << ", -4($t1)" << std::endl;
+                }
+                break;
+            case ASSIGN:
+                address = Symbol.lookUp(id);
+                type = Symbol.getType(id);
+                if(assignop == "=") {
+                    if(type == "INT") {
+                        getIndex()->CompileRec("$t0");
+                        std::cout << "sll $t0, $t0, 2" << std::endl; // x2
+                        std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
+                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addi $sp, $sp, -4" << std::endl;
+                        std::cout << "sw $t1, 0($sp)" << std::endl;
+                        getExpr()->CompileRec("$t0");
+                        std::cout << "lw $t1, 0($sp)" << std::endl;
+                        std::cout << "addi $sp, $sp, 4" << std::endl;
+                        std::cout << "sw $t0, 0($t1)" << std::endl;
+                    }
+                    if(type == "FLOAT") {
+                        getIndex()->CompileRec("$t0");
+                        std::cout << "sll $t0, $t0, 2" << std::endl; // x2
+                        std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
+                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addi $sp, $sp, -4" << std::endl;
+                        std::cout << "sw $t1, 0($sp)" << std::endl;
+                        getExpr()->CompileRec("$f0");
+                        std::cout << "lw $t1, 0($sp)" << std::endl;
+                        std::cout << "addi $sp, $sp, 4" << std::endl;
+                        std::cout << "swc1 $f0, 0($t1)" << std::endl;
+                    }
+                    if(type == "DOUBLE") {
+                        getIndex()->CompileRec("$t0");
+                        std::cout << "sll $t0, $t0, 3" << std::endl; // x3
+                        std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
+                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addi $sp, $sp, -4" << std::endl;
+                        std::cout << "sw $t1, 0($sp)" << std::endl;
+                        getExpr()->CompileRec("$f0");
+                        std::cout << "lw $t1, 0($sp)" << std::endl;
+                        std::cout << "addi $sp, $sp, 4" << std::endl;
+                        std::cout << "swc1 $f0, 0($t1)" << std::endl;
+                        std::cout << "swc1 $f1, -4($t1)" << std::endl;
+                    }
+                }
+                else if(assignop == "+=") {
+
+                }
+                else if(assignop == "-=") {
+
+                }
+                else if(assignop == "/=") {
+
+                }
+                else if(assignop == "*=") {
+
+                }
+                else if(assignop == "%=") {
+
+                }
+                else if(assignop == "<<=") {
+
+                }
+                else if(assignop == ">>=") {
+
+                }
+                else if(assignop == "^=") {
+
+                }
+                else if(assignop == "&=") {
+
+                }
+                else if(assignop == "|=") {
+
+                }
+                break;
+            case DECL:
+                if(getType()== "INT" || getType() == "FLOAT") {
+                    std::cout << "addi $sp, $sp, -" << 4*getLength() << std::endl;
+                    address = std::to_string(StackPointer.getIncr()+4);
+                    StackPointer.setIncr(StackPointer.getIncr()+4*getLength());
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4*getLength());
+                    if(Symbol.lookUp(id) == "Error: undefined reference") {
+                        Symbol.insert(type, "array", id, address);
+                    }else {
+                        Symbol.modify(type, "array", id, address);
+                    }
+                    if(Symbol.getScope() == 0) {
+                        std::cout << ".global " << getId() << std::endl;
+                    }
+                }
+                else if(getType() == "DOUBLE") {
+                    std::cout << "addi $sp, $sp, -" << 8*getLength() << std::endl;
+                    address = std::to_string(StackPointer.getIncr()+4);
+                    StackPointer.setIncr(StackPointer.getIncr()+8*getLength());
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+8*getLength());
+                    if(Symbol.lookUp(id) == "ERROR: undefined reference") {
+                        Symbol.insert(type, "array", id, address);
+                    }else {
+                        Symbol.modify(type, "array", id, address);
+                    }
+                    if(Symbol.getScope() == 0) {
+                        std::cout << ".global " << getId() << std::endl;
+                    }
+                }
+                break;
+        }
+    }
 };
 
 class FunctionStorage

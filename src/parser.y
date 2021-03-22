@@ -23,6 +23,7 @@
   const DeclarationList *decllist;
   const ExpressionList *arglist;
   Variable *variable;
+  Array *array;
   double number;
   std::string *string;
   TypeDef T_type;
@@ -72,6 +73,7 @@ ARG_LIST            : ARG                                                   { $$
                     | ARG T_COMMA ARG_LIST                                  { $$ = new DeclarationList($1, $3); }
 
 ARG                 : TYPE_DEF T_VARIABLE                                   { $$ = new Variable($1, $2, DeclType::ARG); }
+                    | TYPE_DEF T_LSBRACKET T_RSBRACKET T_VARIABLE           { $$ = new Array($1, $4); }
 
 COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$ = new CompoundStatement(); }
                     | T_LBRACE BLOCK_ITEM_LIST T_RBRACE                     { $$ = new CompoundStatement($2); }
@@ -118,11 +120,14 @@ ENUM                : T_VARIABLE                                            {}
 
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
-                    | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET                           {}
+                    | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET T_ASSIGN EXPR T_SEMICOLON {}
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
+                    | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET ASSIGNOP EXPR { $$ = new Array($1, $3, $5, $6); }
+                    | T_VARIABLE T_INCR                                     { $$ = new Variable($1, new std::string("++"), nullptr); }
+                    | T_VARIABLE T_DECR                                     { $$ = new Variable($1, new std::string("--"), nullptr); }
 
 ASSIGNOP            : T_ASSIGN                                              { $$ = new std::string("="); }
                     | T_ADDASSIGN                                           { $$ = new std::string("+="); }
@@ -183,9 +188,6 @@ UNARY               : FACTOR                                                { $$
                     | T_NOT POST                                            { $$ = new NotLogic($2); }
 
 POST                : FACTOR                                                { $$ = $1; }
-                    | POST T_LSBRACKET EXPR T_RSBRACKET                     {}
-                    | POST T_INCR                                           {}
-                    | POST T_DECR                                           {}
 
 EXPR_LIST           : EXPR                                                  { $$ = new ExpressionList($1); }
                     | EXPR T_COMMA EXPR_LIST                                { $$ = new ExpressionList($1, $3); }
@@ -200,13 +202,13 @@ FACTOR              : T_NUMBER_INT                                          { $$
                     | T_VARIABLE T_LBRACKET T_RBRACKET                      { $$ = new FunctionStorage($1); }
                     | T_VARIABLE T_LBRACKET EXPR_LIST T_RBRACKET            { $$ = new FunctionStorage($1, $3); }
                     | T_LBRACKET EXPR T_RBRACKET                            { $$ = $2; }
+                    | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET               { $$ = new Array($1, $3); }
 
 %%
 // Keep in mind Variable is creating a new Variable instead of pointing to an old declaration
 // Currently Compound Statement is incorrectly parsing as it requires the order to be a declaration list then a statement list,
 // but based on our understanding, it should be able to do it in any order
 const Body *g_root; // Definition of variable (to match declaration earlier)
-
 
 const Body *parseAST(FILE *inputFile)
 {
