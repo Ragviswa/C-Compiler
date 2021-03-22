@@ -12,6 +12,7 @@ class StackPtr{
     int argc;
     int scopeincr[50];
     int current_scope = 0;
+    int nullfunc = 0;
     public:
     StackPtr() {
     }
@@ -48,6 +49,13 @@ class StackPtr{
         argc = _argc;
     }
 
+    int getNullfunc() {
+        return nullfunc;
+    }
+
+    void setNullfunc(int _nullfunc) {
+        nullfunc = _nullfunc;
+    }
 };
 
 class Node {

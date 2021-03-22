@@ -40,10 +40,14 @@ public:
     { return args; }
 
     void CompileRec(std::string destReg) const {
-        std::cout << name->getId() << ":" << std::endl;
-        name->CompileRec(destReg);
+        if(statements!=nullptr){
+            name->CompileRec(destReg);
+        }else{
+            name->CompileRec("$0");
+        }
         std::string functionType = getType();
         if(statements!=nullptr){
+            std::cout << name->getId() << ":" << std::endl;
             std::cout << "move $fp, $sp" << std::endl;
             std::cout << "addiu $sp, $sp, -44" << std::endl;
             std::cout << "sw $s0, 4($sp)" << std::endl;
@@ -93,7 +97,6 @@ public:
                     std::cout << "ERROR: function datatype missing" << std::endl;
                 }
             }
-
             StackPointer.setIncr(StackPointer.getIncr()-44);
             std::cout << "lw $s0, 4($sp)" << std::endl;
             std::cout << "lw $s1, 8($sp)" << std::endl;
@@ -107,19 +110,9 @@ public:
             std::cout << "lw $ra, 40($sp)" << std::endl;
             std::cout << "move $sp, $fp" << std::endl;
             std::cout << "jr $ra" << std::endl;
-        }else{
-            if(args!=nullptr){
-                Symbol.newScope();
-                StackPointer.setcurrentscope(StackPointer.getcurrentscope()+1);
-                StackPointer.setscopeIncr(0);
-                args->CompileRec(destReg);
-                std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr() << std::endl;
-                StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
-                Symbol.endScope();
-            }
-        }
-        if(Symbol.getScope()==0){
+            if(Symbol.getScope()==0){
             std::cout << ".global " << name->getId() << std::endl;
+            }
         }
     }
 

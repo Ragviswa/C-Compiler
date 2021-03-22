@@ -355,7 +355,11 @@ public:
             getExp()->CompileRec("$f0");
         }else{
             getExp()->CompileRec("$t0");
-            std::cout << "add $v0, $0, $t0" << std::endl;
+            if(StackPointer.getNullfunc()==1){
+                StackPointer.setNullfunc(0);
+            }else{
+                std::cout << "add $v0, $0, $t0" << std::endl;
+            }
         }
     }
 };
