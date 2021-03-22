@@ -438,7 +438,7 @@ public:
     virtual void CompileRec(std::string destReg) const override{
         switch(VarType) {
             case CALL:
-                address = std::to_string(stoi(Symbol.lookUp(id))+44);
+                address = std::to_string(std::stoi(Symbol.lookUp(id))+44);
                 if(Args!=nullptr){
                     Args->CompileRec(destReg, address);
                 }
@@ -451,9 +451,6 @@ public:
                         Symbol.insert(type, "func", id, address);
                     }else{
                         Symbol.modify(type, "func", id, address);
-                    }
-                    if(Symbol.getScope()==0){
-                        std::cout << ".global " << getId() << std::endl;
                     }
                 }
                 break;

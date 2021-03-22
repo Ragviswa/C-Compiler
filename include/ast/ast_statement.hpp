@@ -353,8 +353,7 @@ public:
     virtual void CompileRec(std::string destReg) const override{
         if(destReg[1] == 'f') {
             getExp()->CompileRec("$f0");
-        }
-        else {
+        }else{
             getExp()->CompileRec("$t0");
             std::cout << "add $v0, $0, $t0" << std::endl;
         }
