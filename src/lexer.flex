@@ -61,6 +61,7 @@ extern "C" int fileno(FILE *stream);
 
 int             { return T_INT; }
 float           { return T_FLOAT; }
+double          { return T_DOUBLE; }
 return          { return T_RETURN; }
 while           { return T_WHILE; }
 if              { return T_IF; }

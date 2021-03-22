@@ -37,7 +37,7 @@
 %token T_ASSIGN T_ADDASSIGN T_SUBASSIGN T_DIVASSIGN T_MULASSIGN T_MODASSIGN T_LEFASSIGN T_RIGASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
-%token T_INT T_FLOAT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
+%token T_INT T_FLOAT T_DOUBLE T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
 %token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
@@ -192,6 +192,7 @@ EXPR_LIST           : EXPR                                                  { $$
 
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
                     | T_FLOAT                                               { $$ = TypeDef::FLOAT; }
+                    | T_DOUBLE                                              { $$ = TypeDef::DOUBLE; }
 
 FACTOR              : T_NUMBER_INT                                          { $$ = new Number_INT($1); }
                     | T_NUMBER_DOUBLE                                       { $$ = new Number_DOUBLE($1); }

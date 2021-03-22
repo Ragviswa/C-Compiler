@@ -69,6 +69,9 @@ public:
                 else if(functionType == "FLOAT") {
                     statements->CompileRec("$f0");
                 }
+                else if(functionType == "DOUBLE") {
+                    statements->CompileRec("$f0");
+                }
                 else {
                     std::cout << "ERROR: function datatype missing" << std::endl;
                 }
@@ -81,6 +84,9 @@ public:
                     statements->CompileRec(destReg);
                 }
                 else if(functionType == "FLOAT") {
+                    statements->CompileRec("$f0");
+                }
+                else if(functionType == "DOUBLE") {
                     statements->CompileRec("$f0");
                 }
                 else {
