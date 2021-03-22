@@ -66,11 +66,20 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
-        getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
-        std::cout << "add " << destReg << ", $t0, $t1" << std::endl;
+        if(destReg[1] == 'f') {
+            getLeft()->CompileRec("$f0");
+            std::cout << "swc1 $f0, -4($sp)" << std::endl;
+            getRight()->CompileRec("$f1");
+            std::cout << "lwc1 $f0, -4($sp)" << std::endl;
+            std::cout << "add.s " << destReg << ", $f0, $f1" << std::endl;
+        }
+        else {
+            getLeft()->CompileRec("$t0");
+            std::cout << "sw $t0, -4($sp)" << std::endl;
+            getRight()->CompileRec("$t1");
+            std::cout << "lw $t0, -4($sp)" << std::endl;
+            std::cout << "add " << destReg << ", $t0, $t1" << std::endl;
+        }
     }
     
 };

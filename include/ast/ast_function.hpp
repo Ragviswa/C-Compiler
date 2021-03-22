@@ -31,6 +31,11 @@ public:
         return name->getId();
     }
 
+    const std::string getType() const
+    {
+        return name->getType();
+    }
+
     DeclarationListPtr getArgs() const
     { return args; }
 

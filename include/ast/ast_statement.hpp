@@ -273,6 +273,9 @@ public:
         else if(initVar == nullptr && initExpr != nullptr) { // i = 0;
             initExpr->CompileRec("$t0");
         }
+        else {
+            std::cout << "ERROR: no initial value in for loop" << std::endl;
+        }
         std::string unique_loop = makeName("loop");
         std::cout << unique_loop << ":" << std::endl;
         std::string unique_exit = makeName("exit");
@@ -348,8 +351,13 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        getExp()->CompileRec("$t0");
-        std::cout << "add $v0, $0, $t0" << std::endl;
+        if(destReg[1] == 'f') {
+            getExp()->CompileRec("$f0");
+        }
+        else {
+            getExp()->CompileRec("$t0");
+            std::cout << "add $v0, $0, $t0" << std::endl;
+        }
     }
 };
 

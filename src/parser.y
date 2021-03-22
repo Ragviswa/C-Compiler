@@ -36,13 +36,13 @@
 %token T_ASSIGN T_ADDASSIGN T_SUBASSIGN T_DIVASSIGN T_MULASSIGN T_MODASSIGN T_LEFASSIGN T_RIGASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
-%token T_INT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
+%token T_INT T_FLOAT T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
 %token T_NUMBER T_VARIABLE
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
 %type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND IOR_EXPR XOR_EXPR AND_EXPR EQUALITY RELAT SHIFT ARITH TERM UNARY POST FACTOR
 %type <number> T_NUMBER
-%type <string> T_INT T_VARIABLE ASSIGNOP
+%type <string> T_INT T_FLOAT T_VARIABLE ASSIGNOP
 %type <T_type> TYPE_DEF
 %type <variable> DECL ARG
 %type <blocklist> BLOCK_ITEM_LIST
@@ -185,6 +185,7 @@ EXPR_LIST           : EXPR                                                  { $$
                     | EXPR T_COMMA EXPR_LIST                                { $$ = new ExpressionList($1, $3); }
 
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
+                    | T_FLOAT                                               { $$ = TypeDef::FLOAT; }
 
 FACTOR              : T_NUMBER                                              { $$ = new Number($1); }
                     | T_VARIABLE                                            { $$ = new Variable($1); }

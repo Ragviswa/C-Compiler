@@ -185,6 +185,22 @@ public:
         return "Error: undefined reference";
     }
 
+    std::string getType(std::string name) { // returns address
+        Node *start = head[current_scope];
+        if(start == nullptr) {
+            return "Error: undefined reference";
+        }
+        while(start != nullptr) {
+            if(start->getName() == name) {
+                return start->getType();
+            }
+            else {
+                start = start->getNext();
+            }
+        }
+        return "Error: undefined reference";
+    }
+
     bool newScope() {
         current_scope = current_scope + 1;
         assert(head[current_scope] == nullptr); // new scope must be empty
