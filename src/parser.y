@@ -3,7 +3,7 @@
 
   #include <cassert>
 
-  extern const Function *g_root; // A way of getting the AST out
+  extern const Body *g_root; // A way of getting the AST out
   extern FILE* yyin;
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
@@ -15,7 +15,8 @@
 // Represents the value associated with any kind of
 // AST node.
 %union{
-  const Function *function;
+  Body *body;
+  Function *function;
   const Statement *stat;
   const Expression *expr;
   const BlockList *blocklist;
@@ -49,13 +50,18 @@
 %type <decllist> ARG_LIST
 %type <arglist> EXPR_LIST
 %type <function> FUNCTION
+%type <body> BODY
 
-%start PROGRAM
+%start BODY
 
 %%
 
-PROGRAM             : FUNCTION                                              { g_root = $1; }
+PROGRAM             : BODY                                              { g_root = $1; }
 
+BODY                : FUNCTION                                          { $$ = new Body($1); }
+                    | BLOCK_ITEM_LIST                                   { $$ = new Body($1); }
+                    | FUNCTION BODY                                     { $$ = new Body($1, $2); }
+                    | BLOCK_ITEM_LIST BODY                              { $$ = new Body($1, $2); }
 
 FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new FunctionStorage($1, $2)), nullptr, $5); }
                     | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new FunctionStorage($1, $2)), $4, $6); }
@@ -197,10 +203,10 @@ FACTOR              : T_NUMBER                                              { $$
 // Keep in mind Variable is creating a new Variable instead of pointing to an old declaration
 // Currently Compound Statement is incorrectly parsing as it requires the order to be a declaration list then a statement list,
 // but based on our understanding, it should be able to do it in any order
-const Function *g_root; // Definition of variable (to match declaration earlier)
+const Body *g_root; // Definition of variable (to match declaration earlier)
 
 
-const Function *parseAST(FILE *inputFile)
+const Body *parseAST(FILE *inputFile)
 {
   g_root=0;
   yyin = inputFile;
@@ -208,7 +214,7 @@ const Function *parseAST(FILE *inputFile)
   return g_root;
 }
 
-/*const Function *parseAST()
+/*const Body *parseAST()
 {
   g_root=0;
   yyparse();

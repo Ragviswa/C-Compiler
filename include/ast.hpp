@@ -9,8 +9,8 @@
 #include "ast/ast_unary.hpp"
 #include "ast/symbol_table.hpp"
 
-extern const Function *parseAST(FILE *fileInput);
-//extern const Function *parseAST();
+extern const Body *parseAST(FILE *fileInput);
+//extern const Body *parseAST();
 extern SymbolTable Symbol;
 extern StackPtr StackPointer;
 
