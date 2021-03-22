@@ -162,7 +162,7 @@ public:
         getRight()->CompileRec("$t1");
         std::cout << "lw $t0, -4($sp)" << std::endl;
         std::cout << "div $t0, $t1" << std::endl;
-        std::cout << "mfhi " << destReg << std::endl;
+        std::cout << "mflo " << destReg << std::endl;
     }
 
     virtual double evaluate(
@@ -192,7 +192,7 @@ public:
         getRight()->CompileRec("$t1");
         std::cout << "lw $t0, -4($sp)" << std::endl;
         std::cout << "div $t0, $t1" << std::endl;
-        std::cout << "mflo " << destReg << std::endl;
+        std::cout << "mfhi " << destReg << std::endl;
     }
 
     virtual double evaluate(

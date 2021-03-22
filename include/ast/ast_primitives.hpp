@@ -214,7 +214,7 @@ public:
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "div $t1, $t0" << std::endl;
-                        std::cout << "mfhi $t1" << std::endl;
+                        std::cout << "mflo $t1" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
                     else if(type == "FLOAT") {
@@ -241,7 +241,7 @@ public:
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "div $t1, $t0" << std::endl;
-                        std::cout << "mflo $t1" << std::endl;
+                        std::cout << "mfhi $t1" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
                 }else if(assignop == "<<="){
