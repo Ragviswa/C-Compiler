@@ -372,20 +372,18 @@ public:
                 else if(getType() == "FLOAT") {
                     std::cout << "addi $sp, $sp, -4" << std::endl;
                     if(StackPointer.getArgc()<4){
-                        int float_argNum;
                         if(StackPointer.getArgc() == 0) {
-                            float_argNum = 12;
+                            std::cout << "swc1 $f12, 0($sp)"<<  std::endl;
                         }
                         else if(StackPointer.getArgc() == 1) {
-                            float_argNum = 14;
+                            std::cout << "swc1 $f14, 0($sp)"<<  std::endl;
                         }
                         else if(StackPointer.getArgc() == 2) {
-                            float_argNum = 16;
+                            std::cout << "sw $6, 0($sp)"<<  std::endl;
                         }
                         else if(StackPointer.getArgc() == 3) {
-                            float_argNum = 18;
+                            std::cout << "sw $7, 0($sp)"<<  std::endl;
                         }
-                        std::cout << "swc1 $f" << float_argNum << ", 0($sp)"<<  std::endl;
                     }
                     StackPointer.setIncr(StackPointer.getIncr()+4);
                     StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);

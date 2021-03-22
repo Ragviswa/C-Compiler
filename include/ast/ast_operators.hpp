@@ -102,9 +102,11 @@ public:
         if(leftType == "INT") {
             if(rightType == "INT") { // int + int
                 getLeft()->CompileRec("$t0");
-                std::cout << "sw $t0, -4($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
                 getRight()->CompileRec("$t1");
-                std::cout << "lw $t0, -4($sp)" << std::endl;
+                std::cout << "lw $t0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
                 if(destReg[1] == 'f') {
                     std::cout << "ERROR: wrong destReg" << std::endl;
                 }
@@ -112,9 +114,11 @@ public:
             }
             else if(rightType == "FLOAT") { // int + float
                 getLeft()->CompileRec("$t0");
-                std::cout << "sw $t0, -4($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
                 getRight()->CompileRec("$f2");
-                std::cout << "lwc1 $f0, -4($sp)" << std::endl;
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
                 if(destReg[1] != 'f') {
                     std::cout << "ERROR: Wrong destReg" << std::endl;
                 }
@@ -122,9 +126,11 @@ public:
             }
             else if(rightType == "DOUBLE") { // int + double
                 getLeft()->CompileRec("$t0");
-                std::cout << "sw $t0, -4($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
                 getRight()->CompileRec("$f2");
-                std::cout << "lwc1 $f0, -4($sp)" << std::endl;
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
                 std::cout << "cvt.d.s $f0, $f0" << std::endl;
                 if(destReg[1] != 'f') {
                     std::cout << "ERROR: Wrong destReg" << std::endl;
@@ -135,9 +141,11 @@ public:
         else if(leftType == "FLOAT") {
             if(rightType == "INT") {
                 getRight()->CompileRec("$t0");
-                std::cout << "sw $t0, -4($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
                 getLeft()->CompileRec("$f0");
-                std::cout << "lwc1 $f2, -4($sp)" << std::endl;
+                std::cout << "lwc1 $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
                 if(destReg[1] != 'f') {
                     std::cout << "ERROR: Wrong destReg" << std::endl;
                 }
@@ -145,9 +153,11 @@ public:
             }
             else if(rightType == "FLOAT") {
                 getLeft()->CompileRec("$f0");
-                std::cout << "swc1 $f0, -4($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
                 getRight()->CompileRec("$f2");
-                std::cout << "lwc1 $f0, -4($sp)" << std::endl;
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
                 if(destReg[1] != 'f') {
                     std::cout << "ERROR: Wrong destReg" << std::endl;
                 }
@@ -155,9 +165,11 @@ public:
             }
             else if(rightType == "DOUBLE") { // float + double
                 getLeft()->CompileRec("$f0");
-                std::cout << "swc1 $f0, -4($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
                 getRight()->CompileRec("$f2");
-                std::cout << "lwc1 $f0, -4($sp)" << std::endl;
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
                 std::cout << "cvt.d.s $f0, $f0" << std::endl;
                 if(destReg[1] != 'f') {
                     std::cout << "ERROR: Wrong destReg" << std::endl;
@@ -168,9 +180,11 @@ public:
         else if(leftType == "DOUBLE") {
             if(rightType == "INT") {
                 getRight()->CompileRec("$t0");
-                std::cout << "sw $t0, -4($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
                 getLeft()->CompileRec("$f0");
-                std::cout << "lwc1 $f2, -4($sp)" << std::endl;
+                std::cout << "lwc1 $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
                 std::cout << "cvt.d.s $f2, $f2" << std::endl;
                 if(destReg[1] != 'f') {
                     std::cout << "ERROR: Wrong destReg" << std::endl;
@@ -179,22 +193,26 @@ public:
             }
             else if(rightType == "FLOAT") { //double + float
                 getRight()->CompileRec("$f2");
-                std::cout << "swc1 $f2, -4($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f2, 0($sp)" << std::endl;
                 getLeft()->CompileRec("$f0");
-                std::cout << "lwc1, $f2, -4($sp)" << std::endl;
+                std::cout << "lwc1, $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
                 std::cout << "cvt.d.s $f2, $f2" << std::endl;
                 if(destReg[1] != 'f') {
                     std::cout << "ERROR: Wrong destReg" << std::endl;
                 }
                 std::cout << "add.d " << destReg << ", $f0, $f2" << std::endl;
             }
-            else if(rightType == "DOUBLE") {
+            else if(rightType == "DOUBLE") { // double + double
                 getLeft()->CompileRec("$f0");
-                std::cout << "swc1 $f1, -4($sp)" << std::endl;
-                std::cout << "swc1 $f0, -8($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, -8" << std::endl;
+                std::cout << "swc1 $f1, 4($sp)" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
                 getRight()->CompileRec("$f2");
-                std::cout << "lwc1 $f1, -4($sp)" << std::endl;
-                std::cout << "lwc1 $f0, -8($sp)" << std::endl;
+                std::cout << "lwc1 $f1, 4($sp)" << std::endl;
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 8" << std::endl;
                 if(destReg[1] != 'f') {
                     std::cout << "ERROR: Wrong destReg" << std::endl;
                 }
@@ -227,11 +245,128 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
-        getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
-        std::cout << "sub " << destReg << ", $t0, $t1" << std::endl;
+        std::string leftType = getLeft()->getDataType();
+        std::string rightType = getRight()->getDataType();
+        if(leftType == "INT") {
+            if(rightType == "INT") { // int - int
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$t1");
+                std::cout << "lw $t0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] == 'f') {
+                    std::cout << "ERROR: wrong destReg" << std::endl;
+                }
+                std::cout << "sub " << destReg << ", $t0, $t1" << std::endl;
+            }
+            else if(rightType == "FLOAT") { // int - float
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "sub.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // int - double
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f0, $f0" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "sub.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+        }
+        else if(leftType == "FLOAT") {
+            if(rightType == "INT") { // float - int
+                getRight()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1 $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "sub.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "FLOAT") { // float - float
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "sub.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // float - double
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f0, $f0" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "sub.d " << destReg << " , $f0, $f2" << std::endl; 
+            }
+        }
+        else if(leftType == "DOUBLE") {
+            if(rightType == "INT") { // double - int
+                getRight()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1 $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f2, $f2" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "sub.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "FLOAT") { //double - float
+                getRight()->CompileRec("$f2");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f2, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1, $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f2, $f2" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "sub.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // double - double
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -8" << std::endl;
+                std::cout << "swc1 $f1, 4($sp)" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f1, 4($sp)" << std::endl;
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 8" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "sub.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+        }
     }
 };
 
@@ -257,11 +392,128 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
-        getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
-        std::cout << "mul " << destReg << ", $t0, $t1" << std::endl;
+        std::string leftType = getLeft()->getDataType();
+        std::string rightType = getRight()->getDataType();
+        if(leftType == "INT") {
+            if(rightType == "INT") { // int * int
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$t1");
+                std::cout << "lw $t0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] == 'f') {
+                    std::cout << "ERROR: wrong destReg" << std::endl;
+                }
+                std::cout << "mul " << destReg << ", $t0, $t1" << std::endl;
+            }
+            else if(rightType == "FLOAT") { // int * float
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "mul.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // int * double
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f0, $f0" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "mul.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+        }
+        else if(leftType == "FLOAT") {
+            if(rightType == "INT") { // float * int
+                getRight()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1 $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "mul.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "FLOAT") { // float * float
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "mul.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // float * double
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f0, $f0" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "mul.d " << destReg << " , $f0, $f2" << std::endl; 
+            }
+        }
+        else if(leftType == "DOUBLE") {
+            if(rightType == "INT") { // double * int
+                getRight()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1 $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f2, $f2" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "mul.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "FLOAT") { //double * float
+                getRight()->CompileRec("$f2");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f2, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1, $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f2, $f2" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "mul.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // double * double
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -8" << std::endl;
+                std::cout << "swc1 $f1, 4($sp)" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f1, 4($sp)" << std::endl;
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 8" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "mul.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+        }
     }
 };
 
@@ -278,12 +530,129 @@ public:
     {}
 
     virtual void CompileRec(std::string destReg) const override {
-        getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
-        getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
-        std::cout << "div $t0, $t1" << std::endl;
-        std::cout << "mflo " << destReg << std::endl;
+        std::string leftType = getLeft()->getDataType();
+        std::string rightType = getRight()->getDataType();
+        if(leftType == "INT") {
+            if(rightType == "INT") { // int / int
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$t1");
+                std::cout << "lw $t0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "div $t0, $t1" << std::endl;
+                if(destReg[1] == 'f') {
+                    std::cout << "ERROR: wrong destReg" << std::endl;
+                }
+                std::cout << "mflo " << destReg << std::endl;
+            }
+            else if(rightType == "FLOAT") { // int / float
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "div.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // int / double
+                getLeft()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f0, $f0" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "div.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+        }
+        else if(leftType == "FLOAT") {
+            if(rightType == "INT") { // float / int
+                getRight()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1 $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "div.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "FLOAT") { // float / float
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "div.s " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // float / double
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f0, $f0" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "div.d " << destReg << " , $f0, $f2" << std::endl; 
+            }
+        }
+        else if(leftType == "DOUBLE") {
+            if(rightType == "INT") { // double / int
+                getRight()->CompileRec("$t0");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1 $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f2, $f2" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "div.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "FLOAT") { //double / float
+                getRight()->CompileRec("$f2");
+                std::cout << "addi $sp, $sp, -4" << std::endl;
+                std::cout << "swc1 $f2, 0($sp)" << std::endl;
+                getLeft()->CompileRec("$f0");
+                std::cout << "lwc1, $f2, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 4" << std::endl;
+                std::cout << "cvt.d.s $f2, $f2" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "div.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+            else if(rightType == "DOUBLE") { // double / double
+                getLeft()->CompileRec("$f0");
+                std::cout << "addi $sp, $sp, -8" << std::endl;
+                std::cout << "swc1 $f1, 4($sp)" << std::endl;
+                std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                getRight()->CompileRec("$f2");
+                std::cout << "lwc1 $f1, 4($sp)" << std::endl;
+                std::cout << "lwc1 $f0, 0($sp)" << std::endl;
+                std::cout << "addi $sp, $sp, 8" << std::endl;
+                if(destReg[1] != 'f') {
+                    std::cout << "ERROR: Wrong destReg" << std::endl;
+                }
+                std::cout << "div.d " << destReg << ", $f0, $f2" << std::endl;
+            }
+        }
     }
 
     virtual double evaluate(
