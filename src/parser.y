@@ -52,7 +52,7 @@
 %type <function> FUNCTION
 %type <body> BODY
 
-%start BODY
+%start PROGRAM
 
 %%
 
