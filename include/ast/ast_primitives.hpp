@@ -516,21 +516,24 @@ public:
     virtual void CompileRec(std::string destReg) const override{
         switch(VarType) {
             case CALL:
-                if(Symbol.lookUp(id)=="null"){
-                    address = "null";
+                if(Symbol.lookUp(id)[0]=='n'){
+                    address = std::to_string(std::stoi(Symbol.lookUp(id).substr(1, Symbol.lookUp(id).length()-1))+44);
                     StackPointer.setNullfunc(1);
+                    if(Args!=nullptr){
+                        Args->CompileRec(destReg, address);
+                    }
                     std::cout << "jal " << id << std::endl;
                 }else{
                     address = std::to_string(std::stoi(Symbol.lookUp(id))+44);
-                if(Args!=nullptr){
-                    Args->CompileRec(destReg, address);
-                }
+                    if(Args!=nullptr){
+                        Args->CompileRec(destReg, address);
+                    }
                 std::cout << "jal " << id << std::endl;
                 }
                 break;
             case DECL:
                 if(destReg=="$0"){
-                    address = "null";
+                    address = "n" + std::to_string(StackPointer.getIncr());
                     if(Symbol.lookUp(id) == "Error: undefined reference"){
                         Symbol.insert(type, "func", id, address);
                     }else{
