@@ -70,7 +70,7 @@ public:
                 getArg()->CompileRec("$a" + std::to_string(StackPointer.getArgc()));
             }else{
                 getArg()->CompileRec("$t0");
-                std::cout << "sw $t0, " << std::to_string(stoi(address)+(StackPointer.getArgc()+1)*4) <<"($sp)"<< std::endl;
+                std::cout << "sw $t0, -" << std::to_string(44+(StackPointer.getArgc()+1)*4) <<"($sp)"<< std::endl;
             }
             StackPointer.setArgc(StackPointer.getArgc()+1);
         }
