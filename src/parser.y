@@ -38,7 +38,7 @@
 %token T_ASSIGN T_ADDASSIGN T_SUBASSIGN T_DIVASSIGN T_MULASSIGN T_MODASSIGN T_LEFASSIGN T_RIGASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
-%token T_INT T_FLOAT T_DOUBLE T_CHAR T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
+%token T_INT T_FLOAT T_DOUBLE T_CHAR T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_DEFAULT T_ENUM
 %token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE
 %token T_SIZEOF
 
@@ -91,7 +91,8 @@ STAT                : COMPOUND_STAT                                         { $$
                     | JUMP_STAT                                             { $$ = $1; }
                     | LABL_STAT                                             { $$ = $1; }
 
-LABL_STAT           : T_CASE CONDITIONAL T_COLON STAT                       { $$ = new LabelStatement($2, $4); }
+LABL_STAT           : T_CASE CONDITIONAL T_COLON STAT                       { $$ = new LabelStatement($4, $2); }
+                    | T_DEFAULT T_COLON STAT                                { $$ = new LabelStatement($4); }
 
 JUMP_STAT           : T_CONTINUE T_SEMICOLON                                { $$ = new ContinueStatement(); }
                     | T_BREAK T_SEMICOLON                                   { $$ = new BreakStatement(); }

@@ -169,7 +169,11 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        //needs implementation
+        getCond()->CompileRec("$t0");
+        std::string exit = makeName("exit");
+        std::cout << "beq $t0, $0, " << exit << std::endl;
+        getStat()->CompileRec(destReg);
+        std::cout << exit << ":" << std::endl;
     }
 };
 
@@ -418,7 +422,7 @@ private:
     ExpressionPtr expression = nullptr;
     StatementPtr statement = nullptr;
 public:
-    LabelStatement(ExpressionPtr _expression = nullptr, StatementPtr _statement = nullptr)
+    LabelStatement(StatementPtr _statement, ExpressionPtr _expression = nullptr) 
         : expression(_expression)
         , statement(_statement)
     {}
