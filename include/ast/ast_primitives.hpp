@@ -1261,7 +1261,20 @@ public:
                     if(Args!=nullptr){
                         Args->CompileRec(destReg, address);
                     }
-                std::cout << "jal " << id << std::endl;
+                    std::cout << "jal " << id << std::endl;
+                    if(getDataType() == "INT") {
+                        std::cout << "add " << destReg << ", $v0, $0" << std::endl;
+                    }
+                    else if(getDataType() == "FLOAT") {
+                        std::cout << "addi.s " << destReg << ", $f0, 0" << std::endl;
+                    }
+                    else if(getDataType() == "DOUBLE") {
+                        std::cout << "addi.d " << destReg << ", $f0, 0" << std::endl;
+                    }
+                    else if(getDataType() == "CHAR") {
+                        std::cout << "add " << destReg << ", $v0, $0" << std::endl;
+                        std::cout << "andi " << destReg << ", " << destReg << ", 0x00ff" << std::endl;
+                    }
                 }
                 break;
             case DECL:
