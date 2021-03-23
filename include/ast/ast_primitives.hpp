@@ -1220,6 +1220,10 @@ public:
     const std::string getType() const
     { return type; }
 
+    virtual const std::string getDataType() const override {
+        return Symbol.getType(id);
+    }
+
     const std::string getId() const
     { return id; }
 

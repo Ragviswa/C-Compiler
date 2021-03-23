@@ -678,9 +678,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::cout << "div $t0, $t1" << std::endl;
         std::cout << "mfhi " << destReg << std::endl;
     }
@@ -709,9 +711,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::cout << "slt " << destReg << ", $t1, $t0" << std::endl;
     }
 
@@ -738,9 +742,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::string set_one = makeName("set_one");
         std::cout << "beq $t0, $t1, " << set_one << std::endl;
         std::cout << "slt " << destReg << ", $t1, $t0" << std::endl;
@@ -774,9 +780,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::cout << "slt " << destReg << ", $t0, $t1" << std::endl;
     }
 
@@ -803,9 +811,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::string set_one = makeName("set_one");
         std::cout << "beq $t0, $t1, " << set_one << std::endl;
         std::cout << "slt " << destReg << ", $t0, $t1" << std::endl;
@@ -839,9 +849,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::string set_one = makeName("set_one");
         std::cout << "beq $t0, $t1, " << set_one << std::endl;
         std::cout << "add " << destReg << ", $0, $0" << std::endl;
@@ -875,9 +887,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::string set_one = makeName("set_one");
         std::cout << "bne $t0, $t1, " << set_one << std::endl;
         std::cout << "add " << destReg << ", $0, $0" << std::endl;
@@ -922,9 +936,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::cout << "and " << destReg << ", $t0, $t1" << std::endl;
     }
     
@@ -953,9 +969,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::cout << "or " << destReg << ", $t0, $t1" << std::endl;
     }
 };
@@ -983,9 +1001,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::cout << "xor " << destReg << ", $t0, $t1" << std::endl;
     }
 };
@@ -1004,9 +1024,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::string set_zero = makeName("set_zero");
         std::cout << "beq $t0, $0, " << set_zero << std::endl;
         std::cout << "beq $t1, $0, " << set_zero << std::endl;
@@ -1041,9 +1063,11 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
         getRight()->CompileRec("$t1");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
         std::string set_one = makeName("set_one");
         std::cout << "bne $t0, $0, " << set_one << std::endl;
         std::cout << "bne $t1, $0, " << set_one << std::endl;
@@ -1106,12 +1130,14 @@ public:
 
     virtual void CompileRec(std::string destReg) const override {
         getcond()->CompileRec("$t0");
-        std::cout << "sw $t0, -4($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, -8" << std::endl;
+        std::cout << "sw $t0, 4($sp)" << std::endl;
         getLeft()->CompileRec("$t1");
-        std::cout << "sw $t1, -8($sp)" << std::endl;
+        std::cout << "sw $t1, 0($sp)" << std::endl;
         getRight()->CompileRec("$t2");
-        std::cout << "lw $t0, -4($sp)" << std::endl;
-        std::cout << "lw $t1, -8($sp)" << std::endl;
+        std::cout << "lw $t0, 4($sp)" << std::endl;
+        std::cout << "lw $t1, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 8" << std::endl;
         std::string else_stat = makeName("else_stat");
         std::cout << "beq $t0, $0, " << else_stat <<std::endl;
         std::cout << "add " << destReg << ", $0, $t1" << std::endl;
