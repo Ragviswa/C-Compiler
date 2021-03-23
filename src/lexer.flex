@@ -72,6 +72,7 @@ switch          { return T_SWITCH; }
 continue        { return T_CONTINUE; }
 break           { return T_BREAK; }
 case            { return T_CASE; }
+default         { return T_DEFAULT; }
 enum            { return T_ENUM; }
 sizeof          { return T_SIZEOF; }
 
