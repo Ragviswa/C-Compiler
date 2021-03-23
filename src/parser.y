@@ -38,8 +38,9 @@
 %token T_ASSIGN T_ADDASSIGN T_SUBASSIGN T_DIVASSIGN T_MULASSIGN T_MODASSIGN T_LEFASSIGN T_RIGASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
-%token T_INT T_FLOAT T_DOUBLE T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
+%token T_INT T_FLOAT T_DOUBLE T_CHAR T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_ENUM
 %token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE
+%token T_SIZEOF
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
 %type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND IOR_EXPR XOR_EXPR AND_EXPR EQUALITY RELAT SHIFT ARITH TERM UNARY POST FACTOR
@@ -197,6 +198,7 @@ EXPR_LIST           : EXPR                                                  { $$
 TYPE_DEF            : T_INT                                                 { $$ = TypeDef::INT; }
                     | T_FLOAT                                               { $$ = TypeDef::FLOAT; }
                     | T_DOUBLE                                              { $$ = TypeDef::DOUBLE; }
+                    | T_CHAR                                                { $$ = TypeDef::CHAR; }
 
 FACTOR              : T_NUMBER_INT                                          { $$ = new Number_INT($1); }
                     | T_NUMBER_DOUBLE                                       { $$ = new Number_DOUBLE($1); }
@@ -205,6 +207,7 @@ FACTOR              : T_NUMBER_INT                                          { $$
                     | T_VARIABLE T_LBRACKET EXPR_LIST T_RBRACKET            { $$ = new FunctionStorage($1, $3); }
                     | T_LBRACKET EXPR T_RBRACKET                            { $$ = $2; }
                     | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET               { $$ = new Array($1, $3); }
+                    | T_SIZEOF T_LBRACKET EXPR T_RBRACKET                   { $$ = new SizeOf($3); }
 
 %%
 // Keep in mind Variable is creating a new Variable instead of pointing to an old declaration

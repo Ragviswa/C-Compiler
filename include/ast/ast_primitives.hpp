@@ -9,7 +9,8 @@
 enum TypeDef{
   INT,
   FLOAT,
-  DOUBLE
+  DOUBLE,
+  CHAR
 };
 
 enum DeclType{
@@ -62,6 +63,10 @@ public:
                     type = "DOUBLE";
                     id = *_id;
                     break;
+                case CHAR:
+                    type = "CHAR";
+                    id = *_id;
+                    break;
                 default:
                     type = "something went wrong";
             }
@@ -83,6 +88,10 @@ public:
                     id = *_id;
                     Expr = _Expr;
                     break;
+                case CHAR:
+                    type = "CHAR";
+                    id = *_id;
+                    Expr = _Expr;
                 default:
                     type = "something went wrong";
             }
@@ -1243,6 +1252,34 @@ public:
     }
     virtual void CompileRec(std::string destReg) const override {
         std::cout << "li.s " << destReg << ", " << value << std::endl;
+    }
+};
+
+class SizeOf
+    : public Expression
+{
+private:
+    mutable double value;
+    ExpressionPtr expr;
+public:
+    SizeOf() {
+
+    }
+    SizeOf(ExpressionPtr _expr) {
+        expr = _expr;
+    }
+    virtual void CompileRec(std::string destReg) const override {
+        const std::string type = expr->getDataType();
+        if(type == "INT" || type == "FLOAT") {
+            value = 4;
+        }
+        else if(type == "DOUBLE") {
+            value = 8;
+        }
+        else if(type == "CHAR") {
+            value = 1;
+        }
+        std::cout << "addi " << destReg << " , $0, " << value << std::endl;
     }
 };
 
