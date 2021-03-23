@@ -173,13 +173,14 @@ public:
         std::string exit = makeName("exit");
         Symbol.setloopscope(Symbol.getloopscope()+1);
         Symbol.setloopend(exit);
+        StackPointer.setIncr(StackPointer.getIncr()+4);
+        StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
+        std::cout << "addiu $sp, $sp, -4" << std::endl;
+        std::cout << "sw $s1, 0($sp)" << std::endl;
         getStat()->CompileRec(destReg);
         std::cout << exit << ":" << std::endl;
         std::string case_start = makeName("case");
         std::cout << case_start << ":" << std::endl;
-        std::cout << "addiu $sp, $sp, 4" << std::endl;
-        StackPointer.setIncr(StackPointer.getIncr()-4);
-        StackPointer.setscopeIncr(StackPointer.getscopeIncr()-4);
     }
 };
 
@@ -464,10 +465,6 @@ public:
             std::cout << case_start << ":" << std::endl;
             getExp()->CompileRec("$t0");
             std::cout << "bne $t0, $s0, " << case_start.substr(0, 6) + std::to_string(std::stoi(case_start.substr(6, case_start.length()-6))+1) << std::endl;
-            StackPointer.setIncr(StackPointer.getIncr()+4);
-            StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
-            std::cout << "addiu $sp, $sp, -4" << std::endl;
-            std::cout << "sw $s1, 0($sp)" << std::endl;
             std::cout << "addiu $s1, $s0, 1" << std::endl;
             getStat()->CompileRec("destReg");
         }else{
