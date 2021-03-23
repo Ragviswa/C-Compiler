@@ -47,6 +47,8 @@ public:
         }
         std::string functionType = getType();
         if(statements!=nullptr){
+            Symbol.setfuncstart(name->getId());
+            Symbol.setfuncend(name->getId()+"end");
             std::cout << name->getId() << ":" << std::endl;
             std::cout << "move $fp, $sp" << std::endl;
             std::cout << "addiu $sp, $sp, -44" << std::endl;
@@ -79,6 +81,8 @@ public:
                 else {
                     std::cout << "ERROR: function datatype missing" << std::endl;
                 }
+                std::cout << name->getId() << "end:" << std::endl;
+                std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr(StackPointer.getcurrentscope()+1) << std::endl;
                 std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr() << std::endl;
                 StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
                 Symbol.endScope();
@@ -96,6 +100,8 @@ public:
                 else {
                     std::cout << "ERROR: function datatype missing" << std::endl;
                 }
+                std::cout << name->getId() << "end:" << std::endl;
+                std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr(StackPointer.getcurrentscope()+1) << std::endl;
             }
             StackPointer.setIncr(StackPointer.getIncr()-44);
             std::cout << "lw $s0, 4($sp)" << std::endl;

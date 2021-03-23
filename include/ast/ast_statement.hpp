@@ -215,6 +215,8 @@ public:
     virtual void CompileRec(std::string destReg) const override{
         std::string unique_exit = makeName("exit");
         std::string unique_loop = makeName("loop");
+        Symbol.setloopstart(unique_loop);
+        Symbol.setloopend(unique_exit);
         std::cout << unique_loop << ":" << std::endl;
         getCond()->CompileRec("$t0");
         std::cout << "beq $t0, $0, " << unique_exit << std::endl;
@@ -276,9 +278,12 @@ public:
         else {
             std::cout << "ERROR: no initial value in for loop" << std::endl;
         }
+        
         std::string unique_loop = makeName("loop");
         std::cout << unique_loop << ":" << std::endl;
         std::string unique_exit = makeName("exit");
+        Symbol.setloopstart(unique_loop);
+        Symbol.setloopend(unique_exit);
         getCond()->CompileRec("$t1"); // i < 3
         std::cout << "beq $t1, $0, " << unique_exit << std::endl; // exit if condition false
         getStat()->CompileRec(destReg); // loop body
@@ -353,12 +358,14 @@ public:
     virtual void CompileRec(std::string destReg) const override{
         if(destReg[1] == 'f') {
             getExp()->CompileRec("$f0");
+            std::cout << "j " << Symbol.getfuncend() << std::endl;
         }else{
             getExp()->CompileRec("$t0");
             if(StackPointer.getNullfunc()==1){
                 StackPointer.setNullfunc(0);
             }else{
                 std::cout << "add $v0, $0, $t0" << std::endl;
+                std::cout << "j " << Symbol.getfuncend() << std::endl;
             }
         }
     }
@@ -380,7 +387,7 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        //needs implementation
+        std::cout << "j " << Symbol.getloopstart() << std::endl;
     }
 };
 
@@ -400,7 +407,7 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override{
-        //needs implementation
+        std::cout << "j " << Symbol.getloopend() << std::endl;
     }
 };
 

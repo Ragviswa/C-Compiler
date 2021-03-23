@@ -29,6 +29,10 @@ class StackPtr{
         return scopeincr[current_scope];
     }
 
+    int getscopeIncr(int scope) {
+        return scopeincr[scope];
+    }
+
     void setscopeIncr(int _scopeincr) {
         scopeincr[current_scope] = _scopeincr;
     }
@@ -129,12 +133,48 @@ class SymbolTable {
 private:
     Node *head[50];
     int current_scope;
+    std::string funcstart;
+    std::string funcend;
+    std::string loopstart;
+    std::string loopend;
 public:
     SymbolTable() {
         for(int i = 0; i < sizeof(head)/sizeof(head[0]); i++) {
             head[i] = nullptr;
         }
         current_scope = 0;
+    }
+
+    std::string getfuncstart(){
+        return funcstart;
+    }
+
+    std::string getfuncend(){
+        return funcend;
+    }
+
+    std::string getloopstart(){
+        return loopstart;
+    }
+
+    std::string getloopend(){
+        return loopend;
+    }
+
+    void setfuncstart(std::string _funcstart){
+        funcstart = _funcstart;
+    }
+
+    void setfuncend(std::string _funcend){
+        funcend = _funcend;
+    }
+
+    void setloopstart(std::string _loopstart){
+        loopstart = _loopstart;
+    }
+
+    void setloopend(std::string _loopend){
+        loopend = _loopend;
     }
 
     int getScope(){
