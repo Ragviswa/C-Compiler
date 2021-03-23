@@ -169,11 +169,17 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        getCond()->CompileRec("$t0");
+        getCond()->CompileRec("$s0");
         std::string exit = makeName("exit");
-        std::cout << "beq $t0, $0, " << exit << std::endl;
+        Symbol.setloopscope(Symbol.getloopscope()+1);
+        Symbol.setloopend(exit);
         getStat()->CompileRec(destReg);
         std::cout << exit << ":" << std::endl;
+        std::string case_start = makeName("case");
+        std::cout << case_start << ":" << std::endl;
+        std::cout << "addiu $sp, $sp, 4" << std::endl;
+        StackPointer.setIncr(StackPointer.getIncr()-4);
+        StackPointer.setscopeIncr(StackPointer.getscopeIncr()-4);
     }
 };
 
@@ -184,7 +190,8 @@ private:
     ExpressionPtr condition;
     StatementPtr statement = nullptr;
 public:
-    LoopStatement() {}
+    LoopStatement() 
+    {}
     LoopStatement(ExpressionPtr _condition, StatementPtr _statement = nullptr)
         : condition(_condition)
         , statement(_statement)
@@ -452,7 +459,26 @@ public:
     }
 
     virtual void CompileRec(std::string destReg) const override {
-        //needs implementation
+        if(expression!=nullptr){
+            std::string case_start = makeName("case");
+            std::cout << case_start << ":" << std::endl;
+            getExp()->CompileRec("$t0");
+            std::cout << "bne $t0, $s0, " << case_start.substr(0, 6) + std::to_string(std::stoi(case_start.substr(6, case_start.length()-6))+1) << std::endl;
+            StackPointer.setIncr(StackPointer.getIncr()+4);
+            StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
+            std::cout << "addiu $sp, $sp, -4" << std::endl;
+            std::cout << "sw $s1, 0($sp)" << std::endl;
+            std::cout << "addiu $s1, $s0, 1" << std::endl;
+            getStat()->CompileRec("destReg");
+        }else{
+            std::string case_start = makeName("case");
+            std::cout << case_start << ":" << std::endl;
+            std::string nodef = makeName("nodef");
+            std::cout << "bne $0, $s1, " << nodef << std::endl;
+            std::cout << "lw $s1, 0($sp)" << std::endl;
+            getStat()->CompileRec("destReg");
+            std::cout << nodef << ":" << std::endl;
+        }
     }
 };
 

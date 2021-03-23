@@ -83,8 +83,12 @@ public:
                     std::cout << "ERROR: function datatype missing" << std::endl;
                 }
                 std::cout << name->getId() << "end:" << std::endl;
-                std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr(StackPointer.getcurrentscope()+1) << std::endl;
-                std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr() << std::endl;
+                for(int i = StackPointer.getcurrentscope(); i<50; i++){
+                    if(StackPointer.getscopeIncr(i)!=0){
+                        std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr(i) << std::endl;
+                    }
+                }
+                StackPointer.setscopeIncr(0);
                 StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
                 Symbol.endScope();
             }else{
@@ -102,7 +106,11 @@ public:
                     std::cout << "ERROR: function datatype missing" << std::endl;
                 }
                 std::cout << name->getId() << "end:" << std::endl;
-                std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr(StackPointer.getcurrentscope()+1) << std::endl;
+                for(int i = StackPointer.getcurrentscope() + 1; i<50; i++){
+                    if(StackPointer.getscopeIncr(i)!=0){
+                        std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr(i) << std::endl;
+                    }
+                }
             }
             StackPointer.setIncr(StackPointer.getIncr()-44);
             std::cout << "lw $s0, 4($sp)" << std::endl;
@@ -128,6 +136,7 @@ public:
                 StackPointer.setscopeIncr(0);
                 args->CompileRec(destReg);
                 std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr() << std::endl;
+                StackPointer.setscopeIncr(0);
                 StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
                 Symbol.endScope();
             }
