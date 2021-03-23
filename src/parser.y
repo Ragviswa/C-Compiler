@@ -92,7 +92,7 @@ STAT                : COMPOUND_STAT                                         { $$
                     | LABL_STAT                                             { $$ = $1; }
 
 LABL_STAT           : T_CASE CONDITIONAL T_COLON STAT                       { $$ = new LabelStatement($4, $2); }
-                    | T_DEFAULT T_COLON STAT                                { $$ = new LabelStatement($4); }
+                    | T_DEFAULT T_COLON STAT                                { $$ = new LabelStatement($3); }
 
 JUMP_STAT           : T_CONTINUE T_SEMICOLON                                { $$ = new ContinueStatement(); }
                     | T_BREAK T_SEMICOLON                                   { $$ = new BreakStatement(); }
