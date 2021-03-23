@@ -1010,6 +1010,50 @@ public:
     }
 };
 
+class LeftShift
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "<<"; }
+public:
+    LeftShift(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        getLeft()->CompileRec("$t0");
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
+        getRight()->CompileRec("$t1");
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
+        std::cout << "sllv " << destReg << ", $t0, $t1" << std::endl;
+    }
+};
+
+class RightShift
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "<<"; }
+public:
+    RightShift(ExpressionPtr _left, ExpressionPtr _right)
+        : Operator(_left, _right)
+    {}
+
+    virtual void CompileRec(std::string destReg) const override {
+        getLeft()->CompileRec("$t0");
+        std::cout << "addi $sp, $sp, -4" << std::endl;
+        std::cout << "sw $t0, 0($sp)" << std::endl;
+        getRight()->CompileRec("$t1");
+        std::cout << "lw $t0, 0($sp)" << std::endl;
+        std::cout << "addi $sp, $sp, 4" << std::endl;
+        std::cout << "srlv " << destReg << ", $t0, $t1" << std::endl;
+    }
+};
+
 // Logic Operators
 class AndLogic
     : public Operator
