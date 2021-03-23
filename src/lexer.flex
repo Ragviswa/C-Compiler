@@ -80,6 +80,7 @@ sizeof          { return T_SIZEOF; }
 [0-9]+[.]([0-9]+)*             { yylval.number=strtod(yytext, 0); return T_NUMBER_DOUBLE; }
 [0-9]+[.]([0-9]+)*f            { yylval.number=strtod(yytext, 0); return T_NUMBER_DOUBLE; }
 [a-zA-Z_][a-zA-Z_\d]*          { yylval.string=new std::string(yytext); return T_VARIABLE; }
+[\'][^\n][\']                  { yylval.string=new std::string(yytext); return T_CHAR_DATA; }
 
 [ \t\r\n]+		{;}
 
