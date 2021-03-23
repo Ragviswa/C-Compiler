@@ -177,6 +177,7 @@ public:
         StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
         std::cout << "addiu $sp, $sp, -4" << std::endl;
         std::cout << "sw $s1, 0($sp)" << std::endl;
+        std::cout << "addiu $s1, $0, 0" << std::endl;
         getStat()->CompileRec(destReg);
         std::cout << exit << ":" << std::endl;
         std::string case_start = makeName("case");
@@ -464,19 +465,22 @@ public:
     virtual void CompileRec(std::string destReg) const override {
         if(expression!=nullptr){
             std::string case_start = makeName("case");
+            std::string case_done = makeName("casedone");
             std::cout << case_start << ":" << std::endl;
+            std::cout << "bne $0, $s1, " << case_done << std::endl;
             getExp()->CompileRec("$t0");
-            std::cout << "bne $t0, $s0, " << case_start.substr(0, 6) + std::to_string(std::stoi(case_start.substr(6, case_start.length()-6))+1) << std::endl;
-            std::cout << "addiu $s1, $s0, 1" << std::endl;
+            std::cout << "bne $t0, $s0, " << case_start.substr(0, 6) + std::to_string(std::stoi(case_start.substr(6, case_start.length()-6))+2) << std::endl;
+            std::cout << "addiu $s1, $0, 1" << std::endl;
+            std::cout << case_done << ":" << std::endl;
             getStat()->CompileRec("destReg");
         }else{
             std::string case_start = makeName("case");
+            std::string case_done= makeName("casedone");
             std::cout << case_start << ":" << std::endl;
-            std::string nodef = makeName("nodef");
-            std::cout << "bne $0, $s1, " << nodef << std::endl;
+            std::cout << "bne $0, $s1, " << case_done << std::endl;
             std::cout << "lw $s1, 0($sp)" << std::endl;
+            std::cout << case_done << ":" << std::endl;
             getStat()->CompileRec("destReg");
-            std::cout << nodef << ":" << std::endl;
         }
     }
 };
