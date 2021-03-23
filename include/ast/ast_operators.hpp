@@ -1037,7 +1037,7 @@ class RightShift
 {
 protected:
     virtual const char *getOpcode() const override
-    { return "<<"; }
+    { return ">>"; }
 public:
     RightShift(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)

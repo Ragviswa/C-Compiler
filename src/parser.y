@@ -174,8 +174,8 @@ RELAT               : SHIFT                                                 { $$
                     | RELAT T_LESSTHANEQUAL SHIFT                           { $$ = new LessThanEqualOperator($1, $3); }
 
 SHIFT               : ARITH                                                 { $$ = $1; }  
-                    | SHIFT T_RSHIFT ARITH                                  { $$ = new LeftShift($1, $3); }
-                    | SHIFT T_LSHIFT ARITH                                  { $$ = new RightShift($1, $3); }
+                    | SHIFT T_RSHIFT ARITH                                  { $$ = new RightShift($1, $3); }
+                    | SHIFT T_LSHIFT ARITH                                  { $$ = new LeftShift($1, $3); }
 
 ARITH               : TERM                                                  { $$ = $1; }
                     | ARITH T_PLUS TERM                                     { $$ = new AddOperator($1, $3); }
