@@ -13,6 +13,7 @@ class StackPtr{
     int scopeincr[50];
     int current_scope = 0;
     int nullfunc = 0;
+    int freturn = 0;
     public:
     StackPtr() {
     }
@@ -59,6 +60,14 @@ class StackPtr{
 
     void setNullfunc(int _nullfunc) {
         nullfunc = _nullfunc;
+    }
+
+    int getfreturn() {
+        return freturn;
+    }
+
+    void setfreturn(int _freturn) {
+        freturn = _freturn;
     }
 };
 

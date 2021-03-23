@@ -128,6 +128,7 @@ public:
             if(Symbol.getScope()==0){
             std::cout << ".global " << name->getId() << std::endl;
             Symbol.setfuncscope(Symbol.getfuncscope()-1);
+            StackPointer.setfreturn(0);
             }
         }else{
             if(args!=nullptr){

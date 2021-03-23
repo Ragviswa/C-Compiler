@@ -375,6 +375,7 @@ public:
         if(destReg[1] == 'f') {
             getExp()->CompileRec("$f0");
             std::cout << "j " << Symbol.getfuncend() << std::endl;
+            StackPointer.setfreturn(1);
         }else{
             getExp()->CompileRec("$t0");
             if(StackPointer.getNullfunc()==1){
@@ -382,6 +383,7 @@ public:
             }else{
                 std::cout << "add $v0, $0, $t0" << std::endl;
                 std::cout << "j " << Symbol.getfuncend() << std::endl;
+                StackPointer.setfreturn(1);
             }
         }
     }
@@ -514,6 +516,9 @@ public:
         }
         std::cout << "addiu $sp, $sp, " << StackPointer.getscopeIncr() << std::endl;
         StackPointer.setIncr(StackPointer.getIncr() - StackPointer.getscopeIncr());
+        if(StackPointer.getfreturn()!=1){
+            StackPointer.setscopeIncr(0);
+        }
         StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
         Symbol.endScope();
     }
