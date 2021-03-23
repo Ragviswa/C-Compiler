@@ -47,6 +47,7 @@ public:
         }
         std::string functionType = getType();
         if(statements!=nullptr){
+            Symbol.setfuncscope(Symbol.getfuncscope()+1);
             Symbol.setfuncstart(name->getId());
             Symbol.setfuncend(name->getId()+"end");
             std::cout << name->getId() << ":" << std::endl;
@@ -118,6 +119,7 @@ public:
             std::cout << "jr $ra" << std::endl;
             if(Symbol.getScope()==0){
             std::cout << ".global " << name->getId() << std::endl;
+            Symbol.setfuncscope(Symbol.getfuncscope()-1);
             }
         }else{
             if(args!=nullptr){

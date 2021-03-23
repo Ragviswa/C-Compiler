@@ -219,6 +219,7 @@ public:
     virtual void CompileRec(std::string destReg) const override{
         std::string unique_exit = makeName("exit");
         std::string unique_loop = makeName("loop");
+        Symbol.setloopscope(Symbol.getloopscope()+1);
         Symbol.setloopstart(unique_loop);
         Symbol.setloopend(unique_exit);
         std::cout << unique_loop << ":" << std::endl;
@@ -227,6 +228,7 @@ public:
         getStat()->CompileRec(destReg); // loop body
         std::cout << "j " << unique_loop << std::endl;
         std::cout << unique_exit << ":" << std::endl;
+        Symbol.setloopscope(Symbol.getloopscope()-1);
     }
 };
 
@@ -286,6 +288,7 @@ public:
         std::string unique_loop = makeName("loop");
         std::cout << unique_loop << ":" << std::endl;
         std::string unique_exit = makeName("exit");
+        Symbol.setloopscope(Symbol.getloopscope()+1);
         Symbol.setloopstart(unique_loop);
         Symbol.setloopend(unique_exit);
         getCond()->CompileRec("$t1"); // i < 3
@@ -294,6 +297,7 @@ public:
         updateExpr->CompileRec("$t0");
         std::cout << "j " << unique_loop << std::endl;
         std::cout << unique_exit << ":" << std::endl;
+        Symbol.setloopscope(Symbol.getloopscope()-1);
     }
 };
 

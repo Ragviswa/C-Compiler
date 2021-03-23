@@ -133,10 +133,12 @@ class SymbolTable {
 private:
     Node *head[50];
     int current_scope;
-    std::string funcstart;
-    std::string funcend;
-    std::string loopstart;
-    std::string loopend;
+    std::string funcstart[50];
+    std::string funcend[50];
+    std::string loopstart[50];
+    std::string loopend[50];
+    int funcscope;
+    int loopscope;
 public:
     SymbolTable() {
         for(int i = 0; i < sizeof(head)/sizeof(head[0]); i++) {
@@ -146,39 +148,55 @@ public:
     }
 
     std::string getfuncstart(){
-        return funcstart;
+        return funcstart[funcscope];
     }
 
     std::string getfuncend(){
-        return funcend;
+        return funcend[funcscope];
     }
 
     std::string getloopstart(){
-        return loopstart;
+        return loopstart[loopscope];
     }
 
     std::string getloopend(){
-        return loopend;
+        return loopend[loopscope];
+    }
+
+    int getfuncscope(){
+        return funcscope;
+    }
+
+    int getloopscope(){
+        return loopscope;
     }
 
     void setfuncstart(std::string _funcstart){
-        funcstart = _funcstart;
+        funcstart[funcscope] = _funcstart;
     }
 
     void setfuncend(std::string _funcend){
-        funcend = _funcend;
+        funcend[funcscope] = _funcend;
     }
 
     void setloopstart(std::string _loopstart){
-        loopstart = _loopstart;
+        loopstart[loopscope] = _loopstart;
     }
 
     void setloopend(std::string _loopend){
-        loopend = _loopend;
+        loopend[loopscope] = _loopend;
     }
 
     int getScope(){
         return current_scope;
+    }
+
+    void setfuncscope(int _funcscope){
+        funcscope = _funcscope;
+    }
+
+    void setloopscope(int _loopscope){
+        loopscope = _loopscope;
     }
 
     bool insert(std::string type, std::string format, std::string name, std::string address) {
