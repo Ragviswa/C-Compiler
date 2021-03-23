@@ -160,7 +160,7 @@ class Body
 private:
 
     Function *func = nullptr;
-    BlockListPtr list = nullptr;
+    Variable  *decl = nullptr;
     Body *body = nullptr;
 
 public:
@@ -169,29 +169,29 @@ public:
         , body(_body)
     {}
 
-    Body(BlockListPtr _list, Body *_body = nullptr) 
-        : list(_list)
+    Body(Variable *_decl, Body *_body = nullptr) 
+        : decl(_decl)
         , body(_body)
     {}
     virtual ~Body()
     {
         delete func,
-        delete list,
+        delete decl,
         delete body;
     }
 
     Function *getFunc() const
     { return func; }
-    BlockListPtr getList() const
-    { return list;}
+    Variable *getDecl() const
+    { return decl;}
     Body *getBody() const
     { return body; }
 
     void CompileRec(std::string destReg) const{
         if(getFunc() != nullptr){
             getFunc()->CompileRec(destReg);
-        }else if(getList() != nullptr){
-            getList()->CompileRec(destReg);
+        }else if(getDecl() != nullptr){
+            getDecl()->CompileRec(destReg);
         }
         if(getBody()!=nullptr){
             getBody()->CompileRec(destReg);

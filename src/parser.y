@@ -61,9 +61,9 @@
 PROGRAM             : BODY                                              { g_root = $1; }
 
 BODY                : FUNCTION                                          { $$ = new Body($1); }
-                    | BLOCK_ITEM_LIST                                   { $$ = new Body($1); }
+                    | DECL                                              { $$ = new Body($1); }
                     | FUNCTION BODY                                     { $$ = new Body($1, $2); }
-                    | BLOCK_ITEM_LIST BODY                              { $$ = new Body($1, $2); }
+                    | DECL BODY                                         { $$ = new Body($1, $2); }
 
 FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new FunctionStorage($1, $2)), nullptr, $5); }
                     | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new FunctionStorage($1, $2)), $4, $6); }
