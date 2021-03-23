@@ -145,6 +145,11 @@ public:
         return type;
     }
 
+    virtual const std::string getDataFormat() const override {
+        std::string format = Symbol.getFormat(id);
+        return format;
+    }
+
     virtual void CompileRec(std::string destReg) const override{
         std::string format;
         switch(VarType) {
@@ -181,275 +186,379 @@ public:
             case ASSIGN:
                 address = Symbol.lookUp(id);
                 type = Symbol.getType(id);
-                if(assignop == "="){
-                    if(type == "INT") {
+                format = Symbol.getFormat(id);
+                if(format == "ptr") {
+                    if(assignop == "=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "FLOAT") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;  
-                    }
-                    else if(type == "DOUBLE") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
-                        std::cout << "swc1 $f1, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                    }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "sb $t0, -" << address << "($fp)" << std::endl;
-                    }
-                    else {
-                        std::cout << getType() << std::endl;
-                        std::cout << "ERROR: type missing" << std::endl;
-                    }
-                }else if(assignop == "+="){
-                    if(type == "INT") {
+                    else if(assignop == "+=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "add $t1, $t1, $t0" << std::endl;
+                        if(type == "DOUBLE") {
+                            for(int i = 0; i < 8; i++) {
+                                std::cout << "add $t1, $t1, $t0" << std::endl;
+                            }
+                        } else {
+                            for(int i = 0; i < 4; i++) {
+                                std::cout << "add $t1, $t1, $t0" << std::endl;
+                            }
+                        }
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "FLOAT") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "add.s $f2, $f2, $f0" << std::endl;
-                        std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
-                    }
-                    else if(type == "DOUBLE") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "lwc1 $f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                        std::cout << "add.d $f2, $f2, $f0" << std::endl;
-                        std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "swc1 #f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                    }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "add $t1, $t1, $t0" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "-="){
-                    if(type == "INT") {
+                    else if(assignop == "-=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "sub $t1, $t1, $t0" << std::endl;
+                        if(type == "DOUBLE") {
+                            for(int i = 0; i < 8; i++) {
+                                std::cout << "sub $t1, $t1, $t0" << std::endl;
+                            }
+                        } else {
+                            for(int i = 0; i < 4; i++) {
+                                std::cout << "sub $t1, $t1, $t0" << std::endl;
+                            }
+                        }
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "FLOAT") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "sub.s $f2, $f2, $f0" << std::endl;
-                        std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
-                    }
-                    else if(type == "DOUBLE") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "lwc1 $f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                        std::cout << "sub.d $f2, $f2, $f0" << std::endl;
-                        std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "swc1 #f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                    }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "sub $t1, $t1, $t0" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "/="){
-                    if(type == "INT") {
+                    else if(assignop == "/=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "div $t1, $t0" << std::endl;
                         std::cout << "mflo $t1" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "FLOAT") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "div.s $f2, $f2, $f0" << std::endl;
-                        std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
-                    }
-                    else if(type == "DOUBLE") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "lwc1 $f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                        std::cout << "div.d $f2, $f2, $f0" << std::endl;
-                        std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "swc1 #f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                    }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "div $t1, $t0" << std::endl;
-                        std::cout << "mflo $t1" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "*="){
-                    if(type == "INT") {
+                    else if(assignop == "*=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "mul $t1, $t1, $t0" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "FLOAT") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "mul.s $f2, $f2, $f0" << std::endl;
-                        std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
-                    }
-                    else if(type == "DOUBLE") {
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "lwc1 $f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                        std::cout << "mul.d $f2, $f2, $f0" << std::endl;
-                        std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
-                        std::cout << "swc1 #f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                    }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "mul $t1, $t1, $t0" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "%="){
-                    if(type == "INT") {
+                    else if(assignop == "%=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "div $t1, $t0" << std::endl;
                         std::cout << "mfhi $t1" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "div $t1, $t0" << std::endl;
-                        std::cout << "mfhi $t1" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "<<="){
-                    if(type == "INT") {
+                    else if(assignop == "<<=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "sllv $t1, $t1, $t0" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "sllv $t1, $t1, $t0" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == ">>="){
-                    if(type == "INT") {
+                    else if(assignop == ">>=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "srlv $t1, $t1, $t0" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "srlv $t1, $t1, $t0" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "^="){
-                    if(type == "INT") {
+                    else if(assignop == "^=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "xor $t1, $t1, $t0" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "xor $t1, $t1, $t0" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "&="){
-                    if(type == "INT") {
+                    else if(assignop == "&=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "and $t1, $t1, $t0" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "and $t1, $t1, $t0" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "|="){
-                    if(type == "INT") {
+                    else if(assignop == "|=") {
                         getExpr()->CompileRec("$t0");
                         std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
                         std::cout << "or $t1, $t1, $t0" << std::endl;
                         std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "CHAR") {
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
-                        std::cout << "or $t1, $t1, $t0" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "++") {
-                    if(type == "INT") {
+                    else if(assignop == "++") {
                         std::cout << "lw $t0, -" << address << "($fp)" << std::endl;
-                        std::cout << "addi $t0, $t0, 1" << std::endl;
+                        if(type == "DOUBLE") {
+                            std::cout << "addi $t0, $t0, 8" << std::endl;
+                        } else {
+                            std::cout << "addi $t0, $t0, 4" << std::endl;
+                        }
                         std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "FLOAT") {
-                        std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
-                        std::cout << "addi.s $f0, $f0, 1" << std::endl;
-                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
-                    }
-                    else if(type == "DOUBLE") {
-                        std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
-                        std::cout << "lwc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
-                        std::cout << "addi.d $f0, $f0, 1" << std::endl;
-                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
-                        std::cout << "swc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
-                    }
-                    else if(type == "CHAR") {
-                        std::cout << "lbu $t0, -" << address << "($fp)" << std::endl;
-                        std::cout << "addi $t0, $t0, 1" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
-                    }
-                }else if(assignop == "--") {
-                    if(type == "INT") {
+                    else if(assignop == "--") {
                         std::cout << "lw $t0, -" << address << "($fp)" << std::endl;
-                        std::cout << "addi $t0, $t0, -1" << std::endl;
+                        if(type == "DOUBLE") {
+                            std::cout << "addi $t0, $t0, -8" << std::endl;
+                        } else {
+                            std::cout << "addi $t0, $t0, -4" << std::endl;
+                        }
                         std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
                     }
-                    else if(type == "FLOAT") {
-                        std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
-                        std::cout << "addi.s $f0, $f0, -1" << std::endl;
-                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
-                    }
-                    else if(type == "DOUBLE") {
-                        std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
-                        std::cout << "lwc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
-                        std::cout << "addi.d $f0, $f0, -1" << std::endl;
-                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
-                        std::cout << "swc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
-                    }
-                    else if(type == "CHAR") {
-                        std::cout << "lbu $t0, -" << address << "($fp)" << std::endl;
-                        std::cout << "addi $t0, $t0, -1" << std::endl;
-                        std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
-                        std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                }else if(format == "var") {
+                    if(assignop == "="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "FLOAT") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;  
+                        }
+                        else if(type == "DOUBLE") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                            std::cout << "swc1 $f1, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "sb $t0, -" << address << "($fp)" << std::endl;
+                        }
+                        else {
+                            std::cout << getType() << std::endl;
+                            std::cout << "ERROR: type missing" << std::endl;
+                        }
+                    }else if(assignop == "+="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "add $t1, $t1, $t0" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "FLOAT") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "add.s $f2, $f2, $f0" << std::endl;
+                            std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "DOUBLE") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "lwc1 $f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                            std::cout << "add.d $f2, $f2, $f0" << std::endl;
+                            std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "swc1 #f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "add $t1, $t1, $t0" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "-="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "sub $t1, $t1, $t0" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "FLOAT") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "sub.s $f2, $f2, $f0" << std::endl;
+                            std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "DOUBLE") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "lwc1 $f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                            std::cout << "sub.d $f2, $f2, $f0" << std::endl;
+                            std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "swc1 #f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "sub $t1, $t1, $t0" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "/="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "div $t1, $t0" << std::endl;
+                            std::cout << "mflo $t1" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "FLOAT") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "div.s $f2, $f2, $f0" << std::endl;
+                            std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "DOUBLE") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "lwc1 $f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                            std::cout << "div.d $f2, $f2, $f0" << std::endl;
+                            std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "swc1 #f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "div $t1, $t0" << std::endl;
+                            std::cout << "mflo $t1" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "*="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "mul $t1, $t1, $t0" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "FLOAT") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "mul.s $f2, $f2, $f0" << std::endl;
+                            std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "DOUBLE") {
+                            getExpr()->CompileRec("$f0");
+                            std::cout << "lwc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "lwc1 $f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                            std::cout << "mul.d $f2, $f2, $f0" << std::endl;
+                            std::cout << "swc1 $f2, -" << address << "($fp)" << std::endl;
+                            std::cout << "swc1 #f3, -" << std::stoi(address)-4 << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "mul $t1, $t1, $t0" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "%="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "div $t1, $t0" << std::endl;
+                            std::cout << "mfhi $t1" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "div $t1, $t0" << std::endl;
+                            std::cout << "mfhi $t1" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "<<="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "sllv $t1, $t1, $t0" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "sllv $t1, $t1, $t0" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == ">>="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "srlv $t1, $t1, $t0" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "srlv $t1, $t1, $t0" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "^="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "xor $t1, $t1, $t0" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "xor $t1, $t1, $t0" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "&="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "and $t1, $t1, $t0" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "and $t1, $t1, $t0" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "|="){
+                        if(type == "INT") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lw $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "or $t1, $t1, $t0" << std::endl;
+                            std::cout << "sw $t1, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            getExpr()->CompileRec("$t0");
+                            std::cout << "lbu $t1, -" << address << "($fp)" << std::endl;
+                            std::cout << "or $t1, $t1, $t0" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "++") {
+                        if(type == "INT") {
+                            std::cout << "lw $t0, -" << address << "($fp)" << std::endl;
+                            std::cout << "addi $t0, $t0, 1" << std::endl;
+                            std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "FLOAT") {
+                            std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
+                            std::cout << "addi.s $f0, $f0, 1" << std::endl;
+                            std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "DOUBLE") {
+                            std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
+                            std::cout << "lwc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
+                            std::cout << "addi.d $f0, $f0, 1" << std::endl;
+                            std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                            std::cout << "swc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            std::cout << "lbu $t0, -" << address << "($fp)" << std::endl;
+                            std::cout << "addi $t0, $t0, 1" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
+                    }else if(assignop == "--") {
+                        if(type == "INT") {
+                            std::cout << "lw $t0, -" << address << "($fp)" << std::endl;
+                            std::cout << "addi $t0, $t0, -1" << std::endl;
+                            std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "FLOAT") {
+                            std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
+                            std::cout << "addi.s $f0, $f0, -1" << std::endl;
+                            std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                        }
+                        else if(type == "DOUBLE") {
+                            std::cout << "lwc1 $f0, -" << address << "($fp)" << std::endl;
+                            std::cout << "lwc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
+                            std::cout << "addi.d $f0, $f0, -1" << std::endl;
+                            std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
+                            std::cout << "swc1 $f1, -" << std::stoi(address)+4 << "($fp)" << std::endl;
+                        }
+                        else if(type == "CHAR") {
+                            std::cout << "lbu $t0, -" << address << "($fp)" << std::endl;
+                            std::cout << "addi $t0, $t0, -1" << std::endl;
+                            std::cout << "andi $t1, $t1, 0x00ff" << std::endl;
+                            std::cout << "sb $t1, -" << address << "($fp)" << std::endl;
+                        }
                     }
                 }
                 break;

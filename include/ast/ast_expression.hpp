@@ -28,6 +28,9 @@ public:
     virtual const std::string getDataType() const
     {}
 
+    virtual const std::string getDataFormat() const
+    { return "not ptr"; }
+
     virtual void CompileRec(std::string destReg) const
     {}
 
