@@ -75,6 +75,7 @@ ARG_LIST            : ARG                                                   { $$
 
 ARG                 : TYPE_DEF T_VARIABLE                                   { $$ = new Variable($1, $2, DeclType::ARG); }
                     | TYPE_DEF T_LSBRACKET T_RSBRACKET T_VARIABLE           { $$ = new Array($1, $4); }
+                    | TYPE_DEF T_TIMES T_VARIABLE                           { $$ = new Pointer($1, $3, DeclType::ARG); }
 
 COMPOUND_STAT       : T_LBRACE T_RBRACE                                     { $$ = new CompoundStatement(); }
                     | T_LBRACE BLOCK_ITEM_LIST T_RBRACE                     { $$ = new CompoundStatement($2); }
@@ -124,6 +125,8 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET T_ASSIGN EXPR T_SEMICOLON {}
+                    | TYPE_DEF T_TIMES T_VARIABLE T_SEMICOLON                                           { $$ = new Pointer($1, $3, DeclType::DECL); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                             { $$ = new Pointer($1, $3, DeclType::DECL, $5); }
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
@@ -132,6 +135,7 @@ EXPR                : CONDITIONAL                                           { $$
                     | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET T_DECR        { $$ = new Array($1, $3, new std::string("--"), nullptr); }
                     | T_VARIABLE T_INCR                                     { $$ = new Variable($1, new std::string("++"), nullptr); }
                     | T_VARIABLE T_DECR                                     { $$ = new Variable($1, new std::string("--"), nullptr); }
+                    | T_TIMES T_VARIABLE ASSIGNOP EXPR                      { $$ = new Pointer($2, $3, $4, true); }
 
 ASSIGNOP            : T_ASSIGN                                              { $$ = new std::string("="); }
                     | T_ADDASSIGN                                           { $$ = new std::string("+="); }
@@ -211,6 +215,8 @@ FACTOR              : T_NUMBER_INT                                          { $$
                     | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET               { $$ = new Array($1, $3); }
                     | T_SIZEOF T_LBRACKET EXPR T_RBRACKET                   { $$ = new SizeOf($3); }
                     | T_SIZEOF T_LBRACKET TYPE_DEF T_RBRACKET               { $$ = new SizeOf($3); }
+                    | T_TIMES T_VARIABLE                                    { $$ = new Pointer($2, true, false); }
+                    | T_AND T_VARIABLE                                      { $$ = new Variable($2, true); }
 
 %%
 // Keep in mind Variable is creating a new Variable instead of pointing to an old declaration
