@@ -46,8 +46,24 @@ public:
     { return "-"; }
 
     virtual void CompileRec(std::string destReg) const override {
-        getExpr()->CompileRec("$t0");
-        std::cout << "subu " << destReg << ", $0, $t0" << std::endl;
+        std::string type = getExpr()->getDataType();
+        if(type == "INT") {
+            getExpr()->CompileRec("$t0");
+            std::cout << "subu " << destReg << ", $0, $t0" << std::endl;
+        }
+        else if(type == "FLOAT") {
+            getExpr()->CompileRec("$f0");
+            std::cout << "sub.s " << destReg << ", $0, $f0" << std::endl;
+        }
+        else if(type == "DOUBLE") {
+            getExpr()->CompileRec("$f0");
+            std::cout << "sub.d " << destReg << ", $0, $f0" << std::endl;
+        }
+        else if(type == "CHAR") {
+            getExpr()->CompileRec("$t0");
+            std::cout << "sub " << destReg << ", $0, $f0" << std::endl;
+            std::cout << "andi " << destReg << ", " << destReg << ", 0x00ff" << std::endl;
+        }
     }
 
     virtual double evaluate(
@@ -71,8 +87,24 @@ public:
     { return "+"; }
 
     virtual void CompileRec(std::string destReg) const override {
-        getExpr()->CompileRec("$t0");
-        std::cout << "subu " << destReg << ", $t0, $0" << std::endl;
+        std::string type = getExpr()->getDataType();
+        if(type == "INT") {
+            getExpr()->CompileRec("$t0");
+            std::cout << "subu " << destReg << ", $t0, $0" << std::endl;
+        }
+        else if(type == "FLOAT") {
+            getExpr()->CompileRec("$f0");
+            std::cout << "sub.s " << destReg << ", $f0, $0" << std::endl;
+        }
+        else if(type == "DOUBLE") {
+            getExpr()->CompileRec("$f0");
+            std::cout << "sub.d " << destReg << ", $f0, $0" << std::endl;
+        }
+        else if(type == "CHAR") {
+            getExpr()->CompileRec("$t0");
+            std::cout << "sub " << destReg << ", $t0, $0" << std::endl;
+            std::cout << "andi " << destReg << ", " << destReg << ", 0x00ff" << std::endl;
+        }
     }
 
     virtual double evaluate(
@@ -80,7 +112,7 @@ public:
     ) const override
     {
         double in=getExpr()->evaluate(bindings);
-        return (-in);
+        return (in);
     }
 };
 

@@ -863,21 +863,27 @@ public:
                 if(type == "INT") {
                     std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                     std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                    std::cout << "subu $t1, $t1, $t0" << std::endl;
+                    std::cout << "addu $t1, $t1, $t0" << std::endl;
                     std::cout << "lw " << destReg << ", 0($t1)" << std::endl;
                 }
                 else if(type == "FLOAT") {
                     std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                     std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                    std::cout << "subu $t1, $t1, $t0" << std::endl;
+                    std::cout << "addu $t1, $t1, $t0" << std::endl;
                     std::cout << "lwc1 " << destReg << ", 0($t1)" << std::endl;
                 }
                 else if(type == "DOUBLE") {
                     std::cout << "sll $t0, $t0, 3" << std::endl; // x3
                     std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                    std::cout << "subu $t1, $t1, $t0" << std::endl;
+                    std::cout << "addu $t1, $t1, $t0" << std::endl;
                     std::cout << "lwc1 " << destReg << ", 0($t1)" << std::endl;
                     std::cout << "lwc1 " << destReg[0] << destReg[1] << (int)destReg[2]-48+1 << ", -4($t1)" << std::endl;
+                }
+                else if(type == "CHAR") {
+                    std::cout << "sll $t0, $t0, 2" << std::endl; // x2
+                    std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
+                    std::cout << "addu $t1, $t1, $t0" << std::endl;
+                    std::cout << "lb " << destReg << ", 0($t1)" << std::endl;
                 }
                 break;
             case ASSIGN:
@@ -888,7 +894,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -900,7 +906,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -912,7 +918,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 3" << std::endl; // x3
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -927,7 +933,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -941,7 +947,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -955,7 +961,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 3" << std::endl; // x3
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -973,7 +979,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -987,7 +993,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -1001,7 +1007,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 3" << std::endl; // x3
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -1019,7 +1025,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -1034,7 +1040,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -1048,7 +1054,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 3" << std::endl; // x3
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -1066,7 +1072,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -1080,7 +1086,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -1094,7 +1100,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 3" << std::endl; // x3
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$f0");
@@ -1112,7 +1118,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -1129,7 +1135,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -1145,7 +1151,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -1161,7 +1167,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -1177,7 +1183,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -1193,7 +1199,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "addi $sp, $sp, -4" << std::endl;
                         std::cout << "sw $t1, 0($sp)" << std::endl;
                         getExpr()->CompileRec("$t0");
@@ -1209,7 +1215,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "lw $t2, 0($t1)" << std::endl;
                         std::cout << "addi $t2, t2, 1" << std::endl;
                         std::cout << "sw $t2, 0($t1)" << std::endl;
@@ -1227,7 +1233,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 3" << std::endl; // x3
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "lwc1 $f0, 0($t1)" << std::endl;
                         std::cout << "lwc1 $f1, -4($t1)" << std::endl;
                         std::cout << "addi.d $f0, $f0, 1" << std::endl;
@@ -1240,7 +1246,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "lw $t2, 0($t1)" << std::endl;
                         std::cout << "addi $t2, t2, -1" << std::endl;
                         std::cout << "sw $t2, 0($t1)" << std::endl;
@@ -1249,7 +1255,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 2" << std::endl; // x2
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "lwc1 $f0, 0($t1)" << std::endl;
                         std::cout << "addi.s $f0, $f0, -1" << std::endl;
                         std::cout << "swc1 $f0, 0($t1)" << std::endl;
@@ -1258,7 +1264,7 @@ public:
                         getIndex()->CompileRec("$t0");
                         std::cout << "sll $t0, $t0, 3" << std::endl; // x3
                         std::cout << "addiu $t1, $fp, -" << address << std::endl; // loading address of head to t1
-                        std::cout << "subu $t1, $t1, $t0" << std::endl;
+                        std::cout << "addu $t1, $t1, $t0" << std::endl;
                         std::cout << "lwc1 $f0, 0($t1)" << std::endl;
                         std::cout << "lwc1 $f1, -4($t1)" << std::endl;
                         std::cout << "addi.d $f0, $f0, -1" << std::endl;
@@ -1270,7 +1276,7 @@ public:
             case DECL:
                 if(getType()== "INT" || getType() == "FLOAT") {
                     std::cout << "addi $sp, $sp, -" << 4*getLength() << std::endl;
-                    address = std::to_string(StackPointer.getIncr()+4);
+                    address = std::to_string((int)(StackPointer.getIncr()+4*getLength()));
                     StackPointer.setIncr(StackPointer.getIncr()+4*getLength());
                     StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4*getLength());
                     if(Symbol.lookUp(id) == "Error: undefined reference") {
@@ -1313,6 +1319,7 @@ private:
     std::string assignop;
     bool deref;
     bool addrOf;
+    std::string stringData = ""; // for char *c = "hello";
 public:
     Pointer() {}
 
@@ -1329,6 +1336,13 @@ public:
         assignop = *_assignop;
         Expr = _Expr;
         deref = _deref;
+    }
+
+    Pointer(const std::string *_id, const std::string *_stringData) { // char *p = "hello";
+        VarType = DECL;
+        id = *_id;
+        stringData = _stringData->substr(1,_stringData->length()-2);
+        type = "CHAR";
     }
 
     Pointer(TypeDef _type, const std::string *_id, DeclType _form, ExpressionPtr _Expr = nullptr) {
@@ -1789,21 +1803,40 @@ public:
                 }
                 break;
             case DECL:
-                std::cout << "addi $sp, $sp, -4" << std::endl;
-                StackPointer.setIncr(StackPointer.getIncr()+4);
-                StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
-                address = std::to_string(StackPointer.getIncr());
-                if(Symbol.lookUp(id) == "Error: undefined reference") {
-                    Symbol.insert(type, "ptr", id, address);
-                }else {
-                    Symbol.modify(type, "ptr", id, address);
-                }
-                if(Expr != nullptr) {
-                    getExpr()->CompileRec("$t0");
-                    std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
-                }
-                if(Symbol.getScope() == 0) {
-                    std::cout << ".global " << getId() << std::endl;
+                if(stringData.empty()) {
+                    std::cout << "addi $sp, $sp, -4" << std::endl;
+                    StackPointer.setIncr(StackPointer.getIncr()+4);
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
+                    address = std::to_string(StackPointer.getIncr());
+                    if(Symbol.lookUp(id) == "Error: undefined reference") {
+                        Symbol.insert(type, "ptr", id, address);
+                    }else {
+                        Symbol.modify(type, "ptr", id, address);
+                    }
+                    if(Expr != nullptr) {
+                        getExpr()->CompileRec("$t0");
+                        std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
+                    }
+                    if(Symbol.getScope() == 0) {
+                        std::cout << ".global " << getId() << std::endl;
+                    }
+                } else { // char *p = "hello";
+                    std::cout << "addi $sp, $sp, -" << 4*stringData.length() << std::endl;
+                    address = std::to_string((int)(StackPointer.getIncr()+4*stringData.length()));
+                    StackPointer.setIncr(StackPointer.getIncr()+4*stringData.length());
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4*stringData.length());
+                    if(Symbol.lookUp(id) == "Error: undefined reference") {
+                        Symbol.insert(type, "array", id, address);
+                    }else {
+                        Symbol.modify(type, "array", id, address);
+                    }
+                    for(int count = 0; count < stringData.length(); count++) {
+                        std::cout << "li $t0, " << (int) stringData[count] << std::endl;
+                        std::cout << "sb $t0, " << 4*count << "($sp)" << std::endl;
+                    }
+                    if(Symbol.getScope() == 0) {
+                        std::cout << ".global " << getId() << std::endl;
+                    }
                 }
                 break;
             case ARG:
@@ -2080,7 +2113,9 @@ private:
     std::string multiChar; // char *x="hello";
 public:
     SingleChar(const std::string *input) {
-        character = (*input)[1];
+        if((*input)[0] == '\'') {
+            character = (*input)[1];
+        }
     }
     char getValue() const
     { return character; }

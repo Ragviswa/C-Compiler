@@ -39,13 +39,13 @@
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
 %token T_INT T_FLOAT T_DOUBLE T_CHAR T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_DEFAULT T_ENUM
-%token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE T_CHAR_DATA
+%token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE T_CHAR_DATA T_STRING_DATA
 %token T_SIZEOF
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
 %type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND IOR_EXPR XOR_EXPR AND_EXPR EQUALITY RELAT SHIFT ARITH TERM UNARY POST FACTOR
 %type <number> T_NUMBER_INT T_NUMBER_DOUBLE
-%type <string> T_INT T_FLOAT T_DOUBLE T_CHAR T_VARIABLE ASSIGNOP T_CHAR_DATA
+%type <string> T_INT T_FLOAT T_DOUBLE T_CHAR T_VARIABLE ASSIGNOP T_CHAR_DATA T_STRING_DATA
 %type <T_type> TYPE_DEF
 %type <variable> DECL ARG
 %type <blocklist> BLOCK_ITEM_LIST
@@ -127,6 +127,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET T_ASSIGN EXPR T_SEMICOLON {}
                     | TYPE_DEF T_TIMES T_VARIABLE T_SEMICOLON                                           { $$ = new Pointer($1, $3, DeclType::DECL); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                             { $$ = new Pointer($1, $3, DeclType::DECL, $5); }
+                    | T_CHAR T_TIMES T_VARIABLE T_ASSIGN T_STRING_DATA T_SEMICOLON                      { $$ = new Pointer($3, $5); }
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
