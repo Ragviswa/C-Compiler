@@ -71,6 +71,10 @@ FUNCTION            : TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT   
                     | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new FunctionStorage($1, $2)), $4, $6); }
                     | TYPE_DEF T_VARIABLE T_LBRACKET T_RBRACKET T_SEMICOLON             { $$ = new Function((new FunctionStorage($1, $2)), nullptr, nullptr); }
                     | TYPE_DEF T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET T_SEMICOLON    { $$ = new Function((new FunctionStorage($1, $2)), $4, nullptr); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_LBRACKET T_RBRACKET COMPOUND_STAT           { $$ = new Function((new FunctionStorage($1, $3)), nullptr, $6); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET COMPOUND_STAT  { $$ = new Function((new FunctionStorage($1, $3)), $5, $7); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_LBRACKET T_RBRACKET T_SEMICOLON             { $$ = new Function((new FunctionStorage($1, $3)), nullptr, nullptr); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_LBRACKET ARG_LIST T_RBRACKET T_SEMICOLON    { $$ = new Function((new FunctionStorage($1, $3)), $5, nullptr); }
 
 ARG_LIST            : ARG                                                   { $$ = new DeclarationList($1, nullptr); }
                     | ARG T_COMMA ARG_LIST                                  { $$ = new DeclarationList($1, $3); }
@@ -125,7 +129,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET T_ASSIGN EXPR T_SEMICOLON {}
                     | TYPE_DEF T_TIMES T_VARIABLE T_SEMICOLON                                           { $$ = new Pointer($1, $3, DeclType::DECL); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                             { $$ = new Pointer($1, $3, DeclType::DECL, $5); }
-                    | T_CHAR T_TIMES T_VARIABLE T_ASSIGN T_STRING_DATA T_SEMICOLON                      { $$ = new Pointer($3, $5); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN T_STRING_DATA T_SEMICOLON                      { $$ = new Pointer($3, $5); }
                     | T_ENUM T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                                    { $$ = new EnumKeyword(nullptr, $3); }
                     | T_ENUM T_VARIABLE T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                         { $$ = new EnumKeyword($2, $4); }
                     | T_ENUM T_VARIABLE                                                                 { $$ = new EnumKeyword($2, nullptr); }
@@ -225,7 +229,6 @@ FACTOR              : T_NUMBER_INT                                          { $$
 // Currently Compound Statement is incorrectly parsing as it requires the order to be a declaration list then a statement list,
 // but based on our understanding, it should be able to do it in any order
 const Body *g_root; // Definition of variable (to match declaration earlier)
-
 
 const Body *parseAST(FILE *inputFile)
 {

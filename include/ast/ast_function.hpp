@@ -70,17 +70,11 @@ public:
                 StackPointer.setcurrentscope(StackPointer.getcurrentscope()+1);
                 StackPointer.setscopeIncr(0);
                 args->CompileRec(destReg);
-                if(functionType == "INT") {
-                    statements->CompileRec(destReg);
-                }
-                else if(functionType == "FLOAT") {
-                    statements->CompileRec("$f0");
-                }
-                else if(functionType == "DOUBLE") {
+                if(functionType == "FLOAT" || functionType == "DOUBLE") {
                     statements->CompileRec("$f0");
                 }
                 else {
-                    std::cout << "ERROR: function datatype missing" << std::endl;
+                    statements->CompileRec(destReg);
                 }
                 std::cout << name->getId() << "end:" << std::endl;
                 for(int i = StackPointer.getcurrentscope(); i<50; i++){
@@ -93,18 +87,11 @@ public:
                 StackPointer.setcurrentscope(StackPointer.getcurrentscope()-1);
                 Symbol.endScope();
             }else{
-                std::string functionType = getType();
-                if(functionType == "INT") {
-                    statements->CompileRec(destReg);
-                }
-                else if(functionType == "FLOAT") {
-                    statements->CompileRec("$f0");
-                }
-                else if(functionType == "DOUBLE") {
+                if(functionType == "FLOAT" || functionType == "DOUBLE") {
                     statements->CompileRec("$f0");
                 }
                 else {
-                    std::cout << "ERROR: function datatype missing" << std::endl;
+                    statements->CompileRec(destReg);
                 }
                 std::cout << name->getId() << "end:" << std::endl;
                 for(int i = StackPointer.getcurrentscope() + 1; i<50; i++){
