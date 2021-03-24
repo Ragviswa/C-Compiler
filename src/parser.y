@@ -40,7 +40,7 @@
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
 %token T_INT T_FLOAT T_DOUBLE T_CHAR T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_DEFAULT T_ENUM T_STRUCT
-%token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE T_CHAR_DATA T_STRING_DATA
+%token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE T_CHAR_DATA T_STRING_DATA STRUCT T_UNSIGNED
 %token T_SIZEOF
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
@@ -122,12 +122,6 @@ ENUM_LIST           : ENUM                                                  { $$
 
 ENUM                : T_VARIABLE                                            { $$ = new Variable(TypeDef::ENUM, $1, DeclType::DECL); }
                     | T_VARIABLE T_ASSIGN CONDITIONAL                       { $$ = new Variable(TypeDef::ENUM, $1, DeclType::DECL, $3); }
-
-STRUCT_MEMBER_LIST  : STRUCT_MEMBER                                                                     {}
-                    | STRUCT_MEMBER STRUCT_MEMBER_LIST                                                  {}
-
-STRUCT_MEMBER       : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
-                    | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
 
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
@@ -218,6 +212,7 @@ TYPE_DEF            : T_INT                                                 { $$
                     | T_FLOAT                                               { $$ = TypeDef::FLOAT; }
                     | T_DOUBLE                                              { $$ = TypeDef::DOUBLE; }
                     | T_CHAR                                                { $$ = TypeDef::CHAR; }
+                    | T_UNSIGNED                                            { $$ = TypeDef::INT; }
 
 FACTOR              : T_NUMBER_INT                                          { $$ = new Number_INT($1); }
                     | T_NUMBER_DOUBLE                                       { $$ = new Number_DOUBLE($1); }
