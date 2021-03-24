@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <math.h>
 
 #include "symbol_table.hpp"
 
@@ -2584,6 +2585,32 @@ public:
     }
     virtual void CompileRec(std::string destReg) const override {
         std::cout << "li " << destReg << ", " << (int) character << std::endl;
+    }
+};
+
+class String 
+    : public Expression
+{
+private:
+    std::string str;
+public:
+    String(const std::string *_str) {
+        str = _str->substr(1,_str->length()-2);
+    }
+    const std::string getString() {
+        return str;
+    }
+    virtual const std::string getDataType() const override {
+        return "CHAR";
+    }
+    virtual void CompileRec(std::string destReg) const override{
+        std::cout << "addi $sp, $sp, -" << (int)(ceil((double)str.length()/4)*4) << std::endl;
+        for(int count = 0; count < str.length(); count++) {
+            std::cout << "li $t0, " << (int) str[count] << std::endl;
+            std::cout << "sb $t0, " << count << "($sp)" << std::endl;
+        }
+        StackPointer.setscopeIncr(StackPointer.getscopeIncr()+(int)(ceil((double)str.length()/4)*4));
+        std::cout << "addi " << destReg << ", $sp, 0" << std::endl;
     }
 };
 

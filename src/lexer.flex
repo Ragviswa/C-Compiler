@@ -63,6 +63,7 @@ int             { return T_INT; }
 float           { return T_FLOAT; }
 double          { return T_DOUBLE; }
 char            { return T_CHAR; }
+void            { return T_VOID; }
 return          { return T_RETURN; }
 while           { return T_WHILE; }
 if              { return T_IF; }
