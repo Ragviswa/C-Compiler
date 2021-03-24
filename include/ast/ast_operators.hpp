@@ -86,6 +86,13 @@ public:
     AddOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl+vr;
+    }
     
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -255,7 +262,14 @@ public:
     SubOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
-    
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl-vr;
+    }
+
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override 
@@ -423,6 +437,13 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl*vr;
+    }
+
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override
@@ -569,6 +590,13 @@ public:
     DivOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl/vr;
+    }
 
     virtual void CompileRec(std::string destReg) const override {
         std::string leftType = getLeft()->getDataType();
@@ -717,6 +745,13 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl%vr;
+    }
+
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
         std::cout << "addi $sp, $sp, -4" << std::endl;
@@ -750,6 +785,13 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl>vr;
+    }
+
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
         std::cout << "addi $sp, $sp, -4" << std::endl;
@@ -780,6 +822,13 @@ public:
     GreaterThanEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl>=vr;
+    }
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
@@ -819,6 +868,13 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl<vr;
+    }
+
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
         std::cout << "addi $sp, $sp, -4" << std::endl;
@@ -849,6 +905,13 @@ public:
     LessThanEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl<=vr;
+    }
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
@@ -888,6 +951,13 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl==vr;
+    }
+
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
         std::cout << "addi $sp, $sp, -4" << std::endl;
@@ -925,6 +995,13 @@ public:
     NotEqualOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl!=vr;
+    }
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
@@ -965,6 +1042,13 @@ public:
     AndOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl&vr;
+    }
     
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -998,6 +1082,13 @@ public:
     OrOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl|vr;
+    }
     
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -1030,6 +1121,13 @@ public:
     XorOperator(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl^vr;
+    }
     
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -1062,6 +1160,13 @@ public:
         : Operator(_left, _right)
     {}
 
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl<<vr;
+    }
+
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
         std::cout << "addi $sp, $sp, -4" << std::endl;
@@ -1083,6 +1188,13 @@ public:
     RightShift(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl>>vr;
+    }
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
@@ -1106,6 +1218,13 @@ public:
     AndLogic(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl&&vr;
+    }
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
@@ -1145,6 +1264,13 @@ public:
     OrLogic(ExpressionPtr _left, ExpressionPtr _right)
         : Operator(_left, _right)
     {}
+
+    virtual int evaluate() const override
+    {
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+        return vl||vr;
+    }
 
     virtual void CompileRec(std::string destReg) const override {
         getLeft()->CompileRec("$t0");
@@ -1203,6 +1329,15 @@ public:
 
     ExpressionPtr getRight() const
     { return right; }
+
+    virtual int evaluate() const override
+    {
+        int vc=getcond()->evaluate();
+        int vl=getLeft()->evaluate();
+        int vr=getRight()->evaluate();
+
+        return vc?vl:vr;
+    }
 
     virtual void print(std::ostream &dst) const override
     {

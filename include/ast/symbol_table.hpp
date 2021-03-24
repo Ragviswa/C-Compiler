@@ -10,6 +10,7 @@ class StackPtr{
     private:
     int incr;
     int argc;
+    int enumdef = 0;
     int scopeincr[50];
     int current_scope = 0;
     int nullfunc = 0;
@@ -52,6 +53,14 @@ class StackPtr{
 
     void setArgc(int _argc) {
         argc = _argc;
+    }
+
+    int getEnumdef() {
+        return enumdef;
+    }
+
+    void setEnumdef(int _enumdef) {
+        enumdef = _enumdef;
     }
 
     int getNullfunc() {

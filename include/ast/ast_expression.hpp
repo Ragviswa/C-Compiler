@@ -34,6 +34,9 @@ public:
     virtual void CompileRec(std::string destReg) const
     {}
 
+    virtual int evaluate() const
+    {}
+
     //! Evaluate the tree using the given mapping of variables to numbers
     virtual double evaluate(
         const std::map<std::string,double> &bindings

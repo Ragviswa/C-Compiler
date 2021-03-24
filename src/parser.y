@@ -22,6 +22,7 @@
   const BlockList *blocklist;
   const DeclarationList *decllist;
   const ExpressionList *arglist;
+  EnumList *enumlist;
   Variable *variable;
   Array *array;
   double number;
@@ -47,9 +48,10 @@
 %type <number> T_NUMBER_INT T_NUMBER_DOUBLE
 %type <string> T_INT T_FLOAT T_DOUBLE T_CHAR T_VARIABLE ASSIGNOP T_CHAR_DATA T_STRING_DATA
 %type <T_type> TYPE_DEF
-%type <variable> DECL ARG
+%type <variable> DECL ARG ENUM
 %type <blocklist> BLOCK_ITEM_LIST
 %type <decllist> ARG_LIST
+%type <enumlist> ENUM_LIST
 %type <arglist> EXPR_LIST
 %type <function> FUNCTION
 %type <body> BODY
@@ -111,15 +113,11 @@ SEL_STAT            : T_IF T_LBRACKET EXPR T_RBRACKET STAT                  { $$
 EXPR_STAT           : T_SEMICOLON                                           { $$ = new ExpressionStatement(); }
                     | EXPR T_SEMICOLON                                      { $$ = new ExpressionStatement($1); }
 
-ENUM_DECL           : ENUM T_LBRACE ENUM_LIST T_RBRACE                      {}
-                    | ENUM T_VARIABLE T_LBRACE ENUM_LIST T_RBRACE           {}
-                    | ENUM T_VARIABLE                                       {}
+ENUM_LIST           : ENUM                                                  { $$ = new EnumList($1); }
+                    | ENUM T_COMMA ENUM_LIST                                { $$ = new EnumList($1, $3); }
 
-ENUM_LIST           : ENUM                                                  {}
-                    | ENUM T_COMMA ENUM_LIST                                {}
-
-ENUM                : T_VARIABLE                                            {}
-                    | T_VARIABLE T_ASSIGN CONDITIONAL                       {}
+ENUM                : T_VARIABLE                                            { $$ = new Variable(TypeDef::ENUM, $1, DeclType::DECL); }
+                    | T_VARIABLE T_ASSIGN CONDITIONAL                       { $$ = new Variable(TypeDef::ENUM, $1, DeclType::DECL, $3); }
 
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
@@ -128,6 +126,9 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | TYPE_DEF T_TIMES T_VARIABLE T_SEMICOLON                                           { $$ = new Pointer($1, $3, DeclType::DECL); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                             { $$ = new Pointer($1, $3, DeclType::DECL, $5); }
                     | T_CHAR T_TIMES T_VARIABLE T_ASSIGN T_STRING_DATA T_SEMICOLON                      { $$ = new Pointer($3, $5); }
+                    | T_ENUM T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                                    { $$ = new EnumKeyword(nullptr, $3); }
+                    | T_ENUM T_VARIABLE T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                         { $$ = new EnumKeyword($2, $4); }
+                    | T_ENUM T_VARIABLE                                                                 { $$ = new EnumKeyword($2, nullptr); }
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}

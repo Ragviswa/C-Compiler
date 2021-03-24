@@ -10,7 +10,8 @@ enum TypeDef{
   INT,
   FLOAT,
   DOUBLE,
-  CHAR
+  CHAR,
+  ENUM
 };
 
 enum DeclType{
@@ -92,6 +93,11 @@ public:
                     break;
                 case CHAR:
                     type = "CHAR";
+                    id = *_id;
+                    Expr = _Expr;
+                    break;
+                case ENUM:
+                    type = "ENUM";
                     id = *_id;
                     Expr = _Expr;
                     break;
@@ -181,6 +187,8 @@ public:
                             std::cout << "lb " << destReg << ", -" << address << "($fp)" << std::endl;
                         }
                     }
+                }else if(format == "enum"){
+                    std::cout << "addiu " << destReg << ", $0, " << address << std::endl;
                 }
                 break;
             case ASSIGN:
@@ -637,6 +645,17 @@ public:
                         std::cout << ".global " << getId() << std::endl;
                     }
                 }
+                else if(getType() == "ENUM") {
+                    if(Expr!=nullptr){
+                        int enumval = getExpr()->evaluate();
+                        StackPointer.setEnumdef(enumval);
+                    }
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert("INT", "enum", id, std::to_string(StackPointer.getEnumdef()));
+                    }else{
+                        Symbol.modify("INT", "enum", id, std::to_string(StackPointer.getEnumdef()));
+                    }
+                }
                 break;
             case ARG:
                 if(getType()=="INT"){
@@ -758,6 +777,86 @@ public:
     {
         return bindings.at(id);
     }    
+};
+
+class EnumList
+    : public Variable
+{
+private:
+    Variable *enumvar;
+    EnumList *enumlist = nullptr;
+public:
+    EnumList(Variable *_enumvar, EnumList *_enumlist = nullptr)
+        : enumvar(_enumvar)
+        , enumlist(_enumlist)
+    {}
+
+    virtual ~EnumList() {
+        delete enumvar;
+        delete enumlist;
+    }
+    Variable *getVar() const
+    { return enumvar; }
+
+    EnumList *getenumlist() const
+    { return enumlist; }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        enumvar->print(dst);
+        if(enumlist!=nullptr){
+            dst << ", ";
+            enumlist->print(dst);
+            dst << "\n";
+        }
+    }
+
+    virtual void CompileRec(std::string destReg) const override{
+        getVar()->CompileRec(destReg);
+        StackPointer.setEnumdef(StackPointer.getEnumdef()+1);
+        if(enumlist!=nullptr){
+            getenumlist()->CompileRec(destReg);
+        }
+        StackPointer.setEnumdef(0);
+    }  
+};
+
+class EnumKeyword
+    :public Variable
+{
+private:
+    std::string id;
+    mutable std::string address;
+    EnumList *enumlist = nullptr;
+public:
+    EnumKeyword() {
+    }
+    
+    EnumKeyword(const std::string *_id = nullptr, EnumList *_enumlist = nullptr) {
+        id = *_id;
+        enumlist = _enumlist;
+    }
+
+    const std::string getId() const
+    { return id; }
+
+    const std::string getAddr() const
+    { return address; }
+
+    ExpressionPtr getenumlist() const
+    { return enumlist; }
+
+    virtual void CompileRec(std::string destReg) const override{
+        if(Symbol.lookUp(id) == "Error: undefined reference"){
+            Symbol.insert("enum", "enum", id, std::to_string(StackPointer.getEnumdef()));
+        }else{
+            Symbol.modify("enum", "enum", id, std::to_string(StackPointer.getEnumdef()));
+        }
+        if(enumlist!=nullptr){
+            getenumlist()->CompileRec(destReg);
+        }
+
+    }
 };
 
 class Array
@@ -2062,6 +2161,10 @@ public:
     { return value; }
     virtual void print(std::ostream &dst) const override
     { dst<<value; }
+    virtual int evaluate() const override
+    {
+        return value;
+    }
     virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override

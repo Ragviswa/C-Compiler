@@ -45,6 +45,12 @@ public:
     virtual const char *getOpcode() const override
     { return "-"; }
 
+    virtual int evaluate() const override
+    {
+        int vl=getExpr()->evaluate();
+        return -vl;
+    }
+
     virtual void CompileRec(std::string destReg) const override {
         std::string type = getExpr()->getDataType();
         if(type == "INT") {
@@ -86,6 +92,12 @@ public:
     virtual const char *getOpcode() const override
     { return "+"; }
 
+    virtual int evaluate() const override
+    {
+        int vl=getExpr()->evaluate();
+        return +vl;
+    }
+
     virtual void CompileRec(std::string destReg) const override {
         std::string type = getExpr()->getDataType();
         if(type == "INT") {
@@ -126,6 +138,12 @@ public:
 
     virtual const char *getOpcode() const override
     { return "!"; }
+
+    virtual int evaluate() const override
+    {
+        int vl=getExpr()->evaluate();
+        return !vl;
+    }
     
     virtual void CompileRec(std::string destReg) const override {
         getExpr()->CompileRec("$t0");
