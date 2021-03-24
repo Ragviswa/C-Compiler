@@ -147,11 +147,21 @@ public:
     }
 
     virtual const std::string getDataType() const override {
+        if(!type.empty()) {
+            return type;
+        }
         type = Symbol.getType(id);
         return type;
     }
 
+    virtual const int getDataLength() const override {
+        return Symbol.getSize(id);
+    }
+
     virtual const std::string getDataFormat() const override {
+        if(VarType == ARG) {
+            return "var";
+        }
         std::string format = Symbol.getFormat(id);
         return format;
     }
@@ -663,7 +673,7 @@ public:
                     if(StackPointer.getArgc()<4){
                         std::cout << "sw $a" << StackPointer.getArgc() << ", 0($sp)"<<  std::endl;
                     }else{
-                        std::cout << "lw $t0, " << StackPointer.getArgc()*4 <<  "($fp)"<<  std::endl;
+                        std::cout << "lw $t0, " << StackPointer.getArgSize() <<  "($fp)"<<  std::endl;
                         std::cout << "sw $t0, 0($sp)" <<  std::endl;
                     }
                     StackPointer.setIncr(StackPointer.getIncr()+4);
@@ -693,6 +703,9 @@ public:
                         else if(StackPointer.getArgc() == 3) {
                             std::cout << "sw $7, 0($sp)"<<  std::endl;
                         }
+                    }else {
+                        std::cout << "lwc1 $f0, " << StackPointer.getArgSize() << "($fp)" << std::endl;
+                        std::cout << "swc1 $f0, 0($sp)" << std::endl;
                     }
                     StackPointer.setIncr(StackPointer.getIncr()+4);
                     StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
@@ -701,10 +714,6 @@ public:
                         Symbol.insert(type, "var", id, address);
                     }else{
                         Symbol.modify(type, "var", id, address);
-                    }
-                    if(Expr!=nullptr){
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
                     }
                     if(Symbol.getScope()==0){
                         std::cout << ".global " << getId() << std::endl;
@@ -728,6 +737,11 @@ public:
                         }
                         std::cout << "swc1 $f" << float_argNum << ", 0($sp)"<<  std::endl;
                         std::cout << "swc1 $f" << float_argNum+1 << ", 4($sp)" << std::endl;
+                    }else {
+                        std::cout << "lwc1 $f0 " << StackPointer.getArgSize() << "($fp)" << std::endl;
+                        std::cout << "lwc1 $f1, " << StackPointer.getArgSize()-4 << "($fp)" << std::endl;
+                        std::cout << "swc1 $f0, 0($sp)" << std::endl;
+                        std::cout << "swc1 $f1, 4($sp)" << std::endl;
                     }
                     StackPointer.setIncr(StackPointer.getIncr()+8);
                     StackPointer.setscopeIncr(StackPointer.getscopeIncr()+8);
@@ -737,11 +751,6 @@ public:
                     }else{
                         Symbol.modify(type, "var", id, address);
                     }
-                    if(Expr!=nullptr){
-                        getExpr()->CompileRec("$f0");
-                        std::cout << "swc1 $f0, -" << address << "($fp)" << std::endl;
-                        std::cout << "swc1 $f1, -" << std::stoi(address)-4 << "($fp)" << std::endl;
-                    }
                     if(Symbol.getScope()==0){
                         std::cout << ".global " << getId() << std::endl;
                     }
@@ -750,6 +759,9 @@ public:
                     std::cout << "addi $sp, $sp, -4" << std::endl;
                     if(StackPointer.getArgc()<4){
                         std::cout << "sb $a" << StackPointer.getArgc() << ", 0($sp)"<<  std::endl;
+                    }else {
+                        std::cout << "lw $t0, " << StackPointer.getArgSize() << "($fp)" << std::endl;
+                        std::cout << "sw $t0, 0($sp)" << std::endl;
                     }
                     StackPointer.setIncr(StackPointer.getIncr()+4);
                     StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
@@ -758,11 +770,6 @@ public:
                         Symbol.insert(type, "var", id, address);
                     }else{
                         Symbol.modify(type, "var", id, address);
-                    }
-                    if(Expr!=nullptr){
-                        getExpr()->CompileRec("$t0");
-                        std::cout << "andi $t0, $t0, 0x00ff" << std::endl;
-                        std::cout << "sb $t0, -" << address << "($fp)" << std::endl;
                     }
                     if(Symbol.getScope()==0){
                         std::cout << ".global " << getId() << std::endl;
@@ -951,6 +958,10 @@ public:
     virtual const std::string getDataType() const override {
         type = Symbol.getType(id);
         return type;
+    }
+
+    virtual const int getDataLength() const override {
+        return Symbol.getSize(id);
     }
 
     virtual void CompileRec(std::string destReg) const override {
@@ -1517,6 +1528,10 @@ public:
         return type;
     }
 
+    virtual const int getDataLength() const override {
+        return Symbol.getSize(id);
+    }
+
     virtual void CompileRec(std::string destReg) const override {
         switch(VarType) {
             case CALL:
@@ -1943,7 +1958,7 @@ public:
                 if(StackPointer.getArgc()<4){
                     std::cout << "sw $a" << StackPointer.getArgc() << ", 0($sp)" << std::endl;
                 }else{
-                    std::cout << "lw $t0, " << StackPointer.getArgc()*4 <<  "($fp)" <<  std::endl;
+                    std::cout << "lw $t0, " << StackPointer.getArgSize() <<  "($fp)" <<  std::endl;
                     std::cout << "sw $t0, 0($sp)" <<  std::endl;
                 }
                 StackPointer.setIncr(StackPointer.getIncr()+4);
@@ -1954,15 +1969,10 @@ public:
                 }else {
                     Symbol.insert(type, "ptr", id, address);
                 }
-                if(Expr != nullptr) {
-                    getExpr()->CompileRec("$t0");
-                    std::cout << "sw $t0, -" << address << "($fp)" << std::endl;
-                }
                 if(Symbol.getScope() == 0) {
                     std::cout << ".global " << getId() << std::endl;
                 }
                 break;
-                
         }
     }
 };
@@ -2047,20 +2057,22 @@ public:
                     }
                     std::cout << "jal " << id << std::endl;
                     std::cout << "add " << destReg << ", $0, $v0" << std::endl; 
-                    std::cout << "addiu $sp, $sp, " << StackPointer.getArgc()*4 << std::endl; 
-                    StackPointer.setIncr(StackPointer.getIncr()-StackPointer.getArgc()*4);
-                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()-StackPointer.getArgc()*4);
+                    std::cout << "addiu $sp, $sp, " << StackPointer.getArgSize() << std::endl; 
+                    StackPointer.setIncr(StackPointer.getIncr()-StackPointer.getArgSize());
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()-StackPointer.getArgSize());
                     StackPointer.setArgc(0);
+                    StackPointer.setArgSize(0);
                 }else{
                     address = std::to_string(std::stoi(Symbol.lookUp(id))+44);
                     if(Args!=nullptr){
                         Args->CompileRec(destReg, address);
                     }
                     std::cout << "jal " << id << std::endl;
-                    std::cout << "addiu $sp, $sp, " << StackPointer.getArgc()*4 << std::endl; 
-                    StackPointer.setIncr(StackPointer.getIncr()-StackPointer.getArgc()*4);
-                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()-StackPointer.getArgc()*4);
+                    std::cout << "addiu $sp, $sp, " << StackPointer.getArgSize() << std::endl; 
+                    StackPointer.setIncr(StackPointer.getIncr()-StackPointer.getArgSize());
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()-StackPointer.getArgSize());
                     StackPointer.setArgc(0);
+                    StackPointer.setArgSize(0);
                     if(getDataType() == "INT") {
                         std::cout << "add " << destReg << ", $v0, $0" << std::endl;
                     }
@@ -2141,10 +2153,22 @@ public:
     virtual void CompileRec(std::string destReg) const override{
         getVar()->CompileRec(destReg);
         StackPointer.setArgc(StackPointer.getArgc()+1);
+        std::string a_format = getVar()->getDataFormat();
+        std::string a_type = getVar()->getDataType();
+        if(a_format == "ptr" || a_format == "array") {
+            StackPointer.setArgSize(StackPointer.getArgSize()+4);
+        }else if(a_format == "var") {
+            if(a_type == "INT" || a_type == "FLOAT" || a_type == "CHAR") {
+                StackPointer.setArgSize(StackPointer.getArgSize()+4);
+            }else if(a_type == "DOUBLE") {
+                StackPointer.setArgSize(StackPointer.getArgSize()+8);
+            }
+        }
         if(declarationList!=nullptr){
             getdecllist()->CompileRec(destReg);
         }
         StackPointer.setArgc(0);
+        StackPointer.setArgSize(0);
     }  
 };
 

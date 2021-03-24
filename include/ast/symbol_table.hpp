@@ -11,12 +11,21 @@ class StackPtr{
     int incr;
     int argc;
     int enumdef = 0;
+    int argSize = 0;
     int scopeincr[50];
     int current_scope = 0;
     int nullfunc = 0;
     int freturn = 0;
     public:
     StackPtr() {
+    }
+
+    int getArgSize() {
+        return argSize;
+    }
+
+    void setArgSize(int n) {
+        argSize = n;
     }
 
     int getIncr() {
@@ -83,6 +92,7 @@ class StackPtr{
 class Node {
 private:
     std::string type, format ,name, address;
+    int length;
     Node* next;
     friend class SymbolTable;
 public:
@@ -90,11 +100,12 @@ public:
         next = nullptr;
     }
 
-    Node(std::string _type, std::string _format, std::string _name, std::string _address) {
+    Node(std::string _type, std::string _format, std::string _name, std::string _address, int _length = 1) {
         type = _type;
         format = _format;
         name = _name;
         address = _address;
+        length = _length;
         next = nullptr;
     }
 
@@ -116,6 +127,14 @@ public:
 
     void setType(std::string _type) {
         type = _type;
+    }
+
+    void setLength(int _length) {
+        length = _length;
+    }
+
+    int getLength() {
+        return length;
     }
 
     std::string getFormat() {
@@ -217,9 +236,9 @@ public:
         loopscope = _loopscope;
     }
 
-    bool insert(std::string type, std::string format, std::string name, std::string address) {
+    bool insert(std::string type, std::string format, std::string name, std::string address, int length = 1) {
         if(head[current_scope] == nullptr) {
-            head[current_scope] = new Node(type, format, name, address);
+            head[current_scope] = new Node(type, format, name, address, length);
             return true;
         }
         else {
@@ -227,14 +246,14 @@ public:
             while(start->getNext() != nullptr) {
                 start = start->getNext();
             }
-            start->setNext(new Node(type, format, name, address));
+            start->setNext(new Node(type, format, name, address, length));
             return true;
         }
         return false;
     }
 
     // modify function should only be called when there is a declaration with an existing variable name
-    bool modify(std::string type, std::string format, std::string name, std::string address) {
+    bool modify(std::string type, std::string format, std::string name, std::string address, int length = 1) {
         if(head[current_scope] == nullptr) {
             return false;
         }
@@ -245,12 +264,29 @@ public:
                     start->setType(type);
                     start->setFormat(format);
                     start->setAddress(address);
+                    start->setLength(length);
                     return true;
                 }
                 start = start->getNext();
             }
         }
         return false;
+    }
+
+    int getSize(std::string id) {
+        Node *start = head[current_scope];
+        if(start == nullptr) {
+            return 0;
+        }
+        while(start != nullptr) {
+            if(start->getName() == id) {
+                return start->getLength();
+            }
+            else {
+                start = start->getNext();
+            }
+        }
+        return 0;
     }
 
     std::string lookUp(std::string name) { // returns address

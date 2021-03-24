@@ -21,6 +21,10 @@ public:
 
     virtual const char *getOpcode() const =0;
 
+    virtual const std::string getDataType() const override {
+        return expr->getDataType();
+    }
+
     ExpressionPtr getExpr() const
     { return expr; }
 
