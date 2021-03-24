@@ -74,6 +74,7 @@ break           { return T_BREAK; }
 case            { return T_CASE; }
 default         { return T_DEFAULT; }
 enum            { return T_ENUM; }
+struct          { return T_STRUCT; }
 sizeof          { return T_SIZEOF; }
 
 [0-9]+                         { yylval.number=strtod(yytext, 0); return T_NUMBER_INT; }
