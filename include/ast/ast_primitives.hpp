@@ -1914,6 +1914,7 @@ public:
                         Args->CompileRec(destReg, address);
                     }
                     std::cout << "jal " << id << std::endl;
+                    std::cout << "add " << destReg << ", $0, $v0" << std::endl; 
                     std::cout << "addiu $sp, $sp, " << StackPointer.getArgc()*4 << std::endl; 
                     StackPointer.setIncr(StackPointer.getIncr()-StackPointer.getArgc()*4);
                     StackPointer.setscopeIncr(StackPointer.getscopeIncr()-StackPointer.getArgc()*4);

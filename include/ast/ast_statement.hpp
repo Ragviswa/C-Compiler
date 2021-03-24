@@ -371,7 +371,6 @@ public:
         dst<<";";
         dst<<'\n';
     }
-
     virtual void CompileRec(std::string destReg) const override{
         if(destReg[1] == 'f') {
             getExp()->CompileRec("$f0");
@@ -381,11 +380,10 @@ public:
             getExp()->CompileRec("$t0");
             if(StackPointer.getNullfunc()==1){
                 StackPointer.setNullfunc(0);
-            }else{
-                std::cout << "add $v0, $0, $t0" << std::endl;
-                std::cout << "j " << Symbol.getfuncend() << std::endl;
-                StackPointer.setfreturn(1);
             }
+            std::cout << "add $v0, $0, $t0" << std::endl;
+            std::cout << "j " << Symbol.getfuncend() << std::endl;
+            StackPointer.setfreturn(1);
         }
     }
 };
