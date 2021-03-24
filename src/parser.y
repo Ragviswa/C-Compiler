@@ -39,7 +39,7 @@
 %token T_ASSIGN T_ADDASSIGN T_SUBASSIGN T_DIVASSIGN T_MULASSIGN T_MODASSIGN T_LEFASSIGN T_RIGASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
-%token T_INT T_FLOAT T_DOUBLE T_CHAR T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_DEFAULT T_ENUM
+%token T_INT T_FLOAT T_DOUBLE T_CHAR T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_DEFAULT T_ENUM T_STRUCT
 %token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE T_CHAR_DATA T_STRING_DATA
 %token T_SIZEOF
 
@@ -123,6 +123,12 @@ ENUM_LIST           : ENUM                                                  { $$
 ENUM                : T_VARIABLE                                            { $$ = new Variable(TypeDef::ENUM, $1, DeclType::DECL); }
                     | T_VARIABLE T_ASSIGN CONDITIONAL                       { $$ = new Variable(TypeDef::ENUM, $1, DeclType::DECL, $3); }
 
+STRUCT_MEMBER_LIST  : STRUCT_MEMBER                                                                     {}
+                    | STRUCT_MEMBER STRUCT_MEMBER_LIST                                                  {}
+
+STRUCT_MEMBER       : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
+                    | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
+
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
@@ -133,6 +139,8 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | T_ENUM T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                                    { $$ = new EnumKeyword(nullptr, $3); }
                     | T_ENUM T_VARIABLE T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                         { $$ = new EnumKeyword($2, $4); }
                     | T_ENUM T_VARIABLE                                                                 { $$ = new EnumKeyword($2, nullptr); }
+                    | STRUCT T_VARIABLE T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                         {}
+                    | STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                          {}
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
