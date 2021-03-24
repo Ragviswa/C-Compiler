@@ -716,7 +716,7 @@ public:
                     StackPointer.setscopeIncr(StackPointer.getscopeIncr()+amount);
                     std::vector<std::string> StructMembers = Symbol.getStructMemb("struct"+sid);
                     int offset = 0;
-                    int size;
+                    int size = 0;
                     for(int i = 0; i < StructMembers.size(); i++){
                         int address = StackPointer.getIncr()-std::stoi(Symbol.lookUp(StructMembers[i]));
                         if(Symbol.lookUp(id+StructMembers[i]) == "Error: undefined reference"){
