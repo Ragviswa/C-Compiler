@@ -114,7 +114,10 @@ public:
             getRight()->CompileRec("$t1");
             std::cout << "lw $t0, 0($sp)" << std::endl;
             std::cout << "addi $sp, $sp, 4" << std::endl;
-            if(leftType != "DOUBLE") {
+            if(leftType == "CHAR") {
+                std::cout << "add $t0, $t0, $t1" << std::endl;
+            }
+            else if(leftType != "DOUBLE") {
                 for(int i = 0; i < 4; i++) {
                     std::cout << "add $t0, $t0, $t1" << std::endl;
                 }
@@ -290,7 +293,10 @@ public:
             getRight()->CompileRec("$t1");
             std::cout << "lw $t0, 0($sp)" << std::endl;
             std::cout << "addi $sp, $sp, 4" << std::endl;
-            if(leftType != "DOUBLE") {
+            if(leftType == "CHAR") {
+                std::cout << "sub $t0, $t0, $t1" << std::endl;
+            }
+            else if(leftType != "DOUBLE") {
                 for(int i = 0; i < 4; i++) {
                     std::cout << "sub $t0, $t0, $t1" << std::endl;
                 }
