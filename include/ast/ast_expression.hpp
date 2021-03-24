@@ -67,17 +67,22 @@ public:
     virtual void CompileRec(std::string destReg, std::string address) const{
         if(getArg() != nullptr){
             if(StackPointer.getArgc()<4){
+                StackPointer.setIncr(StackPointer.getIncr()+4);
+                StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
+                std::cout << "addiu $sp, $sp, -4" << std::endl; 
                 getArg()->CompileRec("$a" + std::to_string(StackPointer.getArgc()));
             }else{
                 getArg()->CompileRec("$t0");
-                std::cout << "sw $t0, -" << std::to_string(44+(StackPointer.getArgc()+1)*4) <<"($sp)"<< std::endl;
+                StackPointer.setIncr(StackPointer.getIncr()+4);
+                StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
+                std::cout << "addiu $sp, $sp, -4" << std::endl;
+                std::cout << "sw $t0, " << std::to_string(StackPointer.getArgc()*4) << "($sp)"<< std::endl;
             }
             StackPointer.setArgc(StackPointer.getArgc()+1);
         }
         if(getArgList()!=nullptr){
             getArgList()->CompileRec(destReg, address);
         }
-        StackPointer.setArgc(0);
     }
 };
 
