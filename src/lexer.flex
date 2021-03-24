@@ -81,6 +81,7 @@ sizeof          { return T_SIZEOF; }
 [0-9]+[\.]([0-9]+)*             { yylval.number=strtod(yytext, 0); return T_NUMBER_DOUBLE; }
 [0-9]+[\.]([0-9]+)*f            { yylval.number=strtod(yytext, 0); return T_NUMBER_DOUBLE; }
 [a-zA-Z_][a-zA-Z_0-9]*          { yylval.string=new std::string(yytext); return T_VARIABLE; }
+[a-zA-Z_][a-zA-Z_0-9]*[.][a-zA-Z_][a-zA-Z_0-9]* { yylval.string=new std::string(yytext); return T_STRUCTVAR; }
 [\'][^\n | (\n) ][\']                  { yylval.string=new std::string(yytext); return T_CHAR_DATA; }
 [\'][\\][n][\']                  { yylval.string=new std::string(yytext); return T_CHAR_DATA; }
 [\"][^\n]+[\"]                  { yylval.string=new std::string(yytext); return T_STRING_DATA; }

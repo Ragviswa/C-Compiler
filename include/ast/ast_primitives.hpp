@@ -18,7 +18,8 @@ enum DeclType{
   CALL,
   ASSIGN,
   DECL,
-  ARG
+  ARG,
+  STRUCT
 };
 
 class Variable
@@ -32,6 +33,7 @@ private:
     DeclType VarType;
     ExpressionPtr Expr = nullptr;
     bool addrOf;
+    std::string sid;
 public:
 //This constructor does not feel right, it's a placeholder.
     Variable() {
@@ -50,9 +52,38 @@ public:
         Expr = _Expr;
     }
 
+    Variable(const std::string *_sid, const std::string *_id, DeclType _form) {
+        VarType = _form;
+        type = "STRUCT";
+        sid = *_sid;
+        id = *_id;
+    }
+
     Variable(TypeDef _type, const std::string *_id, DeclType _form, ExpressionPtr _Expr = nullptr) {
         if(_form == ARG){
             VarType = ARG;
+            switch(_type) {
+                case INT:
+                    type = "INT";
+                    id = *_id;
+                    break;
+                case FLOAT:
+                    type = "FLOAT";
+                    id = *_id;
+                    break;
+                case DOUBLE:
+                    type = "DOUBLE";
+                    id = *_id;
+                    break;
+                case CHAR:
+                    type = "CHAR";
+                    id = *_id;
+                    break;
+                default:
+                    type = "something went wrong";
+            }
+        }else if(_form == STRUCT){
+            VarType = STRUCT;
             switch(_type) {
                 case INT:
                     type = "INT";
@@ -666,6 +697,35 @@ public:
                         Symbol.modify("INT", "enum", id, std::to_string(StackPointer.getEnumdef()));
                     }
                 }
+                else if(getType() == "STRUCT"){
+                    int amount = std::stoi(Symbol.lookUp(sid));
+                    std::cout << "addi $sp, $sp, -" << amount << std::endl;
+                    StackPointer.setIncr(StackPointer.getIncr()+amount);
+                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+amount);
+                    std::vector<std::string> StructMembers = Symbol.getStructMemb("struct"+sid);
+                    int offset = 0;
+                    int size;
+                    for(int i = 0; i < StructMembers.size(); i++){
+                        int address = StackPointer.getIncr()-std::stoi(Symbol.lookUp(StructMembers[i]));
+                        if(Symbol.lookUp(id+StructMembers[i]) == "Error: undefined reference"){
+                            Symbol.insert(Symbol.getType(StructMembers[i]), "var", id+StructMembers[i], std::to_string(address));
+                        }else{
+                            Symbol.modify(Symbol.getType(StructMembers[i]), "var", id+StructMembers[i], std::to_string(address));
+                        }
+                        if(Symbol.getType(StructMembers[i])=="CHAR"){
+                            size+=1;
+                        }else if(Symbol.getType(StructMembers[i])=="INT"||Symbol.getType(StructMembers[i])=="FLOAT"){
+                            size+=4;
+                        }else if(Symbol.getType(StructMembers[i])=="DOUBLE"){
+                            size+=8;
+                        }
+                    }
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert("STRUCT", std::to_string(size), id, std::to_string(StackPointer.getIncr()-amount));
+                    }else{
+                        Symbol.modify("STRUCT", std::to_string(size), id, std::to_string(StackPointer.getIncr()-amount));
+                    }
+                }
                 break;
             case ARG:
                 if(getType()=="INT"){
@@ -776,6 +836,36 @@ public:
                     }
                 }
                 break;
+            case STRUCT:
+                if(getType()=="INT"){
+                    StackPointer.setStructno(StackPointer.getStructno()+4);
+                    address = std::to_string(StackPointer.getStructno());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "struct"+StackPointer.getstruct(), "."+id, address);
+                    }
+                }
+                else if(getType() == "FLOAT") {
+                    StackPointer.setStructno(StackPointer.getStructno()+4);
+                    address = std::to_string(StackPointer.getStructno());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "struct"+StackPointer.getstruct(), "."+id, address);
+                    }
+                }
+                else if(getType() == "DOUBLE") {
+                    StackPointer.setStructno(StackPointer.getStructno()+8);
+                    address = std::to_string(StackPointer.getStructno());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "struct"+StackPointer.getstruct(), "."+id, address);
+                    }
+                }
+                else if(getType() == "CHAR") {
+                    StackPointer.setStructno(StackPointer.getStructno()+4);
+                    address = std::to_string(StackPointer.getStructno());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert(type, "struct"+StackPointer.getstruct(), "."+id, address);
+                    }
+                }
+                break;
         }   
     }
     virtual double evaluate(
@@ -862,6 +952,87 @@ public:
         if(enumlist!=nullptr){
             getenumlist()->CompileRec(destReg);
         }
+
+    }
+};
+
+class StructMemberList
+    : public Variable
+{
+private:
+    Variable *structmember;
+    StructMemberList *structmemlist = nullptr;
+public:
+    StructMemberList(Variable *_structmember, StructMemberList *_structmemlist = nullptr)
+        : structmember(_structmember)
+        , structmemlist(_structmemlist)
+    {}
+
+    virtual ~StructMemberList() {
+        delete structmember;
+        delete structmemlist;
+    }
+    Variable *getVar() const
+    { return structmember; }
+
+    StructMemberList *getmemlist() const
+    { return structmemlist; }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        structmember->print(dst);
+        if(structmemlist!=nullptr){
+            dst << "; ";
+            dst << "\n";
+            structmemlist->print(dst);
+        }
+    }
+
+    virtual void CompileRec(std::string destReg) const override{
+        getVar()->CompileRec(destReg);
+        if(structmemlist!=nullptr){
+            getmemlist()->CompileRec(destReg);
+        }
+    }  
+};
+
+class StructStorage
+    :public Variable
+{
+private:
+    std::string id;
+    mutable std::string address;
+    StructMemberList *structmemlist = nullptr;
+public:
+    StructStorage() {
+    }
+    
+    StructStorage(const std::string *_id = nullptr, StructMemberList *_structmemlist = nullptr) {
+        id = *_id;
+        structmemlist = _structmemlist;
+    }
+
+    const std::string getId() const
+    { return id; }
+
+    const std::string getAddr() const
+    { return address; }
+
+    ExpressionPtr getstructmemlist() const
+    { return structmemlist; }
+
+    virtual void CompileRec(std::string destReg) const override{
+        StackPointer.setStructno(0);
+        if(Symbol.lookUp(id) == "Error: undefined reference"){
+            Symbol.insert("structpar", "struct", id, "0");
+        }else{
+            Symbol.modify("structpar", "struct", id, "0");
+        }
+        StackPointer.setstruct(id);
+        if(structmemlist!=nullptr){
+            getstructmemlist()->CompileRec(destReg);
+        }
+        Symbol.modify("structpar", "struct", id, std::to_string(StackPointer.getStructno()));
 
     }
 };
@@ -2301,8 +2472,11 @@ public:
             else if(type == "CHAR") {
                 value = 1;
             }
+            else if(type == "STRUCT") {
+                value = std::stoi(expr->getDataFormat());
+            }
         }
-        std::cout << "addi " << destReg << " , $0, " << value << std::endl;
+        std::cout << "addi " << destReg << ", $0, " << value << std::endl;
     }
 };
 

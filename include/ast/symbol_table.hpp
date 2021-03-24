@@ -2,6 +2,7 @@
 #define symbol_table_hpp
 
 #include <cassert>
+#include <vector>
 
 class SymbolTable;
 class StackPtr;
@@ -12,10 +13,12 @@ class StackPtr{
     int argc;
     int enumdef = 0;
     int argSize = 0;
+    int structamount = 0;
     int scopeincr[50];
     int current_scope = 0;
     int nullfunc = 0;
     int freturn = 0;
+    std::string strucdecl;
     public:
     StackPtr() {
     }
@@ -26,6 +29,14 @@ class StackPtr{
 
     void setArgSize(int n) {
         argSize = n;
+    }
+
+    std::string getstruct() {
+        return strucdecl;
+    }
+
+    void setstruct(std::string _strucdecl) {
+        strucdecl = _strucdecl;
     }
 
     int getIncr() {
@@ -62,6 +73,14 @@ class StackPtr{
 
     void setArgc(int _argc) {
         argc = _argc;
+    }
+
+    int getStructno() {
+        return structamount;
+    }
+
+    void setStructno(int _structamount) {
+        structamount = _structamount;
     }
 
     int getEnumdef() {
@@ -319,6 +338,21 @@ public:
             }
         }
         return "Error: undefined reference";
+    }
+
+    std::vector<std::string> getStructMemb(std::string format) { // returns vector
+        Node *start = head[current_scope];
+        std::vector<std::string> structmemberids;
+        if(start == nullptr) {
+            return structmemberids;
+        }
+        while(start != nullptr) {
+            if(start->getFormat() == format) {
+                structmemberids.push_back(start->getName());
+            }
+            start = start->getNext();
+        }
+        return structmemberids;
     }
 
     std::string getFormat(std::string name) { // returns format

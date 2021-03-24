@@ -23,6 +23,7 @@
   const DeclarationList *decllist;
   const ExpressionList *arglist;
   EnumList *enumlist;
+  StructMemberList *struclist;
   Variable *variable;
   Array *array;
   double number;
@@ -40,18 +41,19 @@
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
 %token T_INT T_FLOAT T_DOUBLE T_CHAR T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_DEFAULT T_ENUM T_STRUCT
-%token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE T_CHAR_DATA T_STRING_DATA
+%token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE T_CHAR_DATA T_STRING_DATA T_STRUCTVAR
 %token T_SIZEOF
 
 %type <stat> EXPR_STAT SEL_STAT LOOP_STAT JUMP_STAT LABL_STAT STAT COMPOUND_STAT
 %type <expr> EXPR CONDITIONAL LOGIC_OR LOGIC_AND IOR_EXPR XOR_EXPR AND_EXPR EQUALITY RELAT SHIFT ARITH TERM UNARY POST FACTOR
 %type <number> T_NUMBER_INT T_NUMBER_DOUBLE
-%type <string> T_INT T_FLOAT T_DOUBLE T_CHAR T_VARIABLE ASSIGNOP T_CHAR_DATA T_STRING_DATA
+%type <string> T_INT T_FLOAT T_DOUBLE T_CHAR T_VARIABLE ASSIGNOP T_CHAR_DATA T_STRING_DATA T_STRUCTVAR
 %type <T_type> TYPE_DEF
-%type <variable> DECL ARG ENUM
+%type <variable> DECL ARG ENUM STRUCT_MEMBER
 %type <blocklist> BLOCK_ITEM_LIST
 %type <decllist> ARG_LIST
 %type <enumlist> ENUM_LIST
+%type <struclist> STRUCT_MEMBER_LIST
 %type <arglist> EXPR_LIST
 %type <function> FUNCTION
 %type <body> BODY
@@ -119,10 +121,10 @@ ENUM_LIST           : ENUM                                                  { $$
 ENUM                : T_VARIABLE                                            { $$ = new Variable(TypeDef::ENUM, $1, DeclType::DECL); }
                     | T_VARIABLE T_ASSIGN CONDITIONAL                       { $$ = new Variable(TypeDef::ENUM, $1, DeclType::DECL, $3); }
 
-STRUCT_MEMBER_LIST  : STRUCT_MEMBER                                                                     {}
-                    | STRUCT_MEMBER STRUCT_MEMBER_LIST                                                  {}
+STRUCT_MEMBER_LIST  : STRUCT_MEMBER                                                                     { $$ = new StructMemberList($1); }
+                    | STRUCT_MEMBER STRUCT_MEMBER_LIST                                                  { $$ = new StructMemberList($1, $2); }
 
-STRUCT_MEMBER       : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
+STRUCT_MEMBER       : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::STRUCT); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
 
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
@@ -135,16 +137,19 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | T_ENUM T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                                    { $$ = new EnumKeyword(nullptr, $3); }
                     | T_ENUM T_VARIABLE T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                         { $$ = new EnumKeyword($2, $4); }
                     | T_ENUM T_VARIABLE                                                                 { $$ = new EnumKeyword($2, nullptr); }
-                    | STRUCT T_VARIABLE T_LBRACE ENUM_LIST T_RBRACE T_SEMICOLON                         {}
-                    | STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                          {}
+                    | T_STRUCT T_VARIABLE T_LBRACE STRUCT_MEMBER_LIST T_RBRACE T_SEMICOLON              { $$ = new StructStorage($2, $4); }
+                    | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                        { $$ = new Variable($2, $3, DeclType::DECL); }
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
+                    | T_STRUCTVAR ASSIGNOP EXPR                             { $$ = new Variable($1, $2, $3);}
                     | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET ASSIGNOP EXPR { $$ = new Array($1, $3, $5, $6); }
                     | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET T_INCR        { $$ = new Array($1, $3, new std::string("++"), nullptr); }
                     | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET T_DECR        { $$ = new Array($1, $3, new std::string("--"), nullptr); }
                     | T_VARIABLE T_INCR                                     { $$ = new Variable($1, new std::string("++"), nullptr); }
                     | T_VARIABLE T_DECR                                     { $$ = new Variable($1, new std::string("--"), nullptr); }
+                    | T_STRUCTVAR T_INCR                                    { $$ = new Variable($1, new std::string("++"), nullptr); }
+                    | T_STRUCTVAR T_DECR                                    { $$ = new Variable($1, new std::string("--"), nullptr); }
                     | T_TIMES T_VARIABLE ASSIGNOP EXPR                      { $$ = new Pointer($2, $3, $4, true); }
 
 ASSIGNOP            : T_ASSIGN                                              { $$ = new std::string("="); }
@@ -227,6 +232,7 @@ FACTOR              : T_NUMBER_INT                                          { $$
                     | T_SIZEOF T_LBRACKET TYPE_DEF T_RBRACKET               { $$ = new SizeOf($3); }
                     | T_TIMES T_VARIABLE                                    { $$ = new Pointer($2, true, false); }
                     | T_AND T_VARIABLE                                      { $$ = new Variable($2, true); }
+                    | T_STRUCTVAR                                           { $$ = new Variable($1); }
 
 %%
 // Keep in mind Variable is creating a new Variable instead of pointing to an old declaration
