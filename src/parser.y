@@ -2,7 +2,7 @@
   #include "ast.hpp"
 
   #include <cassert>
-
+  #include <map>
   extern const Body *g_root; // A way of getting the AST out
   extern FILE* yyin;
   //! This is to fix problems when generating C++
@@ -10,6 +10,7 @@
   // that Bison generated code can call them.
   int yylex(void);
   void yyerror(const char *);
+  static std::map<std::string, TypeDef> typedefstorage;
 }
 
 // Represents the value associated with any kind of
@@ -134,7 +135,7 @@ STRUCT_MEMBER       : TYPE_DEF T_VARIABLE T_SEMICOLON                           
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
-                    | TYPE_DEF T_VARIABLE T_LSBRACKET CONDITIONAL T_RSBRACKET T_ASSIGN EXPR T_SEMICOLON {}
+                    | TYPE_DEF T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET T_ASSIGN T_LBRACE EXPR_LIST T_RBRACE T_SEMICOLON {}
                     | TYPE_DEF T_TIMES T_VARIABLE T_SEMICOLON                                           { $$ = new Pointer($1, $3, DeclType::DECL); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                             { $$ = new Pointer($1, $3, DeclType::DECL, $5); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN T_STRING_DATA T_SEMICOLON                      { $$ = new Pointer($3, $5); }
@@ -143,7 +144,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | T_ENUM T_VARIABLE                                                                 { $$ = new EnumKeyword($2, nullptr); }
                     | T_STRUCT T_VARIABLE T_LBRACE STRUCT_MEMBER_LIST T_RBRACE T_SEMICOLON              { $$ = new StructStorage($2, $4); }
                     | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                        { $$ = new Variable($2, $3, DeclType::DECL); }
-                    | T_TYPEDEF TYPE_DEF T_VARIABLE                                                     { $$ = new Variable($2, $3, DeclType::TYPEDEF); }
+                    | T_TYPEDEF TYPE_DEF T_VARIABLE T_SEMICOLON                                         { $$ = new Variable($2, $3, DeclType::TYPEDEF); typedefstorage[*$3] = $2;}
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
@@ -226,6 +227,7 @@ TYPE_DEF            : T_INT                                                 { $$
                     | T_CHAR                                                { $$ = TypeDef::CHAR; }
                     | T_UNSIGNED                                            { $$ = TypeDef::INT; }
                     | T_VOID                                                { $$ = TypeDef::INT; }
+                    | T_VARIABLE                                            { $$ = typedefstorage[*$1]; }
 
 FACTOR              : T_NUMBER_INT                                          { $$ = new Number_INT($1); }
                     | T_NUMBER_DOUBLE                                       { $$ = new Number_DOUBLE($1); }
