@@ -116,10 +116,10 @@ public:
             std::cout << "move $sp, $fp" << std::endl;
             std::cout << "lw $fp, 0($sp)" << std::endl;
             std::cout << "jr $ra" << std::endl;
-            if(Symbol.getScope()==0){
-            std::cout << ".global " << name->getId() << std::endl;
             Symbol.setfuncscope(Symbol.getfuncscope()-1);
             StackPointer.setfreturn(0);
+            if(Symbol.getScope()==0){
+            std::cout << ".global " << name->getId() << std::endl;
             }
         }
     }
