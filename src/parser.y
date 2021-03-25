@@ -40,7 +40,7 @@
 %token T_ASSIGN T_ADDASSIGN T_SUBASSIGN T_DIVASSIGN T_MULASSIGN T_MODASSIGN T_LEFASSIGN T_RIGASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN
 %token T_SEMICOLON T_COMMA
 %token T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_LSBRACKET T_RSBRACKET
-%token T_INT T_FLOAT T_DOUBLE T_CHAR T_VOID T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_DEFAULT T_ENUM T_STRUCT
+%token T_INT T_FLOAT T_DOUBLE T_CHAR T_VOID T_RETURN T_WHILE T_IF T_ELSE T_FOR T_SWITCH T_CONTINUE T_BREAK T_CASE T_DEFAULT T_ENUM T_STRUCT T_TYPEDEF
 %token T_NUMBER_INT T_NUMBER_DOUBLE T_VARIABLE T_CHAR_DATA T_STRING_DATA T_STRUCTVAR T_UNSIGNED
 %token T_SIZEOF
 
@@ -143,6 +143,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | T_ENUM T_VARIABLE                                                                 { $$ = new EnumKeyword($2, nullptr); }
                     | T_STRUCT T_VARIABLE T_LBRACE STRUCT_MEMBER_LIST T_RBRACE T_SEMICOLON              { $$ = new StructStorage($2, $4); }
                     | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                        { $$ = new Variable($2, $3, DeclType::DECL); }
+                    | T_TYPEDEF TYPE_DEF T_VARIABLE                                                     { $$ = new Variable($2, $3, DeclType::TYPEDEF); }
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
