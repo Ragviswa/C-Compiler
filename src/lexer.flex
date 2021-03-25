@@ -78,6 +78,7 @@ enum            { return T_ENUM; }
 struct          { return T_STRUCT; }
 sizeof          { return T_SIZEOF; }
 unsigned        { return T_UNSIGNED; }
+typedef         { return T_TYPEDEF; }
 
 [0-9]+                         { yylval.number=strtod(yytext, 0); return T_NUMBER_INT; }
 [0-9]+[\.]([0-9]+)*             { yylval.number=strtod(yytext, 0); return T_NUMBER_DOUBLE; }

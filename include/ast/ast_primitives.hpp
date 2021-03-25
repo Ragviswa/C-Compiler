@@ -20,7 +20,8 @@ enum DeclType{
   ASSIGN,
   DECL,
   ARG,
-  STRUCT
+  STRUCT,
+  TYPEDEF
 };
 
 class Variable
@@ -877,6 +878,13 @@ public:
                     if(Symbol.lookUp(id) == "Error: undefined reference"){
                         Symbol.insert(type, "struct"+StackPointer.getstruct(), "."+id, address);
                     }
+                }
+                break;
+            case TYPEDEF:
+                if(Symbol.lookUp(id) == "Error: undefined reference"){
+                    Symbol.insert(type, "typedef", id, "0");
+                }else{
+                    Symbol.modify(type, "typedef", id, "0");
                 }
                 break;
         }   
