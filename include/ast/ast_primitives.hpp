@@ -1070,6 +1070,8 @@ private:
     std::string assignop;
     DeclType VarType;
     ExpressionPtr Expr = nullptr;
+    ExpressionListPtr list = nullptr;
+    bool isPtr = false;
 public:
 //This constructor does not feel right, it's a placeholder.
     Array() {}
@@ -1088,10 +1090,12 @@ public:
         index = _index;
     }
 
-    Array(TypeDef _type, const std::string *_id, double _length) {
+    Array(TypeDef _type, const std::string *_id, double _length, ExpressionListPtr _list = nullptr, bool _isPtr = false) {
         VarType = DECL;
         id = *_id;
         length = _length;
+        list = _list;
+        isPtr = _isPtr;
         switch(_type) {
             case INT:
                 type = "INT";
@@ -1705,21 +1709,7 @@ public:
                 }
                 break;
             case DECL:
-                if(getType() == "CHAR") {
-                    std::cout << "addi $sp, $sp, -" << getLength() << std::endl;
-                    address = std::to_string((int)(StackPointer.getIncr()+getLength()));
-                    StackPointer.setIncr(StackPointer.getIncr()+getLength());
-                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+getLength());
-                    if(Symbol.lookUp(id) == "Error: undefined reference") {
-                        Symbol.insert(type, "array", id, address);
-                    }else {
-                        Symbol.modify(type, "array", id, address);
-                    }
-                    if(Symbol.getScope() == 0) {
-                        std::cout << ".global " << getId() << std::endl;
-                    }
-                }
-                else if(getType()== "INT" || getType() == "FLOAT") {
+                if(isPtr) {
                     std::cout << "addi $sp, $sp, -" << 4*getLength() << std::endl;
                     address = std::to_string((int)(StackPointer.getIncr()+4*getLength()));
                     StackPointer.setIncr(StackPointer.getIncr()+4*getLength());
@@ -1732,19 +1722,100 @@ public:
                     if(Symbol.getScope() == 0) {
                         std::cout << ".global " << getId() << std::endl;
                     }
-                }
-                else if(getType() == "DOUBLE") {
-                    std::cout << "addi $sp, $sp, -" << 8*getLength() << std::endl;
-                    address = std::to_string(StackPointer.getIncr()+4);
-                    StackPointer.setIncr(StackPointer.getIncr()+8*getLength());
-                    StackPointer.setscopeIncr(StackPointer.getscopeIncr()+8*getLength());
-                    if(Symbol.lookUp(id) == "ERROR: undefined reference") {
-                        Symbol.insert(type, "array", id, address);
-                    }else {
-                        Symbol.modify(type, "array", id, address);
+                }else {
+                    if(getType() == "CHAR") {
+                        std::cout << "addi $sp, $sp, -" << getLength() << std::endl;
+                        address = std::to_string((int)(StackPointer.getIncr()+getLength()));
+                        StackPointer.setIncr(StackPointer.getIncr()+getLength());
+                        StackPointer.setscopeIncr(StackPointer.getscopeIncr()+getLength());
+                        if(Symbol.lookUp(id) == "Error: undefined reference") {
+                            Symbol.insert(type, "array", id, address);
+                        }else {
+                            Symbol.modify(type, "array", id, address);
+                        }
+                        if(Symbol.getScope() == 0) {
+                            std::cout << ".global " << getId() << std::endl;
+                        }
                     }
-                    if(Symbol.getScope() == 0) {
-                        std::cout << ".global " << getId() << std::endl;
+                    else if(getType()== "INT" || getType() == "FLOAT") {
+                        std::cout << "addi $sp, $sp, -" << 4*getLength() << std::endl;
+                        address = std::to_string((int)(StackPointer.getIncr()+4*getLength()));
+                        StackPointer.setIncr(StackPointer.getIncr()+4*getLength());
+                        StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4*getLength());
+                        if(Symbol.lookUp(id) == "Error: undefined reference") {
+                            Symbol.insert(type, "array", id, address);
+                        }else {
+                            Symbol.modify(type, "array", id, address);
+                        }
+                        if(Symbol.getScope() == 0) {
+                            std::cout << ".global " << getId() << std::endl;
+                        }
+                    }
+                    else if(getType() == "DOUBLE") {
+                        std::cout << "addi $sp, $sp, -" << 8*getLength() << std::endl;
+                        address = std::to_string(StackPointer.getIncr()+8*getLength());
+                        StackPointer.setIncr(StackPointer.getIncr()+8*getLength());
+                        StackPointer.setscopeIncr(StackPointer.getscopeIncr()+8*getLength());
+                        if(Symbol.lookUp(id) == "ERROR: undefined reference") {
+                            Symbol.insert(type, "array", id, address);
+                        }else {
+                            Symbol.modify(type, "array", id, address);
+                        }
+                        if(Symbol.getScope() == 0) {
+                            std::cout << ".global " << getId() << std::endl;
+                        }
+                    }
+                }
+                if(list != nullptr) {
+                    ExpressionPtr curr = list->getArg();
+                    ExpressionListPtr rest = list->getArgList();
+                    int address_copy = std::stoi(address);
+                    if(rest == nullptr) {
+                        if(curr == nullptr) {
+                            // nothing
+                        }else {
+                            if(getType() == "INT") {
+                                curr->CompileRec("$t0");
+                                std::cout << "sw $t0, -" << address_copy << "($fp)" << std::endl;
+                                address_copy = address_copy - 4;
+                            }else if(getType() == "FLOAT") {
+                                curr->CompileRec("$f0");
+                                std::cout << "swc1 $f0, -" << address_copy << "($fp)" << std::endl;
+                                address_copy = address_copy - 4;
+                            }else if(getType() == "DOUBLE") {
+                                curr->CompileRec("$f0");
+                                std::cout << "swc1 $f0, -" << address_copy << "($fp)" << std::endl;
+                                std::cout << "swc1 $f1, -" << address_copy-4 << "($fp)" << std::endl;
+                                address_copy = address_copy - 8;
+                            }else if(getType() == "CHAR") {
+                                curr->CompileRec("$t0");
+                                std::cout << "sb $t0, -" << address_copy << "($fp)" << std::endl;
+                                address_copy = address_copy - 1;
+                            }
+                        }
+                    }else {
+                        while(rest != nullptr) {
+                            if(getType() == "INT" || isPtr) {
+                                curr->CompileRec("$t0");
+                                std::cout << "sw $t0, -" << address_copy << "($fp)" << std::endl;
+                                address_copy = address_copy - 4;
+                            }else if(getType() == "FLOAT") {
+                                curr->CompileRec("$f0");
+                                std::cout << "swc1 $f0, -" << address_copy << "($fp)" << std::endl;
+                                address_copy = address_copy - 4;
+                            }else if(getType() == "DOUBLE") {
+                                curr->CompileRec("$f0");
+                                std::cout << "swc1 $f0, -" << address_copy << "($fp)" << std::endl;
+                                std::cout << "swc1 $f1, -" << address_copy-4 << "($fp)" << std::endl;
+                                address_copy = address_copy - 8;
+                            }else if(getType() == "CHAR") {
+                                curr->CompileRec("$t0");
+                                std::cout << "sb $t0, -" << address_copy << "($fp)" << std::endl;
+                                address_copy = address_copy - 1;
+                            }
+                            curr = rest->getArg();
+                            rest = rest->getArgList();
+                        }
                     }
                 }
                 break;
@@ -2630,7 +2701,6 @@ private:
     ExpressionPtr expr = nullptr;
 public:
     SizeOf() {
-
     }
     SizeOf(ExpressionPtr _expr) {
         expr = _expr;

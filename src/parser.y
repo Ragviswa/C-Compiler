@@ -135,7 +135,9 @@ STRUCT_MEMBER       : TYPE_DEF T_VARIABLE T_SEMICOLON                           
 DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                                                   { $$ = new Variable($1, $2, DeclType::DECL); }
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
-                    | TYPE_DEF T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET T_ASSIGN T_LBRACE EXPR_LIST T_RBRACE T_SEMICOLON {}
+                    | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_ASSIGN T_LBRACE EXPR_LIST T_RBRACE T_SEMICOLON { $$ = new Array($1, $2, $4, $8); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON      { $$ = new Array($1, $3, $5, true); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_ASSIGN T_LBRACE EXPR_LIST T_RBRACE T_SEMICOLON {$$ = new Array($1, $3, $5, $9, true); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_SEMICOLON                                           { $$ = new Pointer($1, $3, DeclType::DECL); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                             { $$ = new Pointer($1, $3, DeclType::DECL, $5); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN T_STRING_DATA T_SEMICOLON                      { $$ = new Pointer($3, $5); }
@@ -238,7 +240,11 @@ FACTOR              : T_NUMBER_INT                                          { $$
                     | T_LBRACKET EXPR T_RBRACKET                            { $$ = $2; }
                     | T_VARIABLE T_LSBRACKET EXPR T_RSBRACKET               { $$ = new Array($1, $3); }
                     | T_SIZEOF T_LBRACKET EXPR T_RBRACKET                   { $$ = new SizeOf($3); }
-                    | T_SIZEOF T_LBRACKET TYPE_DEF T_RBRACKET               { $$ = new SizeOf($3); }
+                    | T_SIZEOF T_LBRACKET T_INT T_RBRACKET                  { $$ = new SizeOf(TypeDef::INT); }
+                    | T_SIZEOF T_LBRACKET T_FLOAT T_RBRACKET                { $$ = new SizeOf(TypeDef::FLOAT); }
+                    | T_SIZEOF T_LBRACKET T_DOUBLE T_RBRACKET               { $$ = new SizeOf(TypeDef::DOUBLE); }
+                    | T_SIZEOF T_LBRACKET T_CHAR T_RBRACKET                 { $$ = new SizeOf(TypeDef::CHAR); }
+                    | T_SIZEOF T_LBRACKET T_UNSIGNED T_RBRACKET             { $$ = new SizeOf(TypeDef::INT); }
                     | T_TIMES T_VARIABLE                                    { $$ = new Pointer($2, true, false); }
                     | T_AND T_VARIABLE                                      { $$ = new Variable($2, true); }
                     | T_STRUCTVAR                                           { $$ = new Variable($1); }
@@ -257,7 +263,6 @@ const Body *parseAST(FILE *inputFile)
   yyparse();
   return g_root;
 }
-
 /*
 const Body *parseAST()
 {
