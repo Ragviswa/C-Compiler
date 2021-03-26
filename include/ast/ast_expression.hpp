@@ -84,7 +84,7 @@ public:
                     std::cout << "addiu $sp, $sp, -4" << std::endl;
                     getArg()->CompileRec("$a" + std::to_string(StackPointer.getArgc()));
                     StackPointer.setArgSize(StackPointer.getArgSize()+4);
-                } else if(argFormat == "var") {
+                } else if(argFormat == "var" || argFormat == "gvar") {
                     if(argType == "INT") {
                         StackPointer.setIncr(StackPointer.getIncr()+4);
                         StackPointer.setscopeIncr(StackPointer.getscopeIncr()+4);
@@ -154,7 +154,7 @@ public:
                     std::cout << "addiu $sp, $sp, -4" << std::endl;
                     std::cout << "sw $t0, " << std::to_string(StackPointer.getArgSize()) << "($sp)" << std::endl;
                     StackPointer.setArgSize(StackPointer.getArgSize()+4);
-                } else if(argFormat == "var") {
+                } else if(argFormat == "var" || argFormat == "gvar") {
                     if(argType == "INT") {
                         getArg()->CompileRec("$t0");
                         StackPointer.setIncr(StackPointer.getIncr()+4);

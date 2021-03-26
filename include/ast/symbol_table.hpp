@@ -18,6 +18,7 @@ class StackPtr{
     int current_scope = 0;
     int nullfunc = 0;
     int freturn = 0;
+    bool text = 0;
     std::string strucdecl;
     public:
     StackPtr() {
@@ -29,6 +30,14 @@ class StackPtr{
 
     void setArgSize(int n) {
         argSize = n;
+    }
+
+    bool gettext() {
+        return text;
+    }
+
+    void settext(bool n) {
+        text = n;
     }
 
     std::string getstruct() {

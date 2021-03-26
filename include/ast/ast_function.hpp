@@ -40,6 +40,10 @@ public:
     { return args; }
 
     void CompileRec(std::string destReg) const {
+        if(!StackPointer.gettext()){
+            std::cout << ".text" << std::endl;
+            StackPointer.settext(1);
+        }
         if(statements!=nullptr){
             name->CompileRec(destReg);
         }else{
@@ -51,19 +55,20 @@ public:
             Symbol.setfuncstart(name->getId());
             Symbol.setfuncend(name->getId()+"end");
             std::cout << name->getId() << ":" << std::endl;
-            std::cout << "sw $fp, 0($sp)" << std::endl;
+            std::cout << "move $t7, $fp" << std::endl;
             std::cout << "move $fp, $sp" << std::endl;
             std::cout << "addiu $sp, $sp, -44" << std::endl;
-            std::cout << "sw $s0, 4($sp)" << std::endl;
-            std::cout << "sw $s1, 8($sp)" << std::endl;
-            std::cout << "sw $s2, 12($sp)" << std::endl;
-            std::cout << "sw $s3, 16($sp)" << std::endl;
-            std::cout << "sw $s4, 20($sp)" << std::endl;
-            std::cout << "sw $s5, 24($sp)" << std::endl;
-            std::cout << "sw $s6, 28($sp)" << std::endl;
-            std::cout << "sw $s7, 32($sp)" << std::endl;
-            std::cout << "sw $fp, 36($sp)" << std::endl;
-            std::cout << "sw $ra, 40($sp)" << std::endl;
+            std::cout << "sw $s0, 0($sp)" << std::endl;
+            std::cout << "sw $s1, 4($sp)" << std::endl;
+            std::cout << "sw $s2, 8($sp)" << std::endl;
+            std::cout << "sw $s3, 12($sp)" << std::endl;
+            std::cout << "sw $s4, 16($sp)" << std::endl;
+            std::cout << "sw $s5, 20($sp)" << std::endl;
+            std::cout << "sw $s6, 24($sp)" << std::endl;
+            std::cout << "sw $s7, 28($sp)" << std::endl;
+            std::cout << "sw $fp, 32($sp)" << std::endl;
+            std::cout << "sw $ra, 36($sp)" << std::endl;
+            std::cout << "sw $t7, 40($sp)" << std::endl;
             StackPointer.setIncr(StackPointer.getIncr()+44);
 
             if(args!=nullptr){
@@ -103,18 +108,19 @@ public:
                 }
             }
             StackPointer.setIncr(StackPointer.getIncr()-44);
-            std::cout << "lw $s0, 4($sp)" << std::endl;
-            std::cout << "lw $s1, 8($sp)" << std::endl;
-            std::cout << "lw $s2, 12($sp)" << std::endl;
-            std::cout << "lw $s3, 16($sp)" << std::endl;
-            std::cout << "lw $s4, 20($sp)" << std::endl;
-            std::cout << "lw $s5, 24($sp)" << std::endl;
-            std::cout << "lw $s6, 28($sp)" << std::endl;
-            std::cout << "lw $s7, 32($sp)" << std::endl;
-            std::cout << "lw $fp, 36($sp)" << std::endl;
-            std::cout << "lw $ra, 40($sp)" << std::endl;
+            std::cout << "lw $s0, 0($sp)" << std::endl;
+            std::cout << "lw $s1, 4($sp)" << std::endl;
+            std::cout << "lw $s2, 8($sp)" << std::endl;
+            std::cout << "lw $s3, 12($sp)" << std::endl;
+            std::cout << "lw $s4, 16($sp)" << std::endl;
+            std::cout << "lw $s5, 20($sp)" << std::endl;
+            std::cout << "lw $s6, 24($sp)" << std::endl;
+            std::cout << "lw $s7, 28($sp)" << std::endl;
+            std::cout << "lw $fp, 32($sp)" << std::endl;
+            std::cout << "lw $ra, 36($sp)" << std::endl;
+            std::cout << "lw $t7, 40($sp)" << std::endl;
             std::cout << "move $sp, $fp" << std::endl;
-            std::cout << "lw $fp, 0($sp)" << std::endl;
+            std::cout << "move $fp, $t7" << std::endl;
             std::cout << "jr $ra" << std::endl;
             Symbol.setfuncscope(Symbol.getfuncscope()-1);
             StackPointer.setfreturn(0);

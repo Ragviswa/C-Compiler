@@ -6,7 +6,7 @@ StackPtr StackPointer;
 
 int main(int argc, char *argv[]) {
     FILE *fileInput = fopen(argv[1],"r");
-    std::cout << ".text" << std::endl;
+    std::cout << ".data" << std::endl;
     const Body *ast = parseAST(fileInput);
     ast->CompileRec("$v0");
     /*
