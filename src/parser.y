@@ -147,6 +147,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | T_STRUCT T_VARIABLE T_LBRACE STRUCT_MEMBER_LIST T_RBRACE T_SEMICOLON              { $$ = new StructStorage($2, $4); }
                     | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                        { $$ = new Variable($2, $3, DeclType::DECL); }
                     | T_TYPEDEF TYPE_DEF T_VARIABLE T_SEMICOLON                                         { $$ = new Variable($2, $3, DeclType::TYPEDEF); typedefstorage[*$3] = $2;}
+                    | T_TYPEDEF TYPE_DEF T_TIMES T_VARIABLE T_SEMICOLON                                 { $$ = new Variable($2, $4, DeclType::TYPEDEF); typedefstorage[*$4] = $2;}
 
 EXPR                : CONDITIONAL                                           { $$ = $1; }
                     | T_VARIABLE ASSIGNOP EXPR                              { $$ = new Variable($1, $2, $3);}
