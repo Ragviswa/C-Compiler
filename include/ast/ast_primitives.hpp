@@ -1123,6 +1123,19 @@ public:
         VarType = STRUCT;
         id = *_id;
         length = _length;
+        switch(_type) {
+            case INT:
+                type = "INT";
+                break;
+            case FLOAT:
+                type = "FLOAT";
+                break;
+            case DOUBLE:
+                type = "DOUBLE";
+                break;
+            default:
+                type = "something went wrong";
+        }
     }
 
     Array(TypeDef _type, const std::string *_id) {
