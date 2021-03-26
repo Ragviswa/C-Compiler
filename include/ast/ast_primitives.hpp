@@ -721,10 +721,18 @@ public:
                     int size = 0;
                     for(int i = 0; i < StructMembers.size(); i++){
                         int address = StackPointer.getIncr()-std::stoi(Symbol.lookUp(StructMembers[i]));
-                        if(Symbol.lookUp(id+StructMembers[i]) == "Error: undefined reference"){
-                            Symbol.insert(Symbol.getType(StructMembers[i]), "var", id+StructMembers[i], std::to_string(address));
+                        if(Symbol.getType(StructMembers[i]).substr(0, 3) == "arr"){
+                                if(Symbol.lookUp(id+StructMembers[i]) == "Error: undefined reference"){
+                                    Symbol.insert(Symbol.getType(StructMembers[i]).substr(3, Symbol.getType(StructMembers[i]).length()-3), "array", id+StructMembers[i], std::to_string(address));
+                                }else{
+                                    Symbol.modify(Symbol.getType(StructMembers[i]).substr(3, Symbol.getType(StructMembers[i]).length()-3), "array", id+StructMembers[i], std::to_string(address));
+                                }
                         }else{
-                            Symbol.modify(Symbol.getType(StructMembers[i]), "var", id+StructMembers[i], std::to_string(address));
+                                if(Symbol.lookUp(id+StructMembers[i]) == "Error: undefined reference"){
+                                    Symbol.insert(Symbol.getType(StructMembers[i]), "var", id+StructMembers[i], std::to_string(address));
+                                }else{
+                                    Symbol.modify(Symbol.getType(StructMembers[i]), "var", id+StructMembers[i], std::to_string(address));
+                                }
                         }
                         if(Symbol.getType(StructMembers[i])=="CHAR"){
                             size+=1;
@@ -1109,6 +1117,12 @@ public:
             default:
                 type = "something went wrong";
         }
+    }
+
+    Array(TypeDef _type, const std::string *_id, double _length, DeclType _vartype) {
+        VarType = STRUCT;
+        id = *_id;
+        length = _length;
     }
 
     Array(TypeDef _type, const std::string *_id) {
@@ -1705,6 +1719,36 @@ public:
                         std::cout << "addi.d $f0, $f0, -1" << std::endl;
                         std::cout << "swc1 $f0, 0($t1)" << std::endl;
                         std::cout << "swc1 $f1, -4($t1)" << std::endl;
+                    }
+                }
+                break;
+            case STRUCT:
+                if(getType()=="INT"){
+                    StackPointer.setStructno(StackPointer.getStructno()+4*getLength());
+                    address = std::to_string(StackPointer.getStructno());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert("arr"+type, "struct"+StackPointer.getstruct(), "."+id, address);
+                    }
+                }
+                else if(getType() == "FLOAT") {
+                    StackPointer.setStructno(StackPointer.getStructno()+4*getLength());
+                    address = std::to_string(StackPointer.getStructno());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert("arr"+type, "struct"+StackPointer.getstruct(), "."+id, address);
+                    }
+                }
+                else if(getType() == "DOUBLE") {
+                    StackPointer.setStructno(StackPointer.getStructno()+8*getLength());
+                    address = std::to_string(StackPointer.getStructno());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert("arr"+type, "struct"+StackPointer.getstruct(), "."+id, address);
+                    }
+                }
+                else if(getType() == "CHAR") {
+                    StackPointer.setStructno(StackPointer.getStructno()+4*getLength());
+                    address = std::to_string(StackPointer.getStructno());
+                    if(Symbol.lookUp(id) == "Error: undefined reference"){
+                        Symbol.insert("arr"+type, "struct"+StackPointer.getstruct(), "."+id, address);
                     }
                 }
                 break;
