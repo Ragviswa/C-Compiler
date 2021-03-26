@@ -136,7 +136,7 @@ DECL                : TYPE_DEF T_VARIABLE T_SEMICOLON                           
                     | TYPE_DEF T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                                     { $$ = new Variable($1, $2, DeclType::DECL, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON              { $$ = new Array($1, $2, $4); }
                     | TYPE_DEF T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_ASSIGN T_LBRACE EXPR_LIST T_RBRACE T_SEMICOLON { $$ = new Array($1, $2, $4, $8); }
-                    | TYPE_DEF T_TIMES T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON      { $$ = new Array($1, $3, $5, true); }
+                    | TYPE_DEF T_TIMES T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_SEMICOLON      { $$ = new Array($1, $3, $5, nullptr, true); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_LSBRACKET T_NUMBER_INT T_RSBRACKET T_ASSIGN T_LBRACE EXPR_LIST T_RBRACE T_SEMICOLON {$$ = new Array($1, $3, $5, $9, true); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_SEMICOLON                                           { $$ = new Pointer($1, $3, DeclType::DECL); }
                     | TYPE_DEF T_TIMES T_VARIABLE T_ASSIGN EXPR T_SEMICOLON                             { $$ = new Pointer($1, $3, DeclType::DECL, $5); }
