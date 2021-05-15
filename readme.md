@@ -1,35 +1,52 @@
-2020/2021 Compilers Coursework
-==============================
+# C-Compiler
 
-There is a single assessed code deliverable, which is due on Friday 26 March 2021 at 23:59. This deliverable contains two components:
+The specification for this project is available [here](c_compiler.md)
 
-- [*C-compiler*](c_compiler.md) (90%): a compiler from C to MIPS assembly. The source language is pre-processed C90. The target environment is Ubuntu 16.04, so the lab Ubuntu distribution, or equivalently an Ubuntu 16.04 VM as configured in the attached Vagrantfile.
 
-- [time-tracking/project management component](management.md) (10%), which will be assessed orally at the start of Summer term.
+## Overview
 
-Repositories
-============
+The following repository contains a working compiler which converts C to MIPS1 assembly. The source language is pre-processed C90. The target environment is Ubuntu 16.04, so the lab Ubuntu distribution, or equivalently an Ubuntu 16.04 VM as configured in the attached Vagrantfile. 
 
-Each group gets a bare private repository. It is up to you if you want to clone the master specification, or to start from scratch.
+It supports the compilation of the following features:
 
-Submission
-==========
+* a file containing just a single function with no arguments
+* variables of `int` type
+* local variables
+* arithmetic and logical expressions
+* if-then-else statements
+* while loops
 
-Submission will be via GitHub (code) and Teams (commit hash), as in the labs.
+* files containing multiple functions that call each other
+* functions that take up to four parameters
+* for loops
+* arrays declared globally (i.e. outside of any function in your file)
+* arrays declared locally (i.e. inside a function)
+* reading and writing elements of an array
+* recursive function calls
+* the `enum` keyword
+* `switch` statements
+* the `break` and `continue` keywords
 
-All submissions will be tested functionally -- there is no expectation for your compiler to *optimise* its input. Moreover, your compiler will only be tested on *valid* inputs, so you do not need to handle faulty inputs in a graceful way.
+* variables of `double`, `float`, `char`, `unsigned`, structs, and pointer types
+* calling externally-defined functions (i.e. the file being compiled declares a function, but its definition is provided in a different file that is linked in later on)
+* functions that take more than four parameters
+* mutually recursive function calls
+* locally scoped variable declarations (e.g. a variable that is declared inside the body of a while loop, such as `while(...) { int x = ...; ... }`.
+* the `typedef` keyword
+* the `sizeof(...)` function (which takes either a type or a variable)
+* taking the address of a variable using the `&` operator
+* dereferencing a pointer-variable using the `*` operator
+* pointer arithmetic
+* character literals, including escape sequences like `\n`
+* strings (as NULL-terminated character arrays)
+* declaration and use of structs
 
-Changelog
-=========
+## Guide for Use
 
-* New for 2020/2021:
+The compiler will be built by running the following command in the top-level directory of your repo:
 
-    * In previous years, students were additionally required to submit a C-to-Python translator, as a "ramping up" task. This extra deliverable has been removed, as the labs provide plenty of "ramping up" practice.
+    make bin/c_compiler
 
-    * We have provided a really basic compiler that simply ignores its input and produces a fixed, valid MIPS assembly program. This should help you to get started a bit more rapidly. (Thanks to Archie Crichton for writing this.)
+The compilation function is invoked using the flag `-S`, with the source file and output file specified on the command line:
 
-* New for 2019/2020:
-
-    * In previous years, students were additionally required to submit a set of testcases. This deliverable has been removed; instead, a large collection of testcases has been provided for you, as this was judged to be more useful.
-
-    * In previous years, the compiler component counted for 42.8% of the module; it now counts for 55%. It was felt that this weighting more accurately reflects the effort that students put in to building a working compiler.
+    bin/c_compiler -S [source-file.c] -o [dest-file.s]
